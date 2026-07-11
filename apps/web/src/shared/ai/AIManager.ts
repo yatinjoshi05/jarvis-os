@@ -1,0 +1,6 @@
+export { useAssistantState, assistantState } from './AssistantState'
+export { speechRecognitionManager } from './SpeechRecognitionManager'
+export { aiResponseManager } from './AIResponseManager'
+export { default as MicrophoneController } from './MicrophoneController'
+export { default as SpeechRecognitionController } from './SpeechRecognitionController'
+export { microphoneManager } from './MicrophoneManager'
