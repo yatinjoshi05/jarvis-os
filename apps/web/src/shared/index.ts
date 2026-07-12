@@ -20,4 +20,6 @@ export * as types from './types';
 export * as utils from './utils';
 export * as voice from './voice';
 export * as dashboard from './dashboard';
+export * as agents from './agents';
+
 
