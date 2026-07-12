@@ -1,44 +1,62 @@
-export interface RequestPayload {
-  prompt: string;
-  context?: string;
-  history?: { role: string; content: string }[];
-}
-
-export interface ResponsePayload {
-  text: string;
-}
-
-export interface IAIProvider {
-  initialize(): Promise<void>;
-  generateResponse(input: RequestPayload): Promise<ResponsePayload>;
-  streamResponse(input: RequestPayload, onChunk: (chunk: string) => void): Promise<void>;
-  cancel(): void;
-  healthCheck(): Promise<boolean>;
-  dispose(): void;
-}
+import { AIProvider, ProviderRequestOptions } from "./AIProvider";
+import { ProviderFactory } from "./ProviderFactory";
+import { retryManager } from "./RetryManager";
+import { aiLogger } from "./Logger";
+import { aiEventEmitter, AIEvents } from "./AIEvents";
 
 export class AIRouter {
-  private providers: Map<string, IAIProvider> = new Map();
-  private primaryProviderId: string = 'gemini';
-  private secondaryProviderId: string = 'local';
-  
-  // Deduplication
-  private inFlightRequests: Map<string, Promise<ResponsePayload>> = new Map();
-  
-  // Queueing
+  private providers: Map<string, AIProvider> = new Map();
+  private primaryProviderId = 'gemini';
+  private secondaryProviderId = 'openai';
+
+  // Deduplication cache
+  private inFlightRequests: Map<string, Promise<string>> = new Map();
+
+  // Execution queue
   private requestQueue: Array<() => Promise<void>> = [];
   private isProcessingQueue = false;
 
-  constructor() {}
+  constructor() {
+    this.registerDefaultProviders();
+  }
 
-  public registerProvider(id: string, provider: IAIProvider, isPrimary = false, isSecondary = false) {
+  private registerDefaultProviders() {
+    try {
+      const providersList = ProviderFactory.getRegisteredProviders();
+      for (const id of providersList) {
+        this.providers.set(id, ProviderFactory.create(id));
+      }
+      aiLogger.info('AIRouter', `Default providers registered: ${providersList.join(', ')}`);
+    } catch (e) {
+      aiLogger.error('AIRouter', 'Failed to register default providers', e);
+    }
+  }
+
+  public registerProvider(id: string, provider: AIProvider, isPrimary = false, isSecondary = false) {
     this.providers.set(id, provider);
     if (isPrimary) this.primaryProviderId = id;
     if (isSecondary) this.secondaryProviderId = id;
   }
 
-  public getProvider(id: string): IAIProvider | undefined {
+  public getProvider(id: string): AIProvider | undefined {
     return this.providers.get(id);
+  }
+
+  public setPrimaryProvider(id: string) {
+    if (this.providers.has(id)) {
+      this.primaryProviderId = id;
+      aiLogger.info('AIRouter', `Primary provider set to: ${id}`);
+    } else {
+      throw new Error(`[AIRouter] Provider with ID "${id}" is not registered.`);
+    }
+  }
+
+  public getPrimaryProviderId(): string {
+    return this.primaryProviderId;
+  }
+
+  public getActiveProvider(): AIProvider {
+    return this.providers.get(this.primaryProviderId) || this.providers.get('gemini')!;
   }
 
   private async processQueue() {
@@ -47,26 +65,42 @@ export class AIRouter {
     while (this.requestQueue.length > 0) {
       const task = this.requestQueue.shift();
       if (task) {
-        await task();
+        try {
+          await task();
+        } catch (e) {
+          aiLogger.error('AIRouter', 'Queue task execution failed', e);
+        }
       }
     }
     this.isProcessingQueue = false;
   }
 
-  public async generateResponse(input: RequestPayload, preferredProviderId?: string): Promise<ResponsePayload> {
-    const requestKey = this.getRequestKey(input);
-    
+  public async generateResponse(
+    prompt: string,
+    onChunk?: (chunk: string) => void,
+    options?: ProviderRequestOptions & { providerId?: string }
+  ): Promise<string> {
+    const requestKey = this.getRequestKey(prompt, options?.history);
+
     // Deduplication
     if (this.inFlightRequests.has(requestKey)) {
-      return this.inFlightRequests.get(requestKey)!;
+      aiLogger.info('AIRouter', 'Deduplicating in-flight request');
+      const inFlightPromise = this.inFlightRequests.get(requestKey)!;
+      if (onChunk) {
+        inFlightPromise.then((text) => onChunk(text));
+      }
+      return inFlightPromise;
     }
 
-    const requestPromise = new Promise<ResponsePayload>((resolve, reject) => {
+    const requestPromise = new Promise<string>((resolve, reject) => {
       this.requestQueue.push(async () => {
+        aiEventEmitter.emit(AIEvents.AI_REQUEST_STARTED, { prompt, options });
         try {
-          const response = await this.executeWithRetryAndFallback(input, preferredProviderId);
+          const response = await this.executeWithRetryAndFallback(prompt, onChunk, options);
+          aiEventEmitter.emit(AIEvents.AI_RESPONSE_COMPLETED, { response });
           resolve(response);
         } catch (error) {
+          aiEventEmitter.emit(AIEvents.AI_ERROR, { error });
           reject(error);
         } finally {
           this.inFlightRequests.delete(requestKey);
@@ -79,69 +113,80 @@ export class AIRouter {
     return requestPromise;
   }
 
-  public async streamResponse(input: RequestPayload, onChunk: (chunk: string) => void, preferredProviderId?: string): Promise<void> {
+  public async generateStream(
+    prompt: string,
+    onChunk: (chunk: string) => void,
+    options?: ProviderRequestOptions & { providerId?: string }
+  ): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.requestQueue.push(async () => {
+        aiEventEmitter.emit(AIEvents.AI_STREAM_STARTED, { prompt, options });
         try {
-          await this.executeStreamWithRetryAndFallback(input, onChunk, preferredProviderId);
+          await this.executeStreamWithRetryAndFallback(prompt, onChunk, options);
+          aiEventEmitter.emit(AIEvents.AI_STREAM_FINISHED);
           resolve();
         } catch (error) {
+          aiEventEmitter.emit(AIEvents.AI_ERROR, { error });
           reject(error);
         }
       });
       this.processQueue();
     });
   }
-  
+
   public cancel() {
-      for (const provider of this.providers.values()) {
-          provider.cancel();
+    for (const provider of this.providers.values()) {
+      try {
+        provider.cancel();
+      } catch (e) {
+        aiLogger.error('AIRouter', 'Failed to cancel provider execution', e);
       }
+    }
   }
 
-  private async executeWithRetryAndFallback(input: RequestPayload, preferredProviderId?: string): Promise<ResponsePayload> {
-    const providersToTry = this.getProvidersToTry(preferredProviderId);
-    
+  private async executeWithRetryAndFallback(
+    prompt: string,
+    onChunk?: (chunk: string) => void,
+    options?: ProviderRequestOptions & { providerId?: string }
+  ): Promise<string> {
+    const providersToTry = this.getProvidersToTry(options?.providerId);
     let lastError: any;
 
     for (const providerId of providersToTry) {
       const provider = this.providers.get(providerId);
       if (!provider) continue;
 
-      const isHealthy = await provider.healthCheck();
-      if (!isHealthy) continue;
-
       try {
-        // Retry logic inside provider execution: Try up to 3 times
-        return await this.retryOperation(() => provider.generateResponse(input), 3);
+        aiLogger.info('AIRouter', `Attempting generateResponse with provider: ${providerId}`);
+        return await retryManager.execute(() => provider.generateResponse(prompt, onChunk, options));
       } catch (error) {
         lastError = error;
-        console.warn(`[AIRouter] Provider ${providerId} failed, falling back. Error:`, error);
+        aiLogger.warn('AIRouter', `Provider ${providerId} failed, trying fallback. Error:`, error);
       }
     }
 
     throw lastError || new Error('[AIRouter] All providers failed or were unavailable.');
   }
 
-  private async executeStreamWithRetryAndFallback(input: RequestPayload, onChunk: (chunk: string) => void, preferredProviderId?: string): Promise<void> {
-    const providersToTry = this.getProvidersToTry(preferredProviderId);
+  private async executeStreamWithRetryAndFallback(
+    prompt: string,
+    onChunk: (chunk: string) => void,
+    options?: ProviderRequestOptions & { providerId?: string }
+  ): Promise<void> {
+    const providersToTry = this.getProvidersToTry(options?.providerId);
     let lastError: any;
 
     for (const providerId of providersToTry) {
       const provider = this.providers.get(providerId);
       if (!provider) continue;
 
-      const isHealthy = await provider.healthCheck();
-      if (!isHealthy) continue;
-
       try {
-        // Stream retry logic: A stream should typically not retry internally after emitting chunks, 
-        // as it would duplicate text, but since this is routing we assume provider handles it or it fails early.
-        await provider.streamResponse(input, onChunk);
+        aiLogger.info('AIRouter', `Attempting generateStream with provider: ${providerId}`);
+        await retryManager.execute(() => provider.generateStream(prompt, onChunk, options));
         return;
       } catch (error) {
         lastError = error;
-        console.warn(`[AIRouter] Provider ${providerId} failed stream, falling back. Error:`, error);
+        aiLogger.warn('AIRouter', `Provider ${providerId} failed stream, trying fallback. Error:`, error);
       }
     }
 
@@ -149,43 +194,32 @@ export class AIRouter {
   }
 
   private getProvidersToTry(preferredProviderId?: string): string[] {
-    const providers: string[] = [];
+    const list: string[] = [];
     if (preferredProviderId && this.providers.has(preferredProviderId)) {
-      providers.push(preferredProviderId);
+      list.push(preferredProviderId);
     }
-    if (this.primaryProviderId && !providers.includes(this.primaryProviderId)) {
-      providers.push(this.primaryProviderId);
+    if (this.primaryProviderId && !list.includes(this.primaryProviderId)) {
+      list.push(this.primaryProviderId);
     }
-    if (this.secondaryProviderId && !providers.includes(this.secondaryProviderId)) {
-      providers.push(this.secondaryProviderId);
+    if (this.secondaryProviderId && !list.includes(this.secondaryProviderId)) {
+      list.push(this.secondaryProviderId);
     }
-    return providers;
-  }
-
-  private async retryOperation<T>(operation: () => Promise<T>, maxRetries: number): Promise<T> {
-    let attempt = 0;
-    while (attempt < maxRetries) {
-      try {
-        return await operation();
-      } catch (error: any) {
-        attempt++;
-        if (attempt >= maxRetries) throw error;
-        
-        const isTransient = /network|timeout|fetch|connection|429/i.test(String(error?.message || error));
-        if (!isTransient) throw error;
-        
-        await new Promise(res => setTimeout(res, Math.pow(2, attempt) * 500));
+    // Fallback to any remaining active providers
+    for (const id of this.providers.keys()) {
+      if (!list.includes(id)) {
+        list.push(id);
       }
     }
-    throw new Error('Unreachable');
+    return list;
   }
 
-  private getRequestKey(input: RequestPayload): string {
+  private getRequestKey(prompt: string, history?: any[]): string {
     return JSON.stringify({
-      prompt: input.prompt,
-      historyLength: input.history?.length || 0
+      prompt,
+      historyLength: history?.length || 0,
     });
   }
 }
 
 export const aiRouter = new AIRouter();
+export const aiProvider = aiRouter.getActiveProvider(); // Keep backwards-compatible singleton export if needed
