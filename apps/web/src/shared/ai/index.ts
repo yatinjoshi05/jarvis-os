@@ -14,3 +14,15 @@ export * from './ProviderFactory';
 export * from './AIEvents';
 export * from './Logger';
 export * from './utils';
+
+// Voice Engine exports
+export * from './VoiceManager';
+export * from './MicrophoneManager';
+export * from './SpeechRecognitionManager';
+export * from './SpeechRecognitionControllerClass';
+export * from './WakeWordEngine';
+export * from './SpeechQueue';
+export * from './TextToSpeechManager';
+export * from './VoiceSettings';
+export * from './InterruptManager';
+export * from './voiceUtils';

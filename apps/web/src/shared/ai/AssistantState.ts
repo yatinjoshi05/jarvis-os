@@ -72,6 +72,14 @@ class AssistantState {
     }
   }
 
+  public get muted() {
+    return this.state === 'MUTED';
+  }
+
+  public get permissionDenied() {
+    return this.state === 'PERMISSION_DENIED';
+  }
+
   public get transcript() {
     return this._transcript;
   }
@@ -168,6 +176,14 @@ class AssistantState {
     voiceStateMachine.transitionTo('ERROR');
   }
 
+  setMuted() {
+    voiceStateMachine.transitionTo('MUTED');
+  }
+
+  setPermissionDenied() {
+    voiceStateMachine.transitionTo('PERMISSION_DENIED');
+  }
+
   reset() {
     this._transcript = '';
     this._response = '';
@@ -189,6 +205,8 @@ export function useAssistantState() {
     response: assistantState.response,
     caption: assistantState.caption,
     error: assistantState.error,
+    muted: assistantState.muted,
+    permissionDenied: assistantState.permissionDenied,
   });
 
   useEffect(() => {
@@ -202,9 +220,12 @@ export function useAssistantState() {
         response: assistantState.response,
         caption: assistantState.caption,
         error: assistantState.error,
+        muted: assistantState.muted,
+        permissionDenied: assistantState.permissionDenied,
       });
     });
   }, []);
 
   return state;
 }
+export default assistantState;

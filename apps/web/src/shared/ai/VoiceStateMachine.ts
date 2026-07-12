@@ -7,7 +7,9 @@ export type VoiceState =
   | 'STREAMING'
   | 'SPEAKING'
   | 'ERROR'
-  | 'INTERRUPTED';
+  | 'INTERRUPTED'
+  | 'MUTED'
+  | 'PERMISSION_DENIED';
 
 type VoiceStateListener = (state: VoiceState, previousState: VoiceState) => void;
 

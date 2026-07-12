@@ -1,229 +1,342 @@
-import { voiceStateMachine } from './VoiceStateMachine'
-import { assistantState } from './AssistantState'
-import { captionManager } from './CaptionManager'
+import { voiceStateMachine } from './VoiceStateMachine';
+import { assistantState } from './AssistantState';
+import { captionManager } from './CaptionManager';
+import { voiceSettings } from './VoiceSettings';
+import { VOICE_CONFIG } from './config';
+import { speechQueue } from './SpeechQueue';
 
-// Safety timeout: if speech doesn't start within this window, fall back to caption-only
-const SPEECH_START_TIMEOUT_MS = 900
+const SPEECH_START_TIMEOUT_MS = 1200;
 
 class TextToSpeechManager {
-  private queue: string[] = []
-  private isGenerating = false  // true while Gemini is still streaming
-  private currentIndex = 0
-  private isProcessing = false  // true while a sentence is being spoken
-  private cancelled = false
-
-  // Promise that resolves when the entire queue finishes
-  private queueResolve?: () => void
+  private isGenerating = false;
+  private isProcessing = false;
+  private cancelled = false;
+  private queueResolve?: () => void;
+  private currentAudioElement: HTMLAudioElement | null = null;
 
   // ─── Public API ───────────────────────────────────────────────
 
-  /**
-   * Opens a new queue. Returns a promise that resolves when all sentences
-   * have been spoken (or cancelled). Always call cancel() first if reusing.
-   */
   startQueue(): Promise<void> {
-    this.resetState()
-    this.isGenerating = true
+    this.resetState();
+    this.isGenerating = true;
 
     return new Promise<void>((resolve) => {
-      this.queueResolve = resolve
-    })
+      this.queueResolve = resolve;
+    });
   }
 
-  /** Push a new sentence while streaming. Safe to call concurrently. */
-  addSentence(sentence: string) {
-    if (this.cancelled) return
-    const trimmed = sentence.trim()
-    if (!trimmed) return
-    this.queue.push(trimmed)
-    this.processNext()
+  addSentence(sentence: string, priority: 'HIGH' | 'NORMAL' | 'LOW' = 'NORMAL') {
+    if (this.cancelled) return;
+    const trimmed = sentence.trim();
+    if (!trimmed) return;
+    
+    speechQueue.enqueue(trimmed, priority);
+    this.processNext();
   }
 
-  /** Signal that no more sentences are coming from Gemini. */
   finishQueue() {
-    this.isGenerating = false
-    // In case the queue was already empty when finishQueue was called
-    this.checkIfDone()
+    this.isGenerating = false;
+    this.checkIfDone();
   }
 
-  /** Cancel all speech immediately. Resolves the queue promise so callers don't deadlock. */
   cancel() {
-    this.cancelled = true
-    this.isProcessing = false
+    this.cancelled = true;
+    this.isProcessing = false;
 
-    // Stop browser speech
+    // Stop browser speech synthesis
     try {
-      window.speechSynthesis.cancel()
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
     } catch (_) { /* ignore */ }
 
-    // Stop caption timer without calling onComplete (no stale UI updates)
-    captionManager.stop()
+    // Stop external TTS audio playback
+    if (this.currentAudioElement) {
+      try {
+        this.currentAudioElement.pause();
+        this.currentAudioElement = null;
+      } catch (_) { /* ignore */ }
+    }
 
-    // Resolve the queue promise so AIResponseManager's `await speakPromise` unblocks
-    this.queueResolve?.()
-    this.queueResolve = undefined
+    captionManager.stop();
+    speechQueue.clear();
+
+    this.queueResolve?.();
+    this.queueResolve = undefined;
   }
 
-  /** Stop speech and transition state machine to IDLE. */
   stop() {
-    this.cancel()
-    voiceStateMachine.transitionTo('IDLE')
+    this.cancel();
+    voiceStateMachine.transitionTo('IDLE');
   }
 
   // ─── Internal ─────────────────────────────────────────────────
 
   private resetState() {
-    // Cancel any active speech first
-    this.cancel()
-    this.cancelled = false
-    this.queue = []
-    this.currentIndex = 0
-    this.isProcessing = false
-    this.isGenerating = false
-    this.queueResolve = undefined
+    this.cancel();
+    this.cancelled = false;
+    this.isProcessing = false;
+    this.isGenerating = false;
+    this.queueResolve = undefined;
   }
 
-  /** Non-recursive queue driver. Called after each sentence finishes. */
   private processNext() {
-    // Guard: don't start if already processing or cancelled
-    if (this.isProcessing || this.cancelled) return
+    if (this.isProcessing || this.cancelled) return;
 
-    // Nothing left to process right now
-    if (this.currentIndex >= this.queue.length) {
-      this.checkIfDone()
-      return
+    const nextItem = speechQueue.dequeue();
+    if (!nextItem) {
+      this.checkIfDone();
+      return;
     }
 
-    this.isProcessing = true
-    const sentence = this.queue[this.currentIndex]
-    this.currentIndex++
+    this.isProcessing = true;
 
-    this.speakSentence(sentence).then(() => {
-      this.isProcessing = false
+    this.speakSentence(nextItem.text).then(() => {
+      this.isProcessing = false;
       if (!this.cancelled) {
-        this.processNext()
+        this.processNext();
       }
-    })
+    });
   }
 
   private checkIfDone() {
-    if (!this.isGenerating && this.currentIndex >= this.queue.length && !this.isProcessing) {
-      this.queueResolve?.()
-      this.queueResolve = undefined
+    if (!this.isGenerating && speechQueue.size === 0 && !this.isProcessing) {
+      this.queueResolve?.();
+      this.queueResolve = undefined;
     }
   }
 
-  private speakSentence(sentence: string): Promise<void> {
+  private async speakSentence(sentence: string): Promise<void> {
+    const settings = voiceSettings.settings;
+    const provider = settings.ttsProvider;
+
+    if (provider === 'elevenlabs' && VOICE_CONFIG.elevenlabs.apiKey) {
+      return this.speakExternalElevenLabs(sentence);
+    } else if (provider === 'openai' && VOICE_CONFIG.openai.apiKey) {
+      return this.speakExternalOpenAI(sentence);
+    } else {
+      return this.speakBrowserSynthesis(sentence);
+    }
+  }
+
+  private speakBrowserSynthesis(sentence: string): Promise<void> {
     return new Promise<void>((resolve) => {
       if (!sentence.trim() || this.cancelled) {
-        resolve()
-        return
+        resolve();
+        return;
       }
 
-      let resolved = false
-      let startTimeoutId: ReturnType<typeof setTimeout> | null = null
-      let endTimeoutId: ReturnType<typeof setTimeout> | null = null
+      let resolved = false;
+      let startTimeoutId: ReturnType<typeof setTimeout> | null = null;
+      let endTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
-      // Single resolve guard — prevents double-resolve
       const finish = () => {
-        if (resolved) return
-        resolved = true
-        if (startTimeoutId) {
-          clearTimeout(startTimeoutId)
-          startTimeoutId = null
-        }
-        if (endTimeoutId) {
-          clearTimeout(endTimeoutId)
-          endTimeoutId = null
-        }
-        resolve()
-      }
+        if (resolved) return;
+        resolved = true;
+        if (startTimeoutId) clearTimeout(startTimeoutId);
+        if (endTimeoutId) clearTimeout(endTimeoutId);
+        resolve();
+      };
 
-      // ── Caption setup ──────────────────────────────────────────
-      // Caption completes independently of audio — so captions always show
-      // even if speech is blocked (autoplay policy, TTS error, etc.)
       captionManager.start(
         sentence,
         (cap) => assistantState.setCaption(cap),
-        () => {
-          // Caption finished naturally — audio may still be playing, that's fine
-          // We only finish the sentence promise when audio is done too
-        }
-      )
+        () => {}
+      );
 
-      // ── Utterance ──────────────────────────────────────────────
-      const utterance = new SpeechSynthesisUtterance(sentence)
-      utterance.lang = 'en-IN'
-      utterance.rate = 0.95
-      utterance.pitch = 1.0
+      const utterance = new SpeechSynthesisUtterance(sentence);
+      const settings = voiceSettings.settings;
+
+      utterance.lang = settings.language;
+      utterance.rate = settings.rate;
+      utterance.pitch = settings.pitch;
+      utterance.volume = settings.volume;
+
+      // Select system voice if specified
+      if (settings.voice && typeof window !== 'undefined' && window.speechSynthesis) {
+        const voices = window.speechSynthesis.getVoices();
+        const matchingVoice = voices.find((v) => v.name === settings.voice);
+        if (matchingVoice) utterance.voice = matchingVoice;
+      }
 
       utterance.onstart = () => {
-        if (startTimeoutId) {
-          clearTimeout(startTimeoutId)
-          startTimeoutId = null
-        }
-        
-        // Safety timeout for 'onend' dropping
-        const words = sentence.split(/\s+/).filter(Boolean).length
-        const maxDurationMs = (words * 400) + 2000
+        if (startTimeoutId) clearTimeout(startTimeoutId);
+
+        const words = sentence.split(/\s+/).filter(Boolean).length;
+        const maxDurationMs = (words * 400) + 2000;
         endTimeoutId = setTimeout(() => {
-          console.warn('[JARVIS TTS] End timeout (onend never fired). Resolving forcibly.')
-          captionManager.markComplete()
-          finish()
-        }, maxDurationMs)
+          console.warn('[JARVIS TTS] Browser voice timeout reached. Resolving.');
+          captionManager.markComplete();
+          finish();
+        }, maxDurationMs);
 
-        console.log(`[JARVIS TTS] Speaking: "${sentence.substring(0, 40)}..."`)
-        voiceStateMachine.transitionTo('SPEAKING')
-      }
+        console.log(`[JARVIS TTS] Speaking (Browser): "${sentence.substring(0, 45)}..."`);
+        voiceStateMachine.transitionTo('SPEAKING');
+      };
 
-      // Word-boundary sync: drive caption directly from browser events when available
       utterance.onboundary = (event) => {
-        if (event.name !== 'word') return
-        const charIndex = event.charIndex
-        const remaining = sentence.slice(charIndex)
-        const nextSpace = remaining.search(/\s/)
-        const wordLen = nextSpace === -1 ? remaining.length : nextSpace
-        const textSoFar = sentence.slice(0, charIndex + wordLen)
-        captionManager.updateDirect(textSoFar)
-      }
+        if (event.name !== 'word') return;
+        const charIndex = event.charIndex;
+        const remaining = sentence.slice(charIndex);
+        const nextSpace = remaining.search(/\s/);
+        const wordLen = nextSpace === -1 ? remaining.length : nextSpace;
+        const textSoFar = sentence.slice(0, charIndex + wordLen);
+        captionManager.updateDirect(textSoFar);
+      };
 
       utterance.onend = () => {
-        console.log(`[JARVIS TTS] Done: "${sentence.substring(0, 40)}..."`)
-        captionManager.markComplete()
-        finish()
-      }
+        captionManager.markComplete();
+        finish();
+      };
 
       utterance.onerror = (e) => {
-        // 'interrupted' is expected when cancel() is called — not a real error
         if (e.error !== 'interrupted' && e.error !== 'canceled') {
-          console.warn('[JARVIS TTS] Error:', e.error)
+          console.error('[JARVIS TTS] Browser Speech Error:', e.error);
         }
-        captionManager.markComplete()
-        finish()
-      }
+        captionManager.markComplete();
+        finish();
+      };
 
-      // Safety timeout: if onstart never fires (browser autoplay blocked), resolve anyway
-      // so captions still display and the queue keeps moving
       startTimeoutId = setTimeout(() => {
-        console.warn('[JARVIS TTS] Start timeout. Falling back to caption-only.')
-        voiceStateMachine.transitionTo('SPEAKING')
-        // Don't call finish() yet — let the caption timer run to completion
-        // The caption's onComplete will NOT resolve this promise, so we watch
-        // for caption timer completion via a secondary timeout
-        const captionWords = sentence.split(/\s+/).filter(Boolean)
-        const captionDuration = captionWords.length * 290 + 500
-        setTimeout(finish, captionDuration)
-      }, SPEECH_START_TIMEOUT_MS)
+        console.warn('[JARVIS TTS] Browser Speech start timeout. Transitioning to fallback.');
+        voiceStateMachine.transitionTo('SPEAKING');
+        const captionWords = sentence.split(/\s+/).filter(Boolean);
+        const captionDuration = captionWords.length * 290 + 500;
+        setTimeout(finish, captionDuration);
+      }, SPEECH_START_TIMEOUT_MS);
 
       try {
-        window.speechSynthesis.speak(utterance)
+        window.speechSynthesis.speak(utterance);
       } catch (e) {
-        console.error('[JARVIS TTS] speak() threw:', e)
-        captionManager.markComplete()
-        finish()
+        console.error('[JARVIS TTS] browser speak() failed:', e);
+        captionManager.markComplete();
+        finish();
       }
-    })
+    });
+  }
+
+  private speakExternalElevenLabs(sentence: string): Promise<void> {
+    return new Promise<void>(async (resolve) => {
+      const config = VOICE_CONFIG.elevenlabs;
+
+      captionManager.start(
+        sentence,
+        (cap) => assistantState.setCaption(cap),
+        () => {}
+      );
+
+      try {
+        voiceStateMachine.transitionTo('SPEAKING');
+        const response = await fetch(`${config.baseUrl}/text-to-speech/${config.voiceId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'xi-api-key': config.apiKey
+          },
+          body: JSON.stringify({
+            text: sentence,
+            model_id: 'eleven_monolingual_v1',
+            voice_settings: {
+              stability: 0.5,
+              similarity_boost: 0.75
+            }
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`ElevenLabs returned HTTP ${response.status}`);
+        }
+
+        const blob = await response.blob();
+        if (this.cancelled) {
+          resolve();
+          return;
+        }
+
+        await this.playAudioBlob(blob, resolve);
+      } catch (err) {
+        console.error('[JARVIS TTS] ElevenLabs playback failed, falling back to Browser Synthesis:', err);
+        this.speakBrowserSynthesis(sentence).then(resolve);
+      }
+    });
+  }
+
+  private speakExternalOpenAI(sentence: string): Promise<void> {
+    return new Promise<void>(async (resolve) => {
+      const config = VOICE_CONFIG.openai;
+
+      captionManager.start(
+        sentence,
+        (cap) => assistantState.setCaption(cap),
+        () => {}
+      );
+
+      try {
+        voiceStateMachine.transitionTo('SPEAKING');
+        const response = await fetch(`https://api.openai.com/v1/audio/speech`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${config.apiKey}`
+          },
+          body: JSON.stringify({
+            model: config.model,
+            voice: config.voice,
+            input: sentence
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`OpenAI Speech returned HTTP ${response.status}`);
+        }
+
+        const blob = await response.blob();
+        if (this.cancelled) {
+          resolve();
+          return;
+        }
+
+        await this.playAudioBlob(blob, resolve);
+      } catch (err) {
+        console.error('[JARVIS TTS] OpenAI TTS playback failed, falling back to Browser Synthesis:', err);
+        this.speakBrowserSynthesis(sentence).then(resolve);
+      }
+    });
+  }
+
+  private playAudioBlob(blob: Blob, resolve: () => void): Promise<void> {
+    return new Promise((audioResolve) => {
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      this.currentAudioElement = audio;
+
+      const settings = voiceSettings.settings;
+      audio.volume = settings.volume;
+
+      const cleanup = () => {
+        audio.onended = null;
+        audio.onerror = null;
+        URL.revokeObjectURL(url);
+        if (this.currentAudioElement === audio) {
+          this.currentAudioElement = null;
+        }
+        audioResolve();
+        resolve();
+      };
+
+      audio.onended = cleanup;
+      audio.onerror = () => {
+        console.error('[JARVIS TTS] Audio playback error');
+        cleanup();
+      };
+
+      audio.play().catch((err) => {
+        console.error('[JARVIS TTS] Audio play failed:', err);
+        cleanup();
+      });
+    });
   }
 }
 
-export const textToSpeechManager = new TextToSpeechManager()
+export const textToSpeechManager = new TextToSpeechManager();
+export default textToSpeechManager;

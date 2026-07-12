@@ -1,3 +1,5 @@
+import { assistantState } from './AssistantState';
+
 class CaptionManager {
   private timer: ReturnType<typeof setInterval> | null = null;
   private words: string[] = [];
@@ -59,6 +61,9 @@ class CaptionManager {
     this.completed = false;
     this.onUpdateCallback = undefined;
     this.onCompleteCallback = undefined;
+    
+    // Clear caption in UI state after speech ends
+    assistantState.setCaption('');
   }
 
   private clearTimer() {
@@ -84,3 +89,4 @@ class CaptionManager {
 }
 
 export const captionManager = new CaptionManager();
+export default captionManager;

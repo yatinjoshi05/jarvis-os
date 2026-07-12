@@ -2,6 +2,7 @@ import { aiRouter } from './AIRouter';
 import { conversationManager } from './ConversationManager';
 import { contextManager } from './ContextManager';
 import { aiLogger } from './Logger';
+import { voiceManager } from './VoiceManager';
 
 export { useAssistantState, assistantState } from './AssistantState';
 export { speechRecognitionManager } from './SpeechRecognitionManager';
@@ -66,6 +67,52 @@ export class AIManager {
 
   public cancel() {
     aiRouter.cancel();
+  }
+
+  // ─── Voice Engine APIs ────────────────────────────────────────
+
+  public startListening() {
+    return voiceManager.startListening();
+  }
+
+  public stopListening() {
+    voiceManager.stopListening();
+  }
+
+  public pauseListening() {
+    voiceManager.pauseListening();
+  }
+
+  public resumeListening() {
+    voiceManager.resumeListening();
+  }
+
+  public speak(text: string, priority?: 'HIGH' | 'NORMAL' | 'LOW') {
+    return voiceManager.speak(text, priority);
+  }
+
+  public stopSpeaking() {
+    voiceManager.stopSpeaking();
+  }
+
+  public interrupt() {
+    voiceManager.interrupt();
+  }
+
+  public mute() {
+    voiceManager.mute();
+  }
+
+  public unmute() {
+    voiceManager.unmute();
+  }
+
+  public setVoice(voiceName: string) {
+    voiceManager.setVoice(voiceName);
+  }
+
+  public setLanguage(lang: string) {
+    voiceManager.setLanguage(lang);
   }
 }
 
