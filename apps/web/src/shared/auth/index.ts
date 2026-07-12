@@ -1,8 +1,24 @@
-/**
- * Public API for the auth module.
- */
-export * from './types';
 export * from './interfaces';
-export * from './constants';
-export * from './events';
+export * from './types';
 export * from './errors';
+export * from './events';
+export * from './config';
+export * from './PasswordUtils';
+export * from './AuditLogger';
+export * from './TokenManager';
+export * from './ApiKeyManager';
+export * from './SessionManager';
+export * from './UserManager';
+export * from './SecurityManager';
+export * from './Providers';
+export * from './AuthenticationManager';
+export * from './Middleware';
+export { default as authenticationManager } from './AuthenticationManager';
+export { default as securityManager } from './SecurityManager';
+export { default as userManager } from './UserManager';
+export { default as sessionManager } from './SessionManager';
+export { default as apiKeyManager } from './ApiKeyManager';
+export { default as auditLogger } from './AuditLogger';
+export { default as PasswordUtils } from './PasswordUtils';
+export { default as TokenManager } from './TokenManager';
+export { default as AuthProviders } from './Providers';
