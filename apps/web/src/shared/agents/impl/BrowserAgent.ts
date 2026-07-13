@@ -18,8 +18,11 @@ export class BrowserAgent extends AbstractBaseAgent {
 
     const data = {
       screenshot: 'data:image/png;base64,mock',
-      htmlContent: `<html>Web scrape results for task ${task.name}</html>`
+      htmlContent: `<html>Web scrape results for task ${task.name}</html>`,
+      isMock: true
     };
+
+    agentLogger.log(this.id, 'task_completed', 'info', { taskId: task.id, isMock: true });
 
     this.state = 'Ready';
     return {

@@ -18,8 +18,11 @@ export class EmailAgent extends AbstractBaseAgent {
 
     const data = {
       messageId: `msg_${Date.now()}`,
-      status: `Email queued and sent to SMTP client under user: ${context.userId}.`
+      status: `Email queued and sent to SMTP client under user: ${context.userId}.`,
+      isMock: true
     };
+
+    agentLogger.log(this.id, 'task_completed', 'info', { taskId: task.id, isMock: true });
 
     this.state = 'Ready';
     return {

@@ -19,7 +19,10 @@ export class AutomationAgent extends AbstractBaseAgent {
     const data = {
       jobId: `cron_${Date.now()}`,
       status: `Successfully scheduled recurring loop for task: ${task.name}.`,
+      isMock: true
     };
+
+    agentLogger.log(this.id, 'task_completed', 'info', { taskId: task.id, isMock: true });
 
     this.state = 'Ready';
     return {

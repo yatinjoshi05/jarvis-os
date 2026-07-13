@@ -18,8 +18,11 @@ export class CodingAgent extends AbstractBaseAgent {
 
     const data = {
       code: `// Generated code for ${task.name}\nfunction process() {\n  return "completed";\n}`,
-      buildResult: 'Clean compilation (0 warnings)'
+      buildResult: 'Clean compilation (0 warnings)',
+      isMock: true
     };
+
+    agentLogger.log(this.id, 'task_completed', 'info', { taskId: task.id, isMock: true });
 
     this.state = 'Ready';
     return {

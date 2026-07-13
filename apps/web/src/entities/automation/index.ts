@@ -1,0 +1,18 @@
+export * from './types';
+export * from './interfaces';
+export * from './config';
+export * from './errors';
+export * from './events';
+export * from './utils';
+export * from './queue';
+export * from './worker';
+export * from './webhook';
+export * from './template';
+export * from './services';
+export * from './AutomationManager';
+export { default as automationManager } from './AutomationManager';
+export { default as queueManager } from './queue';
+export { default as backgroundWorker } from './worker';
+export { default as webhookManager } from './webhook';
+export { default as templateManager } from './template';
+export { default as notificationEngine } from './services';

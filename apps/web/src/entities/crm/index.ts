@@ -1,0 +1,12 @@
+export * from './types';
+export * from './interfaces';
+export * from './config';
+export * from './errors';
+export * from './events';
+export * from './utils';
+export * from './leadScoring';
+export * from './reminder';
+export * from './analytics';
+export * from './CRMManager';
+export { default as crmManager } from './CRMManager';
+export { default as reminderEngine } from './reminder';

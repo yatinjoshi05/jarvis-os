@@ -19,8 +19,11 @@ export class TerminalAgent extends AbstractBaseAgent {
     const data = {
       exitCode: 0,
       stdout: `Successfully executed: ${task.description} under path ${context.workspaceId}.`,
-      stderr: ''
+      stderr: '',
+      isMock: true
     };
+
+    agentLogger.log(this.id, 'task_completed', 'info', { taskId: task.id, isMock: true });
 
     this.state = 'Ready';
     return {

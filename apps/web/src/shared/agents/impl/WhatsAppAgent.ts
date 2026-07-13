@@ -18,8 +18,11 @@ export class WhatsAppAgent extends AbstractBaseAgent {
 
     const data = {
       messageId: `wa_${Date.now()}`,
-      status: `WhatsApp API message payload processed successfully.`
+      status: `WhatsApp API message payload processed successfully.`,
+      isMock: true
     };
+
+    agentLogger.log(this.id, 'task_completed', 'info', { taskId: task.id, isMock: true });
 
     this.state = 'Ready';
     return {
