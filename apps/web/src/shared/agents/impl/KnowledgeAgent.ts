@@ -1,6 +1,8 @@
 import { AbstractBaseAgent } from '../BaseAgent';
 import { Task, ExecutionContext, AgentResult } from '../interfaces';
 import { agentLogger } from '../AgentLogger';
+import type { FinancialManager } from '../../../entities/financial/FinancialManager';
+import { serviceRegistry } from '../../providers';
 
 export class KnowledgeAgent extends AbstractBaseAgent {
   constructor(id = 'knowledge_agent', name = 'Knowledge Agent') {
@@ -16,10 +18,16 @@ export class KnowledgeAgent extends AbstractBaseAgent {
     this.state = 'Running';
     agentLogger.log(this.id, 'execute_task', 'info', { taskId: task.id });
 
+    const financialManager = serviceRegistry.get<FinancialManager>('financialManager');
+    const glossary = financialManager.getGlossary();
+    const faqs = financialManager.getFAQs();
+    const concepts = financialManager.getConcepts();
+
     const data = {
       indexStatus: 'complete',
-      nodesCount: 42,
-      taskName: task.name
+      nodesCount: glossary.length + faqs.length + concepts.length,
+      taskName: task.name,
+      indexedGlossaryTerms: glossary.map((g) => g.term)
     };
 
     this.state = 'Ready';

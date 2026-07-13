@@ -6,3 +6,5 @@ export * from './interfaces';
 export * from './constants';
 export * from './events';
 export * from './errors';
+export * from './ServiceRegistry';
+export { default as serviceRegistry } from './ServiceRegistry';
