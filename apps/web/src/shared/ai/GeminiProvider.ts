@@ -144,5 +144,3 @@ export class GeminiProvider implements AIProvider {
     return contents;
   }
 }
-
-export const aiProvider = new GeminiProvider();
