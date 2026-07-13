@@ -20,7 +20,8 @@ class AgentLogger {
 
     this.logs.push(entry);
 
-    const prefix = `[AGENT LOG] [${status.toUpperCase()}] [Agent:${agentId}] [${action}]`;
+    const isMock = details.isMock === true;
+    const prefix = `${isMock ? '[SIMULATED] ' : ''}[AGENT LOG] [${status.toUpperCase()}] [Agent:${agentId}] [${action}]`;
     if (status === 'error') {
       console.error(prefix, details);
     } else if (status === 'warning') {
