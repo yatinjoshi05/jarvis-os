@@ -4,18 +4,15 @@ import { OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 
 /**
- * Phase 3 JarvisGlobe Generator
- * Combines Core Fibonacci Sphere (Phase 1 & 2) with:
- *  - Detached Outer Particle Stream (Phase 3A)
- *  - Background Micro-Dust Field (Phase 3B)
- *  - Smooth multi-layer GLSL time drift & gentle Y-rotation (Phase 3C)
+ * Phase 4 JarvisGlobe
+ * Core Fibonacci Sphere + Energy-Shedding Recycled Detached Particles + Background Micro-Dust
  */
 function generateFibonacciSphere(count: number, radius: number) {
   const positions = new Float32Array(count * 3)
   const colors = new Float32Array(count * 3)
   const sizes = new Float32Array(count)
 
-  const phi = (1 + Math.sqrt(5)) / 2 // Golden ratio
+  const phi = (1 + Math.sqrt(5)) / 2
 
   const cTop = new THREE.Color('#E8FFFF')
   const cUpperMid = new THREE.Color('#00C8FF')
@@ -36,7 +33,7 @@ function generateFibonacciSphere(count: number, radius: number) {
     positions[i * 3 + 1] = y * radius
     positions[i * 3 + 2] = z * radius
 
-    const t = y * 0.5 + 0.5 // 1.0 at top, 0.0 at bottom
+    const t = y * 0.5 + 0.5
 
     const col = new THREE.Color()
     if (t >= 0.8) {
@@ -68,9 +65,6 @@ function generateFibonacciSphere(count: number, radius: number) {
   return { positions, colors, sizes }
 }
 
-/**
- * Generate 12 interior star points scattered inside the sphere volume.
- */
 function generateInteriorStars(count = 12, maxRadius = 1.4) {
   const positions = new Float32Array(count * 3)
   const colors = new Float32Array(count * 3)
@@ -100,11 +94,14 @@ function generateInteriorStars(count = 12, maxRadius = 1.4) {
 }
 
 /**
- * Phase 3A: Generate Detached Outer Particle Stream (4,000 points)
+ * Phase 4: Generate Recycled Detached Particles (3,000 slots)
+ * Spawns on the sphere surface, drifts outward along normal vector, fades & respawns continuously in GLSL.
  */
-function generateDetachedParticles(count = 4000, baseRadius = 1.8) {
+function generateRecycledDetachedBuffer(count = 3000, radius = 1.8) {
   const positions = new Float32Array(count * 3)
+  const normals = new Float32Array(count * 3)
   const colors = new Float32Array(count * 3)
+  const lifetimes = new Float32Array(count * 2) // [birthOffset, duration]
   const sizes = new Float32Array(count)
 
   const cTop = new THREE.Color('#00C8FF')
@@ -112,18 +109,26 @@ function generateDetachedParticles(count = 4000, baseRadius = 1.8) {
   const cBot = new THREE.Color('#FFD700')
 
   for (let i = 0; i < count; i++) {
+    // Random surface point on sphere
     const u = Math.random()
     const v = Math.random()
     const theta = u * 2.0 * Math.PI
     const phi = Math.acos(2.0 * v - 1.0)
 
-    const r = baseRadius * (1.04 + Math.random() * 0.42)
+    const nx = Math.sin(phi) * Math.cos(theta)
+    const ny = Math.cos(phi)
+    const nz = Math.sin(phi) * Math.sin(theta)
 
-    positions[i * 3] = r * Math.sin(phi) * Math.cos(theta)
-    positions[i * 3 + 1] = r * Math.cos(phi)
-    positions[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta)
+    positions[i * 3] = nx * radius
+    positions[i * 3 + 1] = ny * radius
+    positions[i * 3 + 2] = nz * radius
 
-    const normY = (positions[i * 3 + 1] / r) * 0.5 + 0.5
+    normals[i * 3] = nx
+    normals[i * 3 + 1] = ny
+    normals[i * 3 + 2] = nz
+
+    // Color gradient matching spawn Y height
+    const normY = ny * 0.5 + 0.5
     const col = new THREE.Color()
     if (normY > 0.5) {
       col.copy(cMid).lerp(cTop, (normY - 0.5) * 2.0)
@@ -135,14 +140,18 @@ function generateDetachedParticles(count = 4000, baseRadius = 1.8) {
     colors[i * 3 + 1] = col.g
     colors[i * 3 + 2] = col.b
 
-    sizes[i] = 1.8 + Math.random() * 1.6
+    // Lifetime parameters: birthOffset (0..6s), duration (3.5..6.0s)
+    lifetimes[i * 2] = Math.random() * 6.0
+    lifetimes[i * 2 + 1] = 3.5 + Math.random() * 2.5
+
+    sizes[i] = 2.0 + Math.random() * 1.6
   }
 
-  return { positions, colors, sizes }
+  return { positions, normals, colors, lifetimes, sizes }
 }
 
 /**
- * Phase 3B: Generate Background Micro-Dust Field (2,000 points)
+ * Phase 4: Generate Subtle Background Micro-Dust (2,000 points)
  */
 function generateMicroDust(count = 2000) {
   const positions = new Float32Array(count * 3)
@@ -154,7 +163,6 @@ function generateMicroDust(count = 2000) {
     const v = Math.random()
     const theta = u * 2.0 * Math.PI
     const phi = Math.acos(2.0 * v - 1.0)
-
     const r = 2.8 + Math.random() * 3.4
 
     positions[i * 3] = r * Math.sin(phi) * Math.cos(theta)
@@ -178,12 +186,10 @@ export interface JarvisGlobeProps {
 
 function CorePointSphere({ pointCount = 40000, radius = 1.8 }: JarvisGlobeProps) {
   const groupRef = useRef<THREE.Group>(null)
-  const mainPointsRef = useRef<THREE.Points>(null)
-  const starRef = useRef<THREE.Points>(null)
-  const detachedRef = useRef<THREE.Points>(null)
-  const dustRef = useRef<THREE.Points>(null)
+  const frameCountRef = useRef(0)
+  const lastFpsTimeRef = useRef(performance.now())
 
-  // 1. Surface Sphere BufferGeometry
+  // 1. Surface Sphere Geometry
   const mainGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
     const { positions, colors, sizes } = generateFibonacciSphere(pointCount, radius)
@@ -195,7 +201,7 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8 }: JarvisGlobeProps)
     return geo
   }, [pointCount, radius])
 
-  // 2. Interior Stars BufferGeometry
+  // 2. Interior Stars Geometry
   const starGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
     const { positions, colors, sizes } = generateInteriorStars(12, radius * 0.75)
@@ -207,19 +213,21 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8 }: JarvisGlobeProps)
     return geo
   }, [radius])
 
-  // 3. Detached Particles BufferGeometry
+  // 3. Recycled Detached Drift Buffer Geometry
   const detachedGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
-    const { positions, colors, sizes } = generateDetachedParticles(4000, radius)
+    const { positions, normals, colors, lifetimes, sizes } = generateRecycledDetachedBuffer(3000, radius)
 
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+    geo.setAttribute('spawnNormal', new THREE.BufferAttribute(normals, 3))
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+    geo.setAttribute('lifetime', new THREE.BufferAttribute(lifetimes, 2))
     geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
 
     return geo
   }, [radius])
 
-  // 4. Background Micro-Dust BufferGeometry
+  // 4. Background Micro-Dust Geometry
   const dustGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
     const { positions, colors, sizes } = generateMicroDust(2000)
@@ -231,12 +239,10 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8 }: JarvisGlobeProps)
     return geo
   }, [])
 
-  // 5. Main Sphere ShaderMaterial
+  // 5. Main Surface ShaderMaterial
   const mainMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
-      uniforms: {
-        uTime: { value: 0.0 },
-      },
+      uniforms: { uTime: { value: 0.0 } },
       vertexShader: `
         uniform float uTime;
         attribute float size;
@@ -312,27 +318,43 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8 }: JarvisGlobeProps)
     })
   }, [])
 
-  // 7. Detached Stream ShaderMaterial (Time-animated drift)
+  // 7. Phase 4 Detached Particle ShaderMaterial (Normal Drift + Recycled Cyclic Respawning)
   const detachedMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: { uTime: { value: 0.0 } },
       vertexShader: `
         uniform float uTime;
+        attribute vec3 spawnNormal;
+        attribute vec2 lifetime;
         attribute float size;
         varying vec3 vColor;
         varying float vAlpha;
 
         void main() {
           vColor = color;
-          vec3 pos = position;
-          pos.x += sin(uTime * 0.5 + position.y * 2.0) * 0.06;
-          pos.y += cos(uTime * 0.35 + position.x * 2.0) * 0.06;
-          pos.z += sin(uTime * 0.45 + position.z * 2.0) * 0.06;
 
-          vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-          vAlpha = 0.4 + 0.4 * sin(uTime * 1.1 + position.x * 4.0);
+          float birthOffset = lifetime.x;
+          float duration = lifetime.y;
 
-          gl_PointSize = size * (6.0 / -mvPosition.z);
+          float age = mod(uTime + birthOffset, duration);
+          float progress = age / duration;
+
+          float driftDistance = progress * 0.70;
+
+          vec3 wander = vec3(
+            sin(uTime * 0.8 + position.y * 3.0) * 0.06 * progress,
+            cos(uTime * 0.6 + position.x * 3.0) * 0.06 * progress,
+            sin(uTime * 0.7 + position.z * 3.0) * 0.06 * progress
+          );
+
+          vec3 currentPos = position + spawnNormal * driftDistance + wander;
+
+          float fadeIn = smoothstep(0.0, 0.15, progress);
+          float fadeOut = 1.0 - smoothstep(0.65, 1.0, progress);
+          vAlpha = fadeIn * fadeOut * 0.75;
+
+          vec4 mvPosition = modelViewMatrix * vec4(currentPos, 1.0);
+          gl_PointSize = size * (1.0 + progress * 0.3) * (6.0 / -mvPosition.z);
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
@@ -343,8 +365,8 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8 }: JarvisGlobeProps)
         void main() {
           float dist = length(gl_PointCoord - vec2(0.5));
           if (dist > 0.5) discard;
-          float intensity = pow(1.0 - (dist * 2.0), 1.8);
-          gl_FragColor = vec4(vColor * 1.2, intensity * vAlpha);
+          float intensity = pow(1.0 - (dist * 2.0), 1.6);
+          gl_FragColor = vec4(vColor * 1.3, intensity * vAlpha);
         }
       `,
       transparent: true,
@@ -354,7 +376,7 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8 }: JarvisGlobeProps)
     })
   }, [])
 
-  // 8. Micro-Dust ShaderMaterial (Soft alpha twinkle)
+  // 8. Micro-Dust ShaderMaterial
   const dustMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: { uTime: { value: 0.0 } },
@@ -371,7 +393,7 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8 }: JarvisGlobeProps)
           pos.y += cos(uTime * 0.25 + position.x) * 0.04;
 
           vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-          vAlpha = 0.2 + 0.25 * sin(uTime * 0.8 + position.y * 3.0);
+          vAlpha = 0.15 + 0.20 * sin(uTime * 0.7 + position.y * 3.0);
 
           gl_PointSize = size * (6.0 / -mvPosition.z);
           gl_Position = projectionMatrix * mvPosition;
@@ -417,8 +439,17 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8 }: JarvisGlobeProps)
     dustMaterial,
   ])
 
-  // Phase 3 Frame Animation Loop
+  // Phase 4 Frame Loop & Performance Monitoring
   useFrame((_, delta) => {
+    frameCountRef.current += 1
+    const now = performance.now()
+    if (now - lastFpsTimeRef.current >= 3000) {
+      const calculatedFps = Math.round((frameCountRef.current * 1000) / (now - lastFpsTimeRef.current))
+      console.log(`[Phase 4 Performance] FPS: ${calculatedFps} | Main Points: ${pointCount} | Detached Slots: 3000 | Dust Points: 2000`)
+      frameCountRef.current = 0
+      lastFpsTimeRef.current = now
+    }
+
     if (mainMaterial) mainMaterial.uniforms.uTime.value += delta
     if (starMaterial) starMaterial.uniforms.uTime.value += delta
     if (detachedMaterial) detachedMaterial.uniforms.uTime.value += delta
@@ -431,14 +462,14 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8 }: JarvisGlobeProps)
 
   return (
     <group ref={groupRef}>
-      {/* Surface Point Cloud Sphere */}
-      <points ref={mainPointsRef} geometry={mainGeometry} material={mainMaterial} />
-      {/* Sparse Interior Star Points */}
-      <points ref={starRef} geometry={starGeometry} material={starMaterial} />
-      {/* Detached Outer Particle Stream */}
-      <points ref={detachedRef} geometry={detachedGeometry} material={detachedMaterial} />
-      {/* Background Micro-Dust Field */}
-      <points ref={dustRef} geometry={dustGeometry} material={dustMaterial} />
+      {/* 1. Surface Point Cloud Sphere */}
+      <points geometry={mainGeometry} material={mainMaterial} />
+      {/* 2. Sparse Interior Star Points */}
+      <points geometry={starGeometry} material={starMaterial} />
+      {/* 3. Phase 4 Outward Energy-Shedding Detached Drift Particles */}
+      <points geometry={detachedGeometry} material={detachedMaterial} />
+      {/* 4. Phase 4 Subtle Background Micro-Dust */}
+      <points geometry={dustGeometry} material={dustMaterial} />
     </group>
   )
 }
