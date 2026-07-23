@@ -4,8 +4,8 @@ import { OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 
 /**
- * Phase 5 JarvisGlobe
- * Core Fibonacci Sphere + Energy-Shedding Drift + Micro-Dust + Expanding Wave Rings
+ * Phase 6 JarvisGlobe — Shader-Based Glow & Emissive Luminance Accumulation
+ * Achieves high-end bloom & halo glow aesthetic purely in native GLSL shaders (0 external postprocessing dependencies).
  */
 function generateFibonacciSphere(count: number, radius: number) {
   const positions = new Float32Array(count * 3)
@@ -87,7 +87,7 @@ function generateInteriorStars(count = 12, maxRadius = 1.4) {
     colors[i * 3 + 1] = whiteColor.g
     colors[i * 3 + 2] = whiteColor.b
 
-    sizes[i] = 5.5 + Math.random() * 2.5
+    sizes[i] = 6.0 + Math.random() * 2.5
   }
 
   return { positions, colors, sizes }
@@ -169,10 +169,6 @@ function generateMicroDust(count = 2000) {
   return { positions, colors, sizes }
 }
 
-/**
- * Phase 5: Expanding Wave Ring Mesh Component
- * Spawns expanding glowing concentric rings outward from the globe's surface.
- */
 interface RingState {
   age: number
   duration: number
@@ -186,7 +182,6 @@ function ExpandingWaveRings({ intensity = 0.0, radius = 1.8 }: { intensity?: num
   const ringsRef = useRef<THREE.Group>(null)
   const spawnTimerRef = useRef(0)
 
-  // Pre-allocated ring states
   const ringStatesRef = useRef<RingState[]>(
     Array.from({ length: MAX_RINGS }, () => ({
       age: 0,
@@ -214,7 +209,6 @@ function ExpandingWaveRings({ intensity = 0.0, radius = 1.8 }: { intensity?: num
 
         void main() {
           vUv = uv;
-          // Scale ring outward from radius (1.0x) to 2.1x radius
           float scale = 1.0 + uProgress * 1.1;
           vec3 scaledPos = position * vec3(scale, scale, 1.0);
 
@@ -228,12 +222,14 @@ function ExpandingWaveRings({ intensity = 0.0, radius = 1.8 }: { intensity?: num
         varying vec2 vUv;
 
         void main() {
-          // Fade in during first 10%, fade out over remaining 90%
           float fadeIn = smoothstep(0.0, 0.1, uProgress);
           float fadeOut = 1.0 - smoothstep(0.1, 1.0, uProgress);
-          float alpha = fadeIn * fadeOut * (0.35 + uIntensity * 0.45);
+          float alpha = fadeIn * fadeOut * (0.40 + uIntensity * 0.45);
 
-          gl_FragColor = vec4(uColor * (1.2 + uIntensity * 0.8), alpha);
+          // Emissive glowing ring edge
+          vec3 glowingColor = uColor * (1.4 + uIntensity * 1.0);
+
+          gl_FragColor = vec4(glowingColor, alpha);
         }
       `,
       transparent: true,
@@ -252,26 +248,22 @@ function ExpandingWaveRings({ intensity = 0.0, radius = 1.8 }: { intensity?: num
 
   useFrame((_, delta) => {
     spawnTimerRef.current += delta
-
-    // Spawn frequency: Idle = 1 ring every 4.0s, Max Intensity = 1 ring every 0.6s
     const spawnInterval = 4.0 - intensity * 3.4
 
     if (spawnTimerRef.current >= spawnInterval) {
       spawnTimerRef.current = 0
 
-      // Find an inactive slot
       const slot = ringStatesRef.current.find((r) => !r.active)
       if (slot) {
         slot.active = true
         slot.age = 0
-        slot.duration = 3.5 - intensity * 1.8 // Expands faster at high intensity
+        slot.duration = 3.5 - intensity * 1.8
         slot.rotation.set(
           Math.random() * Math.PI,
           Math.random() * Math.PI,
           Math.random() * Math.PI
         )
 
-        // Color sample matching intensity (cyan at idle, electric pink/violet at high intensity)
         if (intensity > 0.5) {
           slot.color.set('#00DFFF').lerp(new THREE.Color('#FF007F'), (intensity - 0.5) * 2.0)
         } else {
@@ -280,7 +272,6 @@ function ExpandingWaveRings({ intensity = 0.0, radius = 1.8 }: { intensity?: num
       }
     }
 
-    // Update active ring meshes
     if (ringsRef.current) {
       ringsRef.current.children.forEach((mesh, index) => {
         const state = ringStatesRef.current[index]
@@ -295,7 +286,6 @@ function ExpandingWaveRings({ intensity = 0.0, radius = 1.8 }: { intensity?: num
             mesh.visible = true
             mesh.rotation.copy(state.rotation)
 
-            // Update mesh uniforms via single material clone or per-mesh property
             const ringMesh = mesh as THREE.Mesh<THREE.RingGeometry, THREE.ShaderMaterial>
             if (ringMesh.material) {
               ringMesh.material.uniforms.uProgress.value = progress
@@ -310,7 +300,6 @@ function ExpandingWaveRings({ intensity = 0.0, radius = 1.8 }: { intensity?: num
     }
   })
 
-  // Pre-instantiate 6 ring meshes with cloned materials for individual uniform tracking
   const ringMeshes = useMemo(() => {
     return Array.from({ length: MAX_RINGS }).map((_, i) => (
       <mesh key={i} geometry={ringGeometry} material={ringMaterial.clone()} visible={false} />
@@ -323,7 +312,7 @@ function ExpandingWaveRings({ intensity = 0.0, radius = 1.8 }: { intensity?: num
 export interface JarvisGlobeProps {
   pointCount?: number
   radius?: number
-  intensity?: number // 0.0 (Idle) to 1.0 (Speaking/Listening)
+  intensity?: number
 }
 
 function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: JarvisGlobeProps) {
@@ -381,7 +370,7 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: 
     return geo
   }, [])
 
-  // 5. Main Surface ShaderMaterial
+  // 5. Phase 6 Surface ShaderMaterial — Dual Core/Halo Soft Glow & Emissive Luminance
   const mainMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: { uTime: { value: 0.0 } },
@@ -401,7 +390,7 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: 
           float ndotv = abs(dot(viewNormal, viewDir));
 
           vRim = pow(1.0 - ndotv, 2.2);
-          float rimSizeBoost = 1.0 + vRim * 0.35;
+          float rimSizeBoost = 1.0 + vRim * 0.38;
 
           gl_PointSize = size * rimSizeBoost * (6.0 / -mvPosition.z);
           gl_Position = projectionMatrix * mvPosition;
@@ -415,10 +404,16 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: 
           float dist = length(gl_PointCoord - vec2(0.5));
           if (dist > 0.5) discard;
           
-          float intensity = pow(1.0 - (dist * 2.0), 1.6);
-          float rimLuminance = 1.0 + vRim * 0.5;
+          // Dual-layer particle profile: intense central core + soft glowing outer halo
+          float coreIntensity = pow(1.0 - (dist * 2.0), 1.8);
+          float outerHalo = pow(1.0 - (dist * 2.0), 0.6) * 0.40;
+          float totalIntensity = coreIntensity + outerHalo;
+
+          // Emissive rim brightness boost (accumulates smoothly in AdditiveBlending)
+          float rimLuminance = 1.0 + vRim * 0.70;
+          vec3 glowColor = vColor * rimLuminance * 1.30;
           
-          gl_FragColor = vec4(vColor * rimLuminance, intensity * 0.96);
+          gl_FragColor = vec4(glowColor, totalIntensity * 0.98);
         }
       `,
       transparent: true,
@@ -428,7 +423,7 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: 
     })
   }, [])
 
-  // 6. Interior Star ShaderMaterial
+  // 6. Phase 6 Interior Star ShaderMaterial — High-Luminance Core + Radial Bloom Halo
   const starMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: { uTime: { value: 0.0 } },
@@ -449,8 +444,13 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: 
         void main() {
           float dist = length(gl_PointCoord - vec2(0.5));
           if (dist > 0.5) discard;
-          float intensity = pow(1.0 - (dist * 2.0), 1.2);
-          gl_FragColor = vec4(vColor * 1.8, intensity * 1.0);
+
+          float starCore = pow(1.0 - (dist * 2.0), 1.4);
+          float starHalo = pow(1.0 - (dist * 2.0), 0.4) * 0.65;
+          float totalStarAlpha = min(1.0, starCore + starHalo);
+
+          // Over-bright emissive multiplication (2.5x) for vivid bloom appearance
+          gl_FragColor = vec4(vColor * 2.5, totalStarAlpha);
         }
       `,
       transparent: true,
@@ -460,7 +460,7 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: 
     })
   }, [])
 
-  // 7. Detached Particle ShaderMaterial
+  // 7. Detached Particle ShaderMaterial — Soft Radial Glow
   const detachedMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: { uTime: { value: 0.0 } },
@@ -493,7 +493,7 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: 
 
           float fadeIn = smoothstep(0.0, 0.15, progress);
           float fadeOut = 1.0 - smoothstep(0.65, 1.0, progress);
-          vAlpha = fadeIn * fadeOut * 0.75;
+          vAlpha = fadeIn * fadeOut * 0.78;
 
           vec4 mvPosition = modelViewMatrix * vec4(currentPos, 1.0);
           gl_PointSize = size * (1.0 + progress * 0.3) * (6.0 / -mvPosition.z);
@@ -507,8 +507,11 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: 
         void main() {
           float dist = length(gl_PointCoord - vec2(0.5));
           if (dist > 0.5) discard;
-          float intensity = pow(1.0 - (dist * 2.0), 1.6);
-          gl_FragColor = vec4(vColor * 1.3, intensity * vAlpha);
+          
+          float coreIntensity = pow(1.0 - (dist * 2.0), 1.6);
+          float outerHalo = pow(1.0 - (dist * 2.0), 0.5) * 0.35;
+
+          gl_FragColor = vec4(vColor * 1.35, (coreIntensity + outerHalo) * vAlpha);
         }
       `,
       transparent: true,
@@ -548,8 +551,8 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: 
         void main() {
           float dist = length(gl_PointCoord - vec2(0.5));
           if (dist > 0.5) discard;
-          float intensity = 1.0 - (dist * 2.0);
-          gl_FragColor = vec4(vColor * 1.1, intensity * vAlpha);
+          float intensity = pow(1.0 - (dist * 2.0), 1.4);
+          gl_FragColor = vec4(vColor * 1.2, intensity * vAlpha);
         }
       `,
       transparent: true,
@@ -581,13 +584,13 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: 
     dustMaterial,
   ])
 
-  // Phase 5 Frame Loop
+  // Frame Loop
   useFrame((_, delta) => {
     frameCountRef.current += 1
     const now = performance.now()
     if (now - lastFpsTimeRef.current >= 3000) {
       const calculatedFps = Math.round((frameCountRef.current * 1000) / (now - lastFpsTimeRef.current))
-      console.log(`[Phase 5 Performance] FPS: ${calculatedFps} | Intensity: ${intensity.toFixed(2)} | Wave Rings: Active`)
+      console.log(`[Phase 6 Glow Performance] FPS: ${calculatedFps} | Emissive Shader Glow Active`)
       frameCountRef.current = 0
       lastFpsTimeRef.current = now
     }
@@ -604,15 +607,15 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: 
 
   return (
     <group ref={groupRef}>
-      {/* 1. Surface Point Cloud Sphere */}
+      {/* 1. Surface Point Cloud Sphere with GLSL Shader Glow */}
       <points geometry={mainGeometry} material={mainMaterial} />
-      {/* 2. Sparse Interior Star Points */}
+      {/* 2. Super-Luminous Interior Star Points */}
       <points geometry={starGeometry} material={starMaterial} />
-      {/* 3. Outward Energy-Shedding Detached Drift Particles */}
+      {/* 3. Energy-Shedding Detached Drift Particles */}
       <points geometry={detachedGeometry} material={detachedMaterial} />
       {/* 4. Subtle Background Micro-Dust */}
       <points geometry={dustGeometry} material={dustMaterial} />
-      {/* 5. Phase 5 Expanding Wave Rings */}
+      {/* 5. Expanding Wave Rings */}
       <ExpandingWaveRings intensity={intensity} radius={radius} />
     </group>
   )
@@ -621,14 +624,11 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: 
 export default function JarvisGlobe({ intensity: externalIntensity }: { intensity?: number }) {
   const [manualIntensity, setManualIntensity] = useState<number>(0.0)
   
-  // Environment variable debug panel gate
   const showDebugPanel = import.meta.env.VITE_GLOBE_DEBUG_PANEL === 'true'
-
   const activeIntensity = externalIntensity !== undefined ? externalIntensity : manualIntensity
 
   return (
     <div className="w-full h-full relative overflow-visible bg-black">
-      {/* Manual Intensity Dev Controller (Visible if VITE_GLOBE_DEBUG_PANEL=true) */}
       {showDebugPanel && (
         <div className="absolute top-3 left-3 z-50 flex flex-col gap-2 bg-black/80 border border-white/10 rounded-xl p-3 text-xs text-white/90 shadow-2xl backdrop-blur-md max-w-xs">
           <div className="flex items-center justify-between gap-4 font-mono">
