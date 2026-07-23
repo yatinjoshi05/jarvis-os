@@ -3,8 +3,10 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import * as THREE from 'three'
+import { useAudioAnalyser } from '../../../shared/audio/useAudioAnalyser'
 
 export type QualityTier = 'low' | 'medium' | 'high' | 'ultra'
+export type AssistantState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'success' | 'warning' | 'error'
 
 export interface QualityConfig {
   mainPoints: number
@@ -50,23 +52,86 @@ export const QUALITY_PRESETS: Record<QualityTier, QualityConfig> = {
   },
 }
 
-/**
- * Fibonacci Sphere Point Generator
- * Produces an evenly spaced distribution of points on a sphere surface of given radius.
- */
+interface StateMultiplier {
+  rotSpeed: number
+  noiseStrength: number
+  noiseSpeed: number
+  rimBoost: number
+  pulseSpeed: number
+  colorTint: THREE.Color | null
+}
+
+const STATE_MULTIPLIERS: Record<AssistantState, StateMultiplier> = {
+  idle: {
+    rotSpeed: 0.0012,
+    noiseStrength: 0.06,
+    noiseSpeed: 0.5,
+    rimBoost: 1.8,
+    pulseSpeed: 0.8,
+    colorTint: null,
+  },
+  listening: {
+    rotSpeed: 0.002,
+    noiseStrength: 0.10,
+    noiseSpeed: 1.2,
+    rimBoost: 2.8,
+    pulseSpeed: 1.5,
+    colorTint: new THREE.Color('#00FFCC'),
+  },
+  thinking: {
+    rotSpeed: 0.0045,
+    noiseStrength: 0.18,
+    noiseSpeed: 2.2,
+    rimBoost: 3.2,
+    pulseSpeed: 3.0,
+    colorTint: new THREE.Color('#FF00FF'),
+  },
+  speaking: {
+    rotSpeed: 0.0018,
+    noiseStrength: 0.12,
+    noiseSpeed: 1.4,
+    rimBoost: 2.4,
+    pulseSpeed: 2.0,
+    colorTint: new THREE.Color('#FFD700'),
+  },
+  success: {
+    rotSpeed: 0.0015,
+    noiseStrength: 0.07,
+    noiseSpeed: 0.8,
+    rimBoost: 2.2,
+    pulseSpeed: 1.2,
+    colorTint: new THREE.Color('#10B981'),
+  },
+  warning: {
+    rotSpeed: 0.0022,
+    noiseStrength: 0.11,
+    noiseSpeed: 1.5,
+    rimBoost: 2.5,
+    pulseSpeed: 2.2,
+    colorTint: new THREE.Color('#F59E0B'),
+  },
+  error: {
+    rotSpeed: 0.0035,
+    noiseStrength: 0.22,
+    noiseSpeed: 2.8,
+    rimBoost: 3.5,
+    pulseSpeed: 3.5,
+    colorTint: new THREE.Color('#FF0055'),
+  },
+}
+
 function generateFibonacciSphere(count: number, radius: number) {
   const positions = new Float32Array(count * 3)
   const colors = new Float32Array(count * 3)
   const sizes = new Float32Array(count)
 
-  const phi = (1 + Math.sqrt(5)) / 2 // Golden ratio
+  const phi = (1 + Math.sqrt(5)) / 2
 
-  // Gradient stops: Top (Cyan/White) -> Upper-Mid (Blue/Indigo) -> Lower-Mid (Purple/Magenta) -> Bottom (Orange/Gold)
-  const cTop = new THREE.Color('#E0FFFF')       // Light Cyan/White
-  const cUpperMid = new THREE.Color('#00DFFF')  // Vivid Cyan/Blue
-  const cMid = new THREE.Color('#7B1FA2')       // Indigo/Purple
-  const cLowerMid = new THREE.Color('#FF0055')  // Pink/Magenta
-  const cBottom = new THREE.Color('#FFD700')    // Gold/Orange
+  const cTop = new THREE.Color('#E0FFFF')
+  const cUpperMid = new THREE.Color('#00DFFF')
+  const cMid = new THREE.Color('#7B1FA2')
+  const cLowerMid = new THREE.Color('#FF0055')
+  const cBottom = new THREE.Color('#FFD700')
 
   for (let i = 0; i < count; i++) {
     const y = 1 - (i / Math.max(1, count - 1)) * 2
@@ -110,16 +175,9 @@ function generateFibonacciSphere(count: number, radius: number) {
   return { positions, colors, sizes }
 }
 
-/**
- * Detached Outer Particle Field (Layer C)
- */
 function generateDetachedParticles(count: number, baseRadius: number) {
   if (count <= 0) {
-    return {
-      positions: new Float32Array(0),
-      colors: new Float32Array(0),
-      sizes: new Float32Array(0),
-    }
+    return { positions: new Float32Array(0), colors: new Float32Array(0), sizes: new Float32Array(0) }
   }
 
   const positions = new Float32Array(count * 3)
@@ -138,15 +196,11 @@ function generateDetachedParticles(count: number, baseRadius: number) {
 
     const r = baseRadius * (1.05 + Math.random() * 0.45)
 
-    const x = r * Math.sin(phi) * Math.cos(theta)
-    const y = r * Math.cos(phi)
-    const z = r * Math.sin(phi) * Math.sin(theta)
+    positions[i * 3] = r * Math.sin(phi) * Math.cos(theta)
+    positions[i * 3 + 1] = r * Math.cos(phi)
+    positions[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta)
 
-    positions[i * 3] = x
-    positions[i * 3 + 1] = y
-    positions[i * 3 + 2] = z
-
-    const normY = (y / r) * 0.5 + 0.5
+    const normY = (positions[i * 3 + 1] / r) * 0.5 + 0.5
     const col = new THREE.Color()
     if (normY > 0.5) {
       col.copy(cMid).lerp(cTop, (normY - 0.5) * 2.0)
@@ -164,16 +218,9 @@ function generateDetachedParticles(count: number, baseRadius: number) {
   return { positions, colors, sizes }
 }
 
-/**
- * Micro Dust Field (Layer D)
- */
 function generateMicroDust(count: number) {
   if (count <= 0) {
-    return {
-      positions: new Float32Array(0),
-      colors: new Float32Array(0),
-      sizes: new Float32Array(0),
-    }
+    return { positions: new Float32Array(0), colors: new Float32Array(0), sizes: new Float32Array(0) }
   }
 
   const positions = new Float32Array(count * 3)
@@ -204,21 +251,15 @@ function generateMicroDust(count: number) {
 
 export interface QuantumParticleSphereProps {
   qualityConfig: QualityConfig
+  assistantState?: AssistantState
   radius?: number
-  noiseStrength?: number
-  noiseSpeed?: number
-  noiseScale?: number
-  rimBoost?: number
   onFpsUpdate?: (fps: number) => void
 }
 
 function QuantumParticleSphere({
   qualityConfig,
+  assistantState = 'idle',
   radius = 1.8,
-  noiseStrength = 0.06,
-  noiseSpeed = 0.5,
-  noiseScale = 1.2,
-  rimBoost = 1.8,
   onFpsUpdate,
 }: QuantumParticleSphereProps) {
   const pointsRef = useRef<THREE.Points>(null)
@@ -226,47 +267,43 @@ function QuantumParticleSphere({
   const dustRef = useRef<THREE.Points>(null)
   const groupRef = useRef<THREE.Group>(null)
 
-  // Performance FPS tracking
+  // Live Web Audio Analyser
+  const { voiceLevel } = useAudioAnalyser()
+
   const frameCountRef = useRef(0)
   const lastTimeRef = useRef(performance.now())
 
-  // Main sphere buffer geometry
+  const stateConfig = STATE_MULTIPLIERS[assistantState]
+
+  // Geometries
   const mainGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
     const { positions, colors, sizes } = generateFibonacciSphere(qualityConfig.mainPoints, radius)
-
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
     geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
-
     return geo
   }, [qualityConfig.mainPoints, radius])
 
-  // Detached particles geometry
   const detachedGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
     const { positions, colors, sizes } = generateDetachedParticles(qualityConfig.detachedPoints, radius)
-
     if (positions.length > 0) {
       geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
       geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
       geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
     }
-
     return geo
   }, [qualityConfig.detachedPoints, radius])
 
-  // Micro dust geometry
   const dustGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
     const { positions, colors, sizes } = generateMicroDust(qualityConfig.dustPoints)
-
     if (positions.length > 0) {
       geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
       geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
       geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
     }
-
     return geo
   }, [qualityConfig.dustPoints])
 
@@ -276,10 +313,11 @@ function QuantumParticleSphere({
       uniforms: {
         uTime: { value: 0.0 },
         uSizeScale: { value: 1.0 },
-        uNoiseStrength: { value: noiseStrength },
-        uNoiseSpeed: { value: noiseSpeed },
-        uNoiseScale: { value: noiseScale },
-        uRimBoost: { value: rimBoost },
+        uNoiseStrength: { value: stateConfig.noiseStrength },
+        uNoiseSpeed: { value: stateConfig.noiseSpeed },
+        uNoiseScale: { value: 1.2 },
+        uRimBoost: { value: stateConfig.rimBoost },
+        uVoiceLevel: { value: 0.0 },
       },
       vertexShader: `
         uniform float uTime;
@@ -288,6 +326,7 @@ function QuantumParticleSphere({
         uniform float uNoiseSpeed;
         uniform float uNoiseScale;
         uniform float uRimBoost;
+        uniform float uVoiceLevel;
 
         attribute float size;
         varying vec3 vColor;
@@ -360,11 +399,12 @@ function QuantumParticleSphere({
 
         void main() {
           vColor = color;
-          
           vec3 normalVec = normalize(position);
           
+          // Voice amplitude boosts noise strength dynamically
+          float dynamicNoise = uNoiseStrength + uVoiceLevel * 0.15;
           float noiseVal = snoise(position * uNoiseScale + vec3(0.0, uTime * uNoiseSpeed, 0.0));
-          vec3 displacedPos = position + normalVec * (noiseVal * uNoiseStrength);
+          vec3 displacedPos = position + normalVec * (noiseVal * dynamicNoise);
 
           vec4 mvPosition = modelViewMatrix * vec4(displacedPos, 1.0);
 
@@ -373,7 +413,7 @@ function QuantumParticleSphere({
           float ndotv = abs(dot(viewNormal, viewDir));
           
           vRim = pow(1.0 - ndotv, 2.2);
-          float sizeFactor = 1.0 + vRim * uRimBoost;
+          float sizeFactor = (1.0 + vRim * uRimBoost) * (1.0 + uVoiceLevel * 0.4);
           
           gl_PointSize = size * uSizeScale * sizeFactor * (300.0 / -mvPosition.z);
           gl_Position = projectionMatrix * mvPosition;
@@ -398,14 +438,12 @@ function QuantumParticleSphere({
       blending: THREE.AdditiveBlending,
       vertexColors: true,
     })
-  }, [noiseStrength, noiseSpeed, noiseScale, rimBoost])
+  }, [])
 
-  // Detached Shader Material
+  // Detached Material
   const detachedMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
-      uniforms: {
-        uTime: { value: 0.0 },
-      },
+      uniforms: { uTime: { value: 0.0 } },
       vertexShader: `
         uniform float uTime;
         attribute float size;
@@ -414,7 +452,6 @@ function QuantumParticleSphere({
 
         void main() {
           vColor = color;
-          
           vec3 pos = position;
           pos.x += sin(uTime * 0.6 + position.y * 2.0) * 0.08;
           pos.y += cos(uTime * 0.4 + position.x * 2.0) * 0.08;
@@ -434,7 +471,6 @@ function QuantumParticleSphere({
         void main() {
           float dist = length(gl_PointCoord - vec2(0.5));
           if (dist > 0.5) discard;
-          
           float intensity = pow(1.0 - (dist * 2.0), 2.0);
           gl_FragColor = vec4(vColor, intensity * vAlpha);
         }
@@ -446,12 +482,10 @@ function QuantumParticleSphere({
     })
   }, [])
 
-  // Dust Shader Material
+  // Dust Material
   const dustMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
-      uniforms: {
-        uTime: { value: 0.0 },
-      },
+      uniforms: { uTime: { value: 0.0 } },
       vertexShader: `
         uniform float uTime;
         attribute float size;
@@ -460,7 +494,6 @@ function QuantumParticleSphere({
 
         void main() {
           vColor = color;
-          
           vec3 pos = position;
           pos.x += sin(uTime * 0.2 + position.z) * 0.05;
           pos.y += cos(uTime * 0.25 + position.x) * 0.05;
@@ -479,7 +512,6 @@ function QuantumParticleSphere({
         void main() {
           float dist = length(gl_PointCoord - vec2(0.5));
           if (dist > 0.5) discard;
-          
           float intensity = 1.0 - (dist * 2.0);
           gl_FragColor = vec4(vColor, intensity * vAlpha);
         }
@@ -503,7 +535,6 @@ function QuantumParticleSphere({
   }, [mainGeometry, detachedGeometry, dustGeometry, mainMaterial, detachedMaterial, dustMaterial])
 
   useFrame((_, delta) => {
-    // Track FPS
     frameCountRef.current += 1
     const now = performance.now()
     if (now - lastTimeRef.current >= 1000) {
@@ -513,15 +544,36 @@ function QuantumParticleSphere({
       lastTimeRef.current = now
     }
 
-    if (mainMaterial) mainMaterial.uniforms.uTime.value += delta
+    if (mainMaterial) {
+      mainMaterial.uniforms.uTime.value += delta
+      mainMaterial.uniforms.uNoiseStrength.value = THREE.MathUtils.lerp(
+        mainMaterial.uniforms.uNoiseStrength.value,
+        stateConfig.noiseStrength,
+        0.05
+      )
+      mainMaterial.uniforms.uNoiseSpeed.value = THREE.MathUtils.lerp(
+        mainMaterial.uniforms.uNoiseSpeed.value,
+        stateConfig.noiseSpeed,
+        0.05
+      )
+      mainMaterial.uniforms.uRimBoost.value = THREE.MathUtils.lerp(
+        mainMaterial.uniforms.uRimBoost.value,
+        stateConfig.rimBoost,
+        0.05
+      )
+      mainMaterial.uniforms.uVoiceLevel.value = voiceLevel
+    }
+
     if (detachedMaterial) detachedMaterial.uniforms.uTime.value += delta
     if (dustMaterial) dustMaterial.uniforms.uTime.value += delta
 
     if (groupRef.current) {
-      groupRef.current.rotation.y += 0.0012
+      groupRef.current.rotation.y += stateConfig.rotSpeed
       const time = mainMaterial ? mainMaterial.uniforms.uTime.value : 0
-      const pulse = 1.0 + Math.sin(time * 0.8) * 0.018
-      groupRef.current.scale.set(pulse, pulse, pulse)
+      const basePulse = Math.sin(time * stateConfig.pulseSpeed) * 0.02
+      const audioPulse = voiceLevel * 0.15
+      const totalScale = 1.0 + basePulse + audioPulse
+      groupRef.current.scale.set(totalScale, totalScale, totalScale)
     }
   })
 
@@ -542,6 +594,7 @@ function QuantumParticleSphere({
 
 export default function QuantumParticleGlobe() {
   const [qualityTier, setQualityTier] = useState<QualityTier>('high')
+  const [assistantState, setAssistantState] = useState<AssistantState>('idle')
   const [fps, setFps] = useState(60)
 
   const config = QUALITY_PRESETS[qualityTier]
@@ -549,14 +602,14 @@ export default function QuantumParticleGlobe() {
 
   return (
     <div className="w-full h-full relative overflow-visible bg-black">
-      {/* Dev Performance & Quality Tier Overlay */}
-      <div className="absolute top-3 left-3 z-50 flex flex-col gap-2 bg-black/80 border border-white/10 rounded-xl p-3 text-xs text-white/90 shadow-2xl backdrop-blur-md">
+      {/* Dev Control Overlay: Performance Tier & AI State Selector */}
+      <div className="absolute top-3 left-3 z-50 flex flex-col gap-2.5 bg-black/80 border border-white/10 rounded-xl p-3 text-xs text-white/90 shadow-2xl backdrop-blur-md max-w-xs">
         <div className="flex items-center justify-between gap-4 font-mono">
           <span className="text-white/60 uppercase tracking-wider text-[10px]">Quality Tier</span>
           <span className="text-[#00DFFF] font-bold">{fps} FPS</span>
         </div>
 
-        <div className="flex items-center gap-1 mt-1">
+        <div className="flex items-center gap-1">
           {(['low', 'medium', 'high', 'ultra'] as QualityTier[]).map((tier) => (
             <button
               key={tier}
@@ -572,7 +625,27 @@ export default function QuantumParticleGlobe() {
           ))}
         </div>
 
-        <div className="text-[10px] font-mono text-white/40 mt-1 flex flex-col gap-0.5">
+        <div className="flex items-center justify-between gap-4 font-mono mt-1">
+          <span className="text-white/60 uppercase tracking-wider text-[10px]">AI State Simulation</span>
+        </div>
+
+        <div className="grid grid-cols-3 gap-1">
+          {(['idle', 'listening', 'thinking', 'speaking', 'success', 'error'] as AssistantState[]).map((st) => (
+            <button
+              key={st}
+              onClick={() => setAssistantState(st)}
+              className={
+                assistantState === st
+                  ? 'px-2 py-1 rounded bg-white/20 border border-white text-white font-bold text-[9px] uppercase tracking-wider text-center'
+                  : 'px-2 py-1 rounded border border-white/10 text-white/50 hover:text-white text-[9px] uppercase tracking-wider text-center'
+              }
+            >
+              {st}
+            </button>
+          ))}
+        </div>
+
+        <div className="text-[10px] font-mono text-white/40 mt-0.5 flex flex-col gap-0.5">
           <div>Points: {totalPoints.toLocaleString()}</div>
           <div>Bloom: {config.enableBloom ? 'ON' : 'OFF'}</div>
         </div>
@@ -586,11 +659,8 @@ export default function QuantumParticleGlobe() {
 
         <QuantumParticleSphere
           qualityConfig={config}
+          assistantState={assistantState}
           radius={1.8}
-          noiseStrength={0.06}
-          noiseSpeed={0.5}
-          noiseScale={1.2}
-          rimBoost={1.8}
           onFpsUpdate={setFps}
         />
 
