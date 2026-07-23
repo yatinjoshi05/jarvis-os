@@ -94,7 +94,7 @@ export const QuantumGlobe = forwardRef<QuantumGlobeRef, QuantumGlobeProps>(
       quality: initialQuality = 'ultra',
       autoRotate = true,
       interactive = true,
-      className = 'w-full h-full relative overflow-visible bg-black',
+      className = 'w-full h-full relative overflow-visible bg-transparent',
       configOverride,
     },
     ref
@@ -185,10 +185,10 @@ export const QuantumGlobe = forwardRef<QuantumGlobeRef, QuantumGlobeProps>(
       <div className={className}>
         <Canvas
           camera={{
-            position: activeConfig.camera.position,
-            fov: activeConfig.camera.fov,
-            near: activeConfig.camera.near,
-            far: activeConfig.camera.far,
+            position: [0, 0.3, 5.5],
+            fov: 35,
+            near: 0.1,
+            far: 1000,
           }}
           gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         >
@@ -201,6 +201,7 @@ export const QuantumGlobe = forwardRef<QuantumGlobeRef, QuantumGlobeProps>(
 
           {interactive && (
             <OrbitControls
+              target={[0, 0, 0]}
               enableZoom={true}
               enablePan={false}
               autoRotate={autoRotate}
