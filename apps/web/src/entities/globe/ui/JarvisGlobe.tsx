@@ -2,11 +2,15 @@ import { useMemo, useRef, useEffect, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
+import { voiceStateMachine, VoiceState } from '../../../shared/ai/VoiceStateMachine'
+import { useAudioAnalyser } from '../../../shared/audio/useAudioAnalyser'
 
 /**
- * Phase 6 JarvisGlobe — Shader-Based Glow & Emissive Luminance Accumulation
- * Achieves high-end bloom & halo glow aesthetic purely in native GLSL shaders (0 external postprocessing dependencies).
+ * Phase 7 JarvisGlobe — Ground-Up Rebuild Complete
+ * Multi-layer R3F Point-Cloud Sphere with GLSL Shader Glow, Recycled Energy-Shedding Streams,
+ * Background Micro-Dust, Expanding Wave Rings, and REAL Audio Analyser / AssistantState Reactivity.
  */
+
 function generateFibonacciSphere(count: number, radius: number) {
   const positions = new Float32Array(count * 3)
   const colors = new Float32Array(count * 3)
@@ -226,7 +230,6 @@ function ExpandingWaveRings({ intensity = 0.0, radius = 1.8 }: { intensity?: num
           float fadeOut = 1.0 - smoothstep(0.1, 1.0, uProgress);
           float alpha = fadeIn * fadeOut * (0.40 + uIntensity * 0.45);
 
-          // Emissive glowing ring edge
           vec3 glowingColor = uColor * (1.4 + uIntensity * 1.0);
 
           gl_FragColor = vec4(glowingColor, alpha);
@@ -248,7 +251,7 @@ function ExpandingWaveRings({ intensity = 0.0, radius = 1.8 }: { intensity?: num
 
   useFrame((_, delta) => {
     spawnTimerRef.current += delta
-    const spawnInterval = 4.0 - intensity * 3.4
+    const spawnInterval = Math.max(0.4, 4.0 - intensity * 3.4)
 
     if (spawnTimerRef.current >= spawnInterval) {
       spawnTimerRef.current = 0
@@ -257,7 +260,7 @@ function ExpandingWaveRings({ intensity = 0.0, radius = 1.8 }: { intensity?: num
       if (slot) {
         slot.active = true
         slot.age = 0
-        slot.duration = 3.5 - intensity * 1.8
+        slot.duration = Math.max(1.0, 3.5 - intensity * 1.8)
         slot.rotation.set(
           Math.random() * Math.PI,
           Math.random() * Math.PI,
@@ -312,13 +315,35 @@ function ExpandingWaveRings({ intensity = 0.0, radius = 1.8 }: { intensity?: num
 export interface JarvisGlobeProps {
   pointCount?: number
   radius?: number
-  intensity?: number
+  voiceState?: VoiceState
 }
 
-function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: JarvisGlobeProps) {
+function CorePointSphere({ pointCount = 40000, radius = 1.8, voiceState = 'IDLE' }: JarvisGlobeProps) {
   const groupRef = useRef<THREE.Group>(null)
   const frameCountRef = useRef(0)
   const lastFpsTimeRef = useRef(performance.now())
+
+  // Connect REAL audio analyser hook
+  const { voiceLevel } = useAudioAnalyser()
+
+  // Calculate dynamic AI state intensity & rotation speed
+  const isListening = voiceState === 'LISTENING'
+  const isThinking = ['THINKING', 'TRANSCRIBING', 'GENERATING'].includes(voiceState)
+  const isSpeaking = ['SPEAKING', 'STREAMING'].includes(voiceState)
+  const isError = voiceState === 'ERROR' || voiceState === 'PERMISSION_DENIED'
+
+  // Real audio-driven intensity (Speaking/Listening use live voiceLevel)
+  let stateIntensity = 0.0
+  if (isSpeaking) {
+    stateIntensity = Math.min(1.0, 0.35 + voiceLevel * 1.5)
+  } else if (isListening) {
+    stateIntensity = Math.min(1.0, 0.25 + voiceLevel * 1.2)
+  } else if (isThinking) {
+    stateIntensity = 0.75
+  }
+
+  const rotSpeed = isThinking ? 0.0045 : isError ? 0.0035 : 0.0012
+  const targetScale = isThinking ? 1.08 : isSpeaking ? 1.0 + voiceLevel * 0.12 : 1.0
 
   // 1. Surface Sphere Geometry
   const mainGeometry = useMemo(() => {
@@ -370,12 +395,16 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: 
     return geo
   }, [])
 
-  // 5. Phase 6 Surface ShaderMaterial — Dual Core/Halo Soft Glow & Emissive Luminance
+  // 5. Main Surface ShaderMaterial (Audio-Reactive Emissive Boost)
   const mainMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
-      uniforms: { uTime: { value: 0.0 } },
+      uniforms: {
+        uTime: { value: 0.0 },
+        uVoiceLevel: { value: 0.0 },
+      },
       vertexShader: `
         uniform float uTime;
+        uniform float uVoiceLevel;
         attribute float size;
         varying vec3 vColor;
         varying float vRim;
@@ -390,13 +419,14 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: 
           float ndotv = abs(dot(viewNormal, viewDir));
 
           vRim = pow(1.0 - ndotv, 2.2);
-          float rimSizeBoost = 1.0 + vRim * 0.38;
+          float rimSizeBoost = (1.0 + vRim * 0.38) * (1.0 + uVoiceLevel * 0.30);
 
           gl_PointSize = size * rimSizeBoost * (6.0 / -mvPosition.z);
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
       fragmentShader: `
+        uniform float uVoiceLevel;
         varying vec3 vColor;
         varying float vRim;
 
@@ -404,13 +434,11 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: 
           float dist = length(gl_PointCoord - vec2(0.5));
           if (dist > 0.5) discard;
           
-          // Dual-layer particle profile: intense central core + soft glowing outer halo
           float coreIntensity = pow(1.0 - (dist * 2.0), 1.8);
           float outerHalo = pow(1.0 - (dist * 2.0), 0.6) * 0.40;
           float totalIntensity = coreIntensity + outerHalo;
 
-          // Emissive rim brightness boost (accumulates smoothly in AdditiveBlending)
-          float rimLuminance = 1.0 + vRim * 0.70;
+          float rimLuminance = (1.0 + vRim * 0.70) * (1.0 + uVoiceLevel * 0.50);
           vec3 glowColor = vColor * rimLuminance * 1.30;
           
           gl_FragColor = vec4(glowColor, totalIntensity * 0.98);
@@ -423,7 +451,7 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: 
     })
   }, [])
 
-  // 6. Phase 6 Interior Star ShaderMaterial — High-Luminance Core + Radial Bloom Halo
+  // 6. Interior Star ShaderMaterial
   const starMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: { uTime: { value: 0.0 } },
@@ -449,7 +477,6 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: 
           float starHalo = pow(1.0 - (dist * 2.0), 0.4) * 0.65;
           float totalStarAlpha = min(1.0, starCore + starHalo);
 
-          // Over-bright emissive multiplication (2.5x) for vivid bloom appearance
           gl_FragColor = vec4(vColor * 2.5, totalStarAlpha);
         }
       `,
@@ -460,7 +487,7 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: 
     })
   }, [])
 
-  // 7. Detached Particle ShaderMaterial — Soft Radial Glow
+  // 7. Detached Particle ShaderMaterial
   const detachedMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: { uTime: { value: 0.0 } },
@@ -584,24 +611,37 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: 
     dustMaterial,
   ])
 
-  // Frame Loop
+  // Phase 7 Real-time Audio & State Animation Loop
   useFrame((_, delta) => {
     frameCountRef.current += 1
     const now = performance.now()
     if (now - lastFpsTimeRef.current >= 3000) {
       const calculatedFps = Math.round((frameCountRef.current * 1000) / (now - lastFpsTimeRef.current))
-      console.log(`[Phase 6 Glow Performance] FPS: ${calculatedFps} | Emissive Shader Glow Active`)
+      console.log(`[Phase 7 Globe Active] State: ${voiceState} | Voice Level: ${voiceLevel.toFixed(3)} | FPS: ${calculatedFps}`)
       frameCountRef.current = 0
       lastFpsTimeRef.current = now
     }
 
-    if (mainMaterial) mainMaterial.uniforms.uTime.value += delta
+    if (mainMaterial) {
+      mainMaterial.uniforms.uTime.value += delta
+      mainMaterial.uniforms.uVoiceLevel.value = THREE.MathUtils.lerp(
+        mainMaterial.uniforms.uVoiceLevel.value,
+        voiceLevel,
+        0.1
+      )
+    }
+
     if (starMaterial) starMaterial.uniforms.uTime.value += delta
     if (detachedMaterial) detachedMaterial.uniforms.uTime.value += delta
     if (dustMaterial) dustMaterial.uniforms.uTime.value += delta
 
     if (groupRef.current) {
-      groupRef.current.rotation.y += 0.0012
+      groupRef.current.rotation.y += rotSpeed
+      
+      // Smooth scale interpolation for Thinking / Audio reactivity
+      const currentScale = groupRef.current.scale.x
+      const newScale = THREE.MathUtils.lerp(currentScale, targetScale, 0.08)
+      groupRef.current.scale.set(newScale, newScale, newScale)
     }
   })
 
@@ -615,56 +655,48 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: 
       <points geometry={detachedGeometry} material={detachedMaterial} />
       {/* 4. Subtle Background Micro-Dust */}
       <points geometry={dustGeometry} material={dustMaterial} />
-      {/* 5. Expanding Wave Rings */}
-      <ExpandingWaveRings intensity={intensity} radius={radius} />
+      {/* 5. Expanding Wave Rings (Driven by Real Voice State Intensity) */}
+      <ExpandingWaveRings intensity={stateIntensity} radius={radius} />
     </group>
   )
 }
 
-export default function JarvisGlobe({ intensity: externalIntensity }: { intensity?: number }) {
-  const [manualIntensity, setManualIntensity] = useState<number>(0.0)
-  
+export default function JarvisGlobe() {
+  const [currentVoiceState, setCurrentVoiceState] = useState<VoiceState>(voiceStateMachine.state)
+
   const showDebugPanel = import.meta.env.VITE_GLOBE_DEBUG_PANEL === 'true'
-  const activeIntensity = externalIntensity !== undefined ? externalIntensity : manualIntensity
+
+  useEffect(() => {
+    const unsubscribe = voiceStateMachine.subscribe((state) => {
+      setCurrentVoiceState(state)
+    })
+    return unsubscribe
+  }, [])
 
   return (
     <div className="w-full h-full relative overflow-visible bg-black">
+      {/* AI State Controller Overlay (Visible if VITE_GLOBE_DEBUG_PANEL=true) */}
       {showDebugPanel && (
         <div className="absolute top-3 left-3 z-50 flex flex-col gap-2 bg-black/80 border border-white/10 rounded-xl p-3 text-xs text-white/90 shadow-2xl backdrop-blur-md max-w-xs">
           <div className="flex items-center justify-between gap-4 font-mono">
-            <span className="text-white/60 uppercase tracking-wider text-[10px]">Wave Ring Intensity</span>
-            <span className="text-[#00DFFF] font-bold">{(activeIntensity * 100).toFixed(0)}%</span>
+            <span className="text-white/60 uppercase tracking-wider text-[10px]">Real Voice State</span>
+            <span className="text-[#00DFFF] font-bold">{currentVoiceState}</span>
           </div>
 
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.05"
-            value={manualIntensity}
-            onChange={(e) => setManualIntensity(parseFloat(e.target.value))}
-            className="w-full accent-[#00DFFF] cursor-pointer"
-          />
-
-          <div className="flex items-center gap-1 mt-1">
-            <button
-              onClick={() => setManualIntensity(0.0)}
-              className="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[9px] uppercase tracking-wider font-mono text-white/80"
-            >
-              Idle (0%)
-            </button>
-            <button
-              onClick={() => setManualIntensity(0.5)}
-              className="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[9px] uppercase tracking-wider font-mono text-white/80"
-            >
-              Listening (50%)
-            </button>
-            <button
-              onClick={() => setManualIntensity(1.0)}
-              className="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[9px] uppercase tracking-wider font-mono text-white/80"
-            >
-              Speaking (100%)
-            </button>
+          <div className="grid grid-cols-3 gap-1 mt-1">
+            {(['IDLE', 'LISTENING', 'THINKING', 'SPEAKING', 'ERROR'] as VoiceState[]).map((st) => (
+              <button
+                key={st}
+                onClick={() => voiceStateMachine.transitionTo(st)}
+                className={
+                  currentVoiceState === st
+                    ? 'px-2 py-1 rounded bg-[#00DFFF]/20 border border-[#00DFFF] text-[#00DFFF] font-bold text-[9px] uppercase tracking-wider text-center'
+                    : 'px-2 py-1 rounded border border-white/10 text-white/50 hover:text-white text-[9px] uppercase tracking-wider text-center'
+                }
+              >
+                {st}
+              </button>
+            ))}
           </div>
         </div>
       )}
@@ -675,7 +707,7 @@ export default function JarvisGlobe({ intensity: externalIntensity }: { intensit
       >
         <ambientLight intensity={0.4} />
 
-        <CorePointSphere pointCount={40000} radius={1.8} intensity={activeIntensity} />
+        <CorePointSphere pointCount={40000} radius={1.8} voiceState={currentVoiceState} />
 
         <OrbitControls
           enableZoom={true}
