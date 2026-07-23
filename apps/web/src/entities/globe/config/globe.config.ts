@@ -1,30 +1,47 @@
 import { GlobeConfig } from '../types/globe.types'
 
 export const DEFAULT_GLOBE_CONFIG: GlobeConfig = {
+  layers: {
+    coreEnabled: true,
+    surfaceEnabled: true,
+    edgeRimEnabled: true,
+    floatingOrbitEnabled: true,
+    dustEnabled: true,
+    glowEnabled: true,
+    lightingEnabled: true,
+    postProcessingEnabled: true,
+    audioReactiveEnabled: true,
+    aiStateEnabled: true,
+  },
+
   quality: {
     ultra: {
-      surfaceParticleCount: 80000,
-      edgeParticleCount: 15000,
-      floatingParticleCount: 3000,
-      microDustCount: 2000,
+      totalParticles: 100000,
+      surfaceParticles: 80000,
+      edgeParticles: 10000,
+      floatingParticles: 7000,
+      dustParticles: 3000,
     },
     high: {
-      surfaceParticleCount: 45000,
-      edgeParticleCount: 10000,
-      floatingParticleCount: 2000,
-      microDustCount: 1200,
+      totalParticles: 60000,
+      surfaceParticles: 48000,
+      edgeParticles: 6000,
+      floatingParticles: 4200,
+      dustParticles: 1800,
     },
     medium: {
-      surfaceParticleCount: 25000,
-      edgeParticleCount: 6000,
-      floatingParticleCount: 1200,
-      microDustCount: 800,
+      totalParticles: 35000,
+      surfaceParticles: 28000,
+      edgeParticles: 3500,
+      floatingParticles: 2450,
+      dustParticles: 1050,
     },
     low: {
-      surfaceParticleCount: 12000,
-      edgeParticleCount: 3000,
-      floatingParticleCount: 600,
-      microDustCount: 400,
+      totalParticles: 18000,
+      surfaceParticles: 14400,
+      edgeParticles: 1800,
+      floatingParticles: 1260,
+      dustParticles: 540,
     },
   },
 
@@ -32,14 +49,15 @@ export const DEFAULT_GLOBE_CONFIG: GlobeConfig = {
 
   colors: {
     idle: {
-      top: '#7FE8FF',       // Ice Cyan
-      upperMid: '#00DFFF',  // Electric Cyan
-      mid: '#8B5CF6',       // Deep Purple / Violet
-      lowerMid: '#D946EF',  // Magenta
-      red: '#F43F5E',       // Crimson Coral Red
-      bottom: '#FACC15',    // Warm Golden Yellow
-      orange: '#F97316',    // Fiery Amber Orange
+      top: '#FFFFFF',       // White
+      upperMid: '#7FE8FF',  // Light Cyan
+      mid: '#00DFFF',       // Blue / Cyan
+      lowerMid: '#4A5FE8',  // Indigo
+      red: '#8B3FD9',       // Purple
+      bottom: '#E8397F',    // Pink / Orange / Red
+      orange: '#FF5500',    // Fiery Orange
       interiorDark: '#010A1C',
+      rimGlow: '#00DFFF',
     },
     listening: {
       top: '#E0FFFF',
@@ -50,6 +68,7 @@ export const DEFAULT_GLOBE_CONFIG: GlobeConfig = {
       bottom: '#00DFFF',
       orange: '#0088FF',
       interiorDark: '#001133',
+      rimGlow: '#00FFFF',
     },
     thinking: {
       top: '#F5D0FE',
@@ -60,6 +79,7 @@ export const DEFAULT_GLOBE_CONFIG: GlobeConfig = {
       bottom: '#C084FC',
       orange: '#A855F7',
       interiorDark: '#1A0B2E',
+      rimGlow: '#C084FC',
     },
     speaking: {
       top: '#FFFFFF',
@@ -70,6 +90,7 @@ export const DEFAULT_GLOBE_CONFIG: GlobeConfig = {
       bottom: '#FFD700',
       orange: '#FF6600',
       interiorDark: '#1A0010',
+      rimGlow: '#FF1155',
     },
     success: {
       top: '#F0FDF4',
@@ -80,6 +101,7 @@ export const DEFAULT_GLOBE_CONFIG: GlobeConfig = {
       bottom: '#A3E635',
       orange: '#4ADE80',
       interiorDark: '#022C22',
+      rimGlow: '#22C55E',
     },
     warning: {
       top: '#FEF9C3',
@@ -90,6 +112,7 @@ export const DEFAULT_GLOBE_CONFIG: GlobeConfig = {
       bottom: '#F59E0B',
       orange: '#F97316',
       interiorDark: '#291E03',
+      rimGlow: '#EAB308',
     },
     error: {
       top: '#FEE2E2',
@@ -100,25 +123,29 @@ export const DEFAULT_GLOBE_CONFIG: GlobeConfig = {
       bottom: '#F87171',
       orange: '#EF4444',
       interiorDark: '#310404',
+      rimGlow: '#EF4444',
     },
   },
 
   noise: {
-    frequency: 2.6,
-    amplitude: 0.12,
+    frequency: 2.4,
+    amplitude: 0.10,
     speed: 0.35,
     octaves: 3,
-    rimDisplacement: 0.16,
-    bottomScatter: 0.18,
+    rimDisplacement: 0.14,
+    bottomScatter: 0.16,
+    curlFrequency: 1.8,
   },
 
   motion: {
-    baseRotationSpeed: 0.0012,
-    thinkingRotationSpeed: 0.0045,
-    errorRotationSpeed: 0.0035,
-    breathingAmplitude: 0.04,
+    baseRotationSpeedY: 0.08, // 0.08 rad/sec
+    baseRotationSpeedX: 0.035,
+    thinkingRotationSpeed: 0.18,
+    errorRotationSpeed: 0.14,
+    breathingAmplitude: 0.035,
     breathingSpeed: 1.2,
     audioVibrationMultiplier: 0.25,
+    microVibrationFrequency: 12.0,
   },
 
   lighting: {
@@ -129,17 +156,23 @@ export const DEFAULT_GLOBE_CONFIG: GlobeConfig = {
   },
 
   bloom: {
-    emissiveLuminance: 1.35,
-    rimPower: 3.6,
-    corePointSize: 1.3,
+    emissiveLuminance: 1.45,
+    rimPower: 3.8,
+    corePointSize: 1.4,
     rimPointSize: 4.8,
+    floatingPointSize: 2.2,
+    dustPointSize: 1.1,
     starSize: 5.2,
+    depthFadingFactor: 0.75,
   },
 
   camera: {
-    position: [0, 0, 6.0],
-    fov: 50,
+    position: [0, 0.35, 5.5],
+    lookAt: [0, 0, 0],
+    fov: 35,
     near: 0.1,
     far: 1000,
+    autoRotate: true,
+    autoRotateSpeed: 0.8,
   },
 }

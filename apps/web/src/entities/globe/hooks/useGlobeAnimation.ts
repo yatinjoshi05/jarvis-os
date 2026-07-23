@@ -37,11 +37,13 @@ export function useGlobeAnimation({
     const isError = state === 'error'
     const isSpeaking = state === 'speaking'
 
-    const rotSpeed = isThinking
+    const rotSpeedY = isThinking
       ? config.motion.thinkingRotationSpeed
       : isError
       ? config.motion.errorRotationSpeed
-      : config.motion.baseRotationSpeed
+      : config.motion.baseRotationSpeedY
+
+    const rotSpeedX = Math.sin(timeRef.current * 0.5) * config.motion.baseRotationSpeedX * 0.05
 
     // Scale breathing oscillation & voice amplitude reaction
     const breathingOffset = Math.sin(timeRef.current * config.motion.breathingSpeed) * config.motion.breathingAmplitude
@@ -49,7 +51,8 @@ export function useGlobeAnimation({
     const targetScale = (isThinking ? 1.08 : 1.0) + breathingOffset + audioScaleOffset
 
     if (groupRef.current) {
-      groupRef.current.rotation.y += rotSpeed
+      groupRef.current.rotation.y += rotSpeedY
+      groupRef.current.rotation.x = rotSpeedX
       const currentScale = groupRef.current.scale.x
       const newScale = THREE.MathUtils.lerp(currentScale, targetScale, 0.08)
       groupRef.current.scale.set(newScale, newScale, newScale)

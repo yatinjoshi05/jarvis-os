@@ -1,13 +1,16 @@
-import { forwardRef, useImperativeHandle, useRef, useState, useEffect } from 'react'
+import { forwardRef, useImperativeHandle, useRef, useState, useEffect, useMemo } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
-import { GlobeState, GlobeQuality, QuantumGlobeProps, QuantumGlobeRef } from '../types/globe.types'
+import { GlobeState, GlobeQuality, QuantumGlobeProps, QuantumGlobeRef, GlobeConfig, LayerToggleConfig } from '../types/globe.types'
 import { DEFAULT_GLOBE_CONFIG } from '../config/globe.config'
-import { GlobeParticles } from './GlobeParticles'
-import { EdgeParticles } from './EdgeParticles'
-import { FloatingParticles } from './FloatingParticles'
-import { GlobeLights } from './GlobeLights'
+import { CoreLayer } from './CoreLayer'
+import { SurfaceParticleLayer } from './SurfaceParticleLayer'
+import { EdgeRimLayer } from './EdgeRimLayer'
+import { FloatingOrbitLayer } from './FloatingOrbitLayer'
+import { DustLayer } from './DustLayer'
+import { GlowLayer } from './GlowLayer'
+import { LightingLayer } from './LightingLayer'
 import { useGlobeAnimation } from '../hooks/useGlobeAnimation'
 import { globeStateController } from '../model/GlobeStateController'
 import { voiceStateMachine } from '../../../shared/ai/VoiceStateMachine'
@@ -17,44 +20,69 @@ interface InnerGlobeContentProps {
   state: GlobeState
   quality: GlobeQuality
   audioAmplitude: number
+  config: GlobeConfig
 }
 
-function InnerGlobeContent({ state, quality, audioAmplitude }: InnerGlobeContentProps) {
+function InnerGlobeContent({ state, quality, audioAmplitude, config }: InnerGlobeContentProps) {
   const groupRef = useRef<THREE.Group>(null!)
   const dummyShaderRef = useRef<THREE.ShaderMaterial>(null!)
 
-  const profile = DEFAULT_GLOBE_CONFIG.quality[quality] || DEFAULT_GLOBE_CONFIG.quality.ultra
+  const profile = config.quality[quality] || config.quality.ultra
+  const layers = config.layers
 
   useGlobeAnimation({
     state,
     audioAmplitude,
-    config: DEFAULT_GLOBE_CONFIG,
+    config,
     groupRef,
     materialRef: dummyShaderRef,
   })
 
   return (
     <group ref={groupRef}>
-      <GlobeLights config={DEFAULT_GLOBE_CONFIG} />
-      <GlobeParticles
-        pointCount={profile.surfaceParticleCount}
-        radius={DEFAULT_GLOBE_CONFIG.radius}
-        state={state}
-        config={DEFAULT_GLOBE_CONFIG}
-      />
-      <EdgeParticles
-        pointCount={profile.edgeParticleCount}
-        radius={DEFAULT_GLOBE_CONFIG.radius}
-        state={state}
-        config={DEFAULT_GLOBE_CONFIG}
-      />
-      <FloatingParticles
-        floatingCount={profile.floatingParticleCount}
-        microDustCount={profile.microDustCount}
-        radius={DEFAULT_GLOBE_CONFIG.radius}
-        state={state}
-        config={DEFAULT_GLOBE_CONFIG}
-      />
+      {/* Layer 7: Lighting Layer */}
+      {layers.lightingEnabled && <LightingLayer config={config} />}
+
+      {/* Layer 1: Core Layer */}
+      {layers.coreEnabled && <CoreLayer radius={config.radius} state={state} config={config} />}
+
+      {/* Layer 6: Glow Layer */}
+      {layers.glowEnabled && <GlowLayer radius={config.radius} state={state} config={config} />}
+
+      {/* Layer 2: Surface Particle Layer (80,000 particles) */}
+      {layers.surfaceEnabled && (
+        <SurfaceParticleLayer
+          pointCount={profile.surfaceParticles}
+          radius={config.radius}
+          state={state}
+          config={config}
+        />
+      )}
+
+      {/* Layer 3: Edge Rim Layer (10,000 particles) */}
+      {layers.edgeRimEnabled && (
+        <EdgeRimLayer
+          pointCount={profile.edgeParticles}
+          radius={config.radius}
+          state={state}
+          config={config}
+        />
+      )}
+
+      {/* Layer 4: Floating Orbit Particle Layer (7,000 particles) */}
+      {layers.floatingOrbitEnabled && (
+        <FloatingOrbitLayer
+          pointCount={profile.floatingParticles}
+          radius={config.radius}
+          state={state}
+          config={config}
+        />
+      )}
+
+      {/* Layer 5: Dust Layer (3,000 particles) */}
+      {layers.dustEnabled && (
+        <DustLayer pointCount={profile.dustParticles} config={config} />
+      )}
     </group>
   )
 }
@@ -64,16 +92,32 @@ export const QuantumGlobe = forwardRef<QuantumGlobeRef, QuantumGlobeProps>(
     {
       state: initialPropsState,
       quality: initialQuality = 'ultra',
-      autoRotate = false,
+      autoRotate = true,
       interactive = true,
       className = 'w-full h-full relative overflow-visible bg-black',
+      configOverride,
     },
     ref
   ) => {
+    const activeConfig = useMemo(() => {
+      if (!configOverride) return DEFAULT_GLOBE_CONFIG
+      return {
+        ...DEFAULT_GLOBE_CONFIG,
+        ...configOverride,
+        layers: { ...DEFAULT_GLOBE_CONFIG.layers, ...configOverride.layers },
+        noise: { ...DEFAULT_GLOBE_CONFIG.noise, ...configOverride.noise },
+        motion: { ...DEFAULT_GLOBE_CONFIG.motion, ...configOverride.motion },
+        lighting: { ...DEFAULT_GLOBE_CONFIG.lighting, ...configOverride.lighting },
+        bloom: { ...DEFAULT_GLOBE_CONFIG.bloom, ...configOverride.bloom },
+        camera: { ...DEFAULT_GLOBE_CONFIG.camera, ...configOverride.camera },
+      }
+    }, [configOverride])
+
     const [currentState, setCurrentState] = useState<GlobeState>(
       initialPropsState || (voiceStateMachine.state.toLowerCase() as GlobeState) || 'idle'
     )
     const [currentQuality, setCurrentQuality] = useState<GlobeQuality>(initialQuality)
+    const [layerToggles, setLayerToggles] = useState<LayerToggleConfig>(activeConfig.layers)
     const [audioAmplitude, setAudioAmplitudeState] = useState<number>(0)
     const [isPaused, setIsPaused] = useState<boolean>(false)
 
@@ -118,8 +162,19 @@ export const QuantumGlobe = forwardRef<QuantumGlobeRef, QuantumGlobeProps>(
           setCurrentQuality(q)
           globeStateController.setQuality(q)
         },
+        toggleLayer: (layerName: keyof LayerToggleConfig, enabled: boolean) => {
+          setLayerToggles((prev) => ({ ...prev, [layerName]: enabled }))
+        },
       }),
       []
+    )
+
+    const mergedConfig = useMemo(
+      () => ({
+        ...activeConfig,
+        layers: layerToggles,
+      }),
+      [activeConfig, layerToggles]
     )
 
     if (isPaused) {
@@ -130,10 +185,10 @@ export const QuantumGlobe = forwardRef<QuantumGlobeRef, QuantumGlobeProps>(
       <div className={className}>
         <Canvas
           camera={{
-            position: DEFAULT_GLOBE_CONFIG.camera.position,
-            fov: DEFAULT_GLOBE_CONFIG.camera.fov,
-            near: DEFAULT_GLOBE_CONFIG.camera.near,
-            far: DEFAULT_GLOBE_CONFIG.camera.far,
+            position: activeConfig.camera.position,
+            fov: activeConfig.camera.fov,
+            near: activeConfig.camera.near,
+            far: activeConfig.camera.far,
           }}
           gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         >
@@ -141,6 +196,7 @@ export const QuantumGlobe = forwardRef<QuantumGlobeRef, QuantumGlobeProps>(
             state={currentState}
             quality={currentQuality}
             audioAmplitude={audioAmplitude}
+            config={mergedConfig}
           />
 
           {interactive && (
@@ -148,7 +204,7 @@ export const QuantumGlobe = forwardRef<QuantumGlobeRef, QuantumGlobeProps>(
               enableZoom={true}
               enablePan={false}
               autoRotate={autoRotate}
-              autoRotateSpeed={0.8}
+              autoRotateSpeed={activeConfig.camera.autoRotateSpeed}
             />
           )}
         </Canvas>

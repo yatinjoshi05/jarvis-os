@@ -9,11 +9,25 @@ export type GlobeState =
 
 export type GlobeQuality = 'ultra' | 'high' | 'medium' | 'low'
 
+export interface LayerToggleConfig {
+  coreEnabled: boolean
+  surfaceEnabled: boolean
+  edgeRimEnabled: boolean
+  floatingOrbitEnabled: boolean
+  dustEnabled: boolean
+  glowEnabled: boolean
+  lightingEnabled: boolean
+  postProcessingEnabled: boolean
+  audioReactiveEnabled: boolean
+  aiStateEnabled: boolean
+}
+
 export interface QualityProfile {
-  surfaceParticleCount: number
-  edgeParticleCount: number
-  floatingParticleCount: number
-  microDustCount: number
+  totalParticles: number
+  surfaceParticles: number // 80%
+  edgeParticles: number    // 10%
+  floatingParticles: number// 7%
+  dustParticles: number    // 3%
 }
 
 export interface StateColorPalette {
@@ -25,9 +39,11 @@ export interface StateColorPalette {
   bottom: string
   orange: string
   interiorDark: string
+  rimGlow: string
 }
 
 export interface GlobeConfig {
+  layers: LayerToggleConfig
   quality: Record<GlobeQuality, QualityProfile>
   radius: number
   colors: Record<GlobeState, StateColorPalette>
@@ -38,14 +54,17 @@ export interface GlobeConfig {
     octaves: number
     rimDisplacement: number
     bottomScatter: number
+    curlFrequency: number
   }
   motion: {
-    baseRotationSpeed: number
+    baseRotationSpeedY: number
+    baseRotationSpeedX: number
     thinkingRotationSpeed: number
     errorRotationSpeed: number
     breathingAmplitude: number
     breathingSpeed: number
     audioVibrationMultiplier: number
+    microVibrationFrequency: number
   }
   lighting: {
     ambientIntensity: number
@@ -58,13 +77,19 @@ export interface GlobeConfig {
     rimPower: number
     corePointSize: number
     rimPointSize: number
+    floatingPointSize: number
+    dustPointSize: number
     starSize: number
+    depthFadingFactor: number
   }
   camera: {
     position: [number, number, number]
+    lookAt: [number, number, number]
     fov: number
     near: number
     far: number
+    autoRotate: boolean
+    autoRotateSpeed: number
   }
 }
 
@@ -74,6 +99,7 @@ export interface QuantumGlobeProps {
   autoRotate?: boolean
   interactive?: boolean
   className?: string
+  configOverride?: Partial<GlobeConfig>
 }
 
 export interface QuantumGlobeRef {
@@ -82,4 +108,5 @@ export interface QuantumGlobeRef {
   pause: () => void
   resume: () => void
   setQuality: (quality: GlobeQuality) => void
+  toggleLayer: (layerName: keyof LayerToggleConfig, enabled: boolean) => void
 }
