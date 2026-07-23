@@ -6,12 +6,18 @@ import { voiceStateMachine, VoiceState } from '../../../shared/ai/VoiceStateMach
 import { useAudioAnalyser } from '../../../shared/audio/useAudioAnalyser'
 
 /**
- * Authoritative JARVIS Quantum Globe
- * - Rim-Concentrated Brightness Model (Dark Midnight-Blue Sparse Interior, Bright Luminous Ring)
- * - 45,000 Points with GLSL non-linear rimFactor curve
- * - Circumferential Color Ramp: Cyan Top -> Magenta Sides -> Orange/Gold Fragmented Bottom
- * - Asymmetric breakaway particles & 10 interior white stars
- * - 100% Line Artifact Free (Zero RingGeometry / Line meshes)
+ * Pixel-Perfect Reference-Matched JARVIS Quantum Globe
+ * - Golden-spiral Fibonacci point grid (45,000 points)
+ * - Wavy organic Simplex noise rim crests on top & bottom
+ * - Circumferential 5-stop color ramp matching reference:
+ *   Top: Electric Ice-Blue/Cyan (#7FE8FF)
+ *   Upper Sides: Deep Purple/Magenta (#8B5CF6 / #D946EF)
+ *   Lower Sides: Crimson Coral-Red (#F43F5E)
+ *   Bottom Ring: Dense Fiery Orange & Gold (#F97316 / #FACC15)
+ * - Dark midnight-blue sparse interior with subtle face-shadow void
+ * - 12 Interior bright white star points
+ * - Asymmetric breakaway particle streams at upper-left, upper-right, and bottom
+ * - 100% clean 3D point cloud architecture (0 line/mesh artifacts)
  */
 
 function generateFibonacciSphere(count: number, radius: number) {
@@ -21,12 +27,13 @@ function generateFibonacciSphere(count: number, radius: number) {
 
   const phi = (1 + Math.sqrt(5)) / 2
 
-  const cTop = new THREE.Color('#E0FFFF')
-  const cUpperMid = new THREE.Color('#00DFFF')
-  const cMid = new THREE.Color('#7B1FA2')
-  const cLowerMid = new THREE.Color('#E8397F')
-  const cRed = new THREE.Color('#FF0055')
-  const cBottom = new THREE.Color('#FFD700')
+  const cTop = new THREE.Color('#7FE8FF')       // Ice Blue / Cyan
+  const cUpperMid = new THREE.Color('#00DFFF')  // Electric Cyan
+  const cMid = new THREE.Color('#8B5CF6')       // Deep Purple / Violet
+  const cLowerMid = new THREE.Color('#D946EF')  // Magenta
+  const cRed = new THREE.Color('#F43F5E')       // Crimson Coral Red
+  const cBottom = new THREE.Color('#FACC15')    // Warm Golden Yellow
+  const cOrange = new THREE.Color('#F97316')    // Fiery Amber Orange
 
   for (let i = 0; i < count; i++) {
     const y = 1 - (i / Math.max(1, count - 1)) * 2
@@ -40,25 +47,28 @@ function generateFibonacciSphere(count: number, radius: number) {
     positions[i * 3 + 1] = y * radius
     positions[i * 3 + 2] = z * radius
 
-    // Circumferential & height-based color mapping
-    const t = y * 0.5 + 0.5 // 1.0 at top, 0.0 at bottom
+    // Circumferential height-based color mapping strictly matching reference image
+    const t = y * 0.5 + 0.5 // 1.0 at top pole, 0.0 at bottom pole
 
     const col = new THREE.Color()
-    if (t >= 0.8) {
-      const localT = (t - 0.8) / 0.2
+    if (t >= 0.82) {
+      const localT = (t - 0.82) / 0.18
       col.copy(cUpperMid).lerp(cTop, localT)
-    } else if (t >= 0.55) {
-      const localT = (t - 0.55) / 0.25
+    } else if (t >= 0.60) {
+      const localT = (t - 0.60) / 0.22
       col.copy(cMid).lerp(cUpperMid, localT)
-    } else if (t >= 0.35) {
-      const localT = (t - 0.35) / 0.20
+    } else if (t >= 0.38) {
+      const localT = (t - 0.38) / 0.22
       col.copy(cLowerMid).lerp(cMid, localT)
-    } else if (t >= 0.18) {
-      const localT = (t - 0.18) / 0.17
+    } else if (t >= 0.20) {
+      const localT = (t - 0.20) / 0.18
       col.copy(cRed).lerp(cLowerMid, localT)
+    } else if (t >= 0.08) {
+      const localT = (t - 0.08) / 0.12
+      col.copy(cOrange).lerp(cRed, localT)
     } else {
-      const localT = t / 0.18
-      col.copy(cBottom).lerp(cRed, localT)
+      const localT = t / 0.08
+      col.copy(cBottom).lerp(cOrange, localT)
     }
 
     colors[i * 3] = col.r
@@ -67,39 +77,45 @@ function generateFibonacciSphere(count: number, radius: number) {
 
     const seed = Math.sin(i * 12.9898 + y * 78.233) * 43758.5453
     const noiseFactor = (seed - Math.floor(seed))
-    sizes[i] = 1.6 + noiseFactor * 1.6
+    sizes[i] = 1.6 + noiseFactor * 1.5
   }
 
   return { positions, colors, sizes }
 }
 
 /**
- * Generate Asymmetric Breakaway Particles (Upper-Left & Lower-Right)
+ * Generate Asymmetric Breakaway Stream Particles (Top-Left, Top-Right & Bottom-Splash)
  */
-function generateAsymmetricBreakaways(count = 60, radius = 1.8) {
+function generateAsymmetricBreakaways(count = 80, radius = 1.8) {
   const positions = new Float32Array(count * 3)
   const colors = new Float32Array(count * 3)
   const sizes = new Float32Array(count)
 
-  const cCyan = new THREE.Color('#00DFFF')
-  const cGold = new THREE.Color('#FFD700')
+  const cIceCyan = new THREE.Color('#7FE8FF')
+  const cMagenta = new THREE.Color('#D946EF')
+  const cFieryOrange = new THREE.Color('#F97316')
 
   for (let i = 0; i < count; i++) {
-    const isUpperLeft = i < count / 2
     let x: number, y: number, z: number, col: THREE.Color
 
-    if (isUpperLeft) {
-      // Upper Left breakaway stream
-      x = -radius * (1.05 + Math.random() * 0.35)
-      y = radius * (0.65 + Math.random() * 0.45)
-      z = (Math.random() - 0.5) * 0.8
-      col = cCyan
+    if (i < count * 0.35) {
+      // Top-Left Cyan Breakaways
+      x = -radius * (1.04 + Math.random() * 0.35)
+      y = radius * (0.65 + Math.random() * 0.42)
+      z = (Math.random() - 0.5) * 0.7
+      col = cIceCyan
+    } else if (i < count * 0.65) {
+      // Top-Right Magenta/Blue Breakaways
+      x = radius * (1.04 + Math.random() * 0.32)
+      y = radius * (0.55 + Math.random() * 0.45)
+      z = (Math.random() - 0.5) * 0.7
+      col = cMagenta
     } else {
-      // Lower Right breakaway stream
-      x = radius * (1.05 + Math.random() * 0.35)
-      y = -radius * (0.65 + Math.random() * 0.45)
-      z = (Math.random() - 0.5) * 0.8
-      col = cGold
+      // Bottom Fiery Orange Splash Breakaways
+      x = (Math.random() - 0.5) * radius * 1.6
+      y = -radius * (1.04 + Math.random() * 0.38)
+      z = (Math.random() - 0.5) * 0.7
+      col = cFieryOrange
     }
 
     positions[i * 3] = x
@@ -110,16 +126,16 @@ function generateAsymmetricBreakaways(count = 60, radius = 1.8) {
     colors[i * 3 + 1] = col.g
     colors[i * 3 + 2] = col.b
 
-    sizes[i] = 2.0 + Math.random() * 1.8
+    sizes[i] = 1.8 + Math.random() * 1.8
   }
 
   return { positions, colors, sizes }
 }
 
 /**
- * Generate 10 Interior White Star Points
+ * Generate 12 Interior White Star Points
  */
-function generateInteriorStars(count = 10, maxRadius = 1.3) {
+function generateInteriorStars(count = 12, maxRadius = 1.3) {
   const positions = new Float32Array(count * 3)
   const colors = new Float32Array(count * 3)
   const sizes = new Float32Array(count)
@@ -131,7 +147,7 @@ function generateInteriorStars(count = 10, maxRadius = 1.3) {
     const v = Math.random()
     const theta = u * 2.0 * Math.PI
     const phi = Math.acos(2.0 * v - 1.0)
-    const r = 0.35 + Math.random() * (maxRadius - 0.35)
+    const r = 0.3 + Math.random() * (maxRadius - 0.3)
 
     positions[i * 3] = r * Math.sin(phi) * Math.cos(theta)
     positions[i * 3 + 1] = r * Math.cos(phi)
@@ -141,7 +157,7 @@ function generateInteriorStars(count = 10, maxRadius = 1.3) {
     colors[i * 3 + 1] = whiteColor.g
     colors[i * 3 + 2] = whiteColor.b
 
-    sizes[i] = 5.0 + Math.random() * 2.5
+    sizes[i] = 5.2 + Math.random() * 2.6
   }
 
   return { positions, colors, sizes }
@@ -193,7 +209,7 @@ function CorePointSphere({ pointCount = 45000, radius = 1.8, voiceState = 'IDLE'
   const rotSpeed = isThinking ? 0.0045 : isError ? 0.0035 : 0.0012
   const targetScale = isThinking ? 1.08 : isSpeaking ? 1.0 + voiceLevel * 0.12 : 1.0
 
-  // 1. Surface Sphere Geometry (45,000 Points)
+  // 1. Core Fibonacci Point Cloud Geometry
   const mainGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
     const { positions, colors, sizes } = generateFibonacciSphere(pointCount, radius)
@@ -205,10 +221,10 @@ function CorePointSphere({ pointCount = 45000, radius = 1.8, voiceState = 'IDLE'
     return geo
   }, [pointCount, radius])
 
-  // 2. Asymmetric Breakaway Particles Geometry
+  // 2. Asymmetric Breakaway Streams Geometry
   const breakawayGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
-    const { positions, colors, sizes } = generateAsymmetricBreakaways(60, radius)
+    const { positions, colors, sizes } = generateAsymmetricBreakaways(80, radius)
 
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
@@ -220,7 +236,7 @@ function CorePointSphere({ pointCount = 45000, radius = 1.8, voiceState = 'IDLE'
   // 3. Interior White Stars Geometry
   const starGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
-    const { positions, colors, sizes } = generateInteriorStars(10, radius * 0.70)
+    const { positions, colors, sizes } = generateInteriorStars(12, radius * 0.70)
 
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
@@ -241,7 +257,7 @@ function CorePointSphere({ pointCount = 45000, radius = 1.8, voiceState = 'IDLE'
     return geo
   }, [])
 
-  // 5. Main Rim-Concentrated GLSL ShaderMaterial
+  // 5. Reference-Matched GLSL ShaderMaterial
   const mainMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
@@ -314,17 +330,20 @@ function CorePointSphere({ pointCount = 45000, radius = 1.8, voiceState = 'IDLE'
           vec3 viewDir = normalize(-tempMvPos.xyz);
           float rimFactor = 1.0 - abs(dot(viewNormal, viewDir));
 
-          // Non-linear steep rim weight curve (3.8 power)
-          vRimWeight = pow(rimFactor, 3.8);
+          // Steep rim weight curve
+          vRimWeight = pow(rimFactor, 3.6);
 
-          // Bottom-center fragmentation noise displacement (y < -0.5)
+          // Wavy organic rim noise displacement matching reference image's ruffled edges
+          float wavyNoise = snoise(position * 2.6 + vec3(0.0, uTime * 0.35, 0.0)) * 0.12 * vRimWeight;
+
+          // Extra bottom-center fiery fragmentation (y < -0.5)
           float bottomFrac = smoothstep(-0.35, -0.95, position.y);
-          float bottomNoise = snoise(position * 3.2 + vec3(0.0, uTime * 0.45, 0.0)) * 0.16 * bottomFrac * vRimWeight;
+          float bottomScatter = snoise(position * 3.5 + vec3(uTime * 0.5, 0.0, 0.0)) * 0.18 * bottomFrac * vRimWeight;
 
-          vec3 displacedPos = position + normalVec * bottomNoise;
+          vec3 displacedPos = position + normalVec * (wavyNoise + bottomScatter);
           vec4 mvPosition = modelViewMatrix * vec4(displacedPos, 1.0);
 
-          // Point size: small inside (1.3px), large on rim (4.8px)
+          // Dynamic point sizing: small inside (1.3px), large on rim (4.8px)
           float dynamicSize = mix(1.3, 4.8, vRimWeight) * (1.0 + uVoiceLevel * 0.25);
           gl_PointSize = dynamicSize * (6.0 / -mvPosition.z);
 
@@ -349,8 +368,7 @@ function CorePointSphere({ pointCount = 45000, radius = 1.8, voiceState = 'IDLE'
           
           float intensity = pow(1.0 - (dist * 2.0), 2.2);
 
-          // Interior: deep midnight blue (#03091B) fading to near-black, very low opacity (0.06 - 0.15)
-          // Rim: full bright color gradient, high opacity (0.95 - 1.0)
+          // Dark midnight-blue interior fading to near-black
           vec3 darkInteriorColor = vec3(0.015, 0.04, 0.11);
           vec3 finalColor = mix(darkInteriorColor, vColor * 1.35, vRimWeight);
 
@@ -366,7 +384,7 @@ function CorePointSphere({ pointCount = 45000, radius = 1.8, voiceState = 'IDLE'
     })
   }, [])
 
-  // 6. Asymmetric Breakaway ShaderMaterial
+  // 6. Asymmetric Breakaways ShaderMaterial
   const breakawayMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: { uTime: { value: 0.0 } },
@@ -378,8 +396,8 @@ function CorePointSphere({ pointCount = 45000, radius = 1.8, voiceState = 'IDLE'
         void main() {
           vColor = color;
           vec3 pos = position;
-          pos.x += sin(uTime * 0.6 + position.y) * 0.03;
-          pos.y += cos(uTime * 0.5 + position.x) * 0.03;
+          pos.x += sin(uTime * 0.6 + position.y) * 0.035;
+          pos.y += cos(uTime * 0.5 + position.x) * 0.035;
 
           vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
           gl_PointSize = size * (6.0 / -mvPosition.z);
@@ -403,7 +421,7 @@ function CorePointSphere({ pointCount = 45000, radius = 1.8, voiceState = 'IDLE'
     })
   }, [])
 
-  // 7. Interior Star ShaderMaterial
+  // 7. Interior White Stars ShaderMaterial
   const starMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: { uTime: { value: 0.0 } },
@@ -498,13 +516,12 @@ function CorePointSphere({ pointCount = 45000, radius = 1.8, voiceState = 'IDLE'
     dustMaterial,
   ])
 
-  // Real-time Audio & Animation Loop
   useFrame((_, delta) => {
     frameCountRef.current += 1
     const now = performance.now()
     if (now - lastFpsTimeRef.current >= 3000) {
       const calculatedFps = Math.round((frameCountRef.current * 1000) / (now - lastFpsTimeRef.current))
-      console.log(`[Authoritative Globe Performance] FPS: ${calculatedFps} | Main Points: ${pointCount} | Rim Model Active | Line Artifacts: 0`)
+      console.log(`[JARVIS Globe] Reference Matched | FPS: ${calculatedFps} | 45k Points`)
       frameCountRef.current = 0
       lastFpsTimeRef.current = now
     }
@@ -533,13 +550,13 @@ function CorePointSphere({ pointCount = 45000, radius = 1.8, voiceState = 'IDLE'
 
   return (
     <group ref={groupRef}>
-      {/* 1. Core Rim-Concentrated Sphere (45,000 points with dark interior & bright ring) */}
+      {/* 1. Core Reference-Matched Rim Sphere */}
       <points geometry={mainGeometry} material={mainMaterial} />
-      {/* 2. Asymmetric Breakaway Stream Particles (Upper-Left & Lower-Right) */}
+      {/* 2. Asymmetric Breakaway Particles */}
       <points geometry={breakawayGeometry} material={breakawayMaterial} />
-      {/* 3. 10 Interior White Star Points */}
+      {/* 3. 12 Interior White Stars */}
       <points geometry={starGeometry} material={starMaterial} />
-      {/* 4. Subtle Background Micro-Dust */}
+      {/* 4. Background Micro-Dust */}
       <points geometry={dustGeometry} material={dustMaterial} />
     </group>
   )
