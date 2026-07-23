@@ -1,11 +1,11 @@
-import { useMemo, useRef, useEffect } from 'react'
+import { useMemo, useRef, useEffect, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 
 /**
- * Phase 4 JarvisGlobe
- * Core Fibonacci Sphere + Energy-Shedding Recycled Detached Particles + Background Micro-Dust
+ * Phase 5 JarvisGlobe
+ * Core Fibonacci Sphere + Energy-Shedding Drift + Micro-Dust + Expanding Wave Rings
  */
 function generateFibonacciSphere(count: number, radius: number) {
   const positions = new Float32Array(count * 3)
@@ -93,15 +93,11 @@ function generateInteriorStars(count = 12, maxRadius = 1.4) {
   return { positions, colors, sizes }
 }
 
-/**
- * Phase 4: Generate Recycled Detached Particles (3,000 slots)
- * Spawns on the sphere surface, drifts outward along normal vector, fades & respawns continuously in GLSL.
- */
 function generateRecycledDetachedBuffer(count = 3000, radius = 1.8) {
   const positions = new Float32Array(count * 3)
   const normals = new Float32Array(count * 3)
   const colors = new Float32Array(count * 3)
-  const lifetimes = new Float32Array(count * 2) // [birthOffset, duration]
+  const lifetimes = new Float32Array(count * 2)
   const sizes = new Float32Array(count)
 
   const cTop = new THREE.Color('#00C8FF')
@@ -109,7 +105,6 @@ function generateRecycledDetachedBuffer(count = 3000, radius = 1.8) {
   const cBot = new THREE.Color('#FFD700')
 
   for (let i = 0; i < count; i++) {
-    // Random surface point on sphere
     const u = Math.random()
     const v = Math.random()
     const theta = u * 2.0 * Math.PI
@@ -127,7 +122,6 @@ function generateRecycledDetachedBuffer(count = 3000, radius = 1.8) {
     normals[i * 3 + 1] = ny
     normals[i * 3 + 2] = nz
 
-    // Color gradient matching spawn Y height
     const normY = ny * 0.5 + 0.5
     const col = new THREE.Color()
     if (normY > 0.5) {
@@ -140,7 +134,6 @@ function generateRecycledDetachedBuffer(count = 3000, radius = 1.8) {
     colors[i * 3 + 1] = col.g
     colors[i * 3 + 2] = col.b
 
-    // Lifetime parameters: birthOffset (0..6s), duration (3.5..6.0s)
     lifetimes[i * 2] = Math.random() * 6.0
     lifetimes[i * 2 + 1] = 3.5 + Math.random() * 2.5
 
@@ -150,9 +143,6 @@ function generateRecycledDetachedBuffer(count = 3000, radius = 1.8) {
   return { positions, normals, colors, lifetimes, sizes }
 }
 
-/**
- * Phase 4: Generate Subtle Background Micro-Dust (2,000 points)
- */
 function generateMicroDust(count = 2000) {
   const positions = new Float32Array(count * 3)
   const colors = new Float32Array(count * 3)
@@ -179,12 +169,164 @@ function generateMicroDust(count = 2000) {
   return { positions, colors, sizes }
 }
 
+/**
+ * Phase 5: Expanding Wave Ring Mesh Component
+ * Spawns expanding glowing concentric rings outward from the globe's surface.
+ */
+interface RingState {
+  age: number
+  duration: number
+  rotation: THREE.Euler
+  color: THREE.Color
+  active: boolean
+}
+
+function ExpandingWaveRings({ intensity = 0.0, radius = 1.8 }: { intensity?: number; radius?: number }) {
+  const MAX_RINGS = 6
+  const ringsRef = useRef<THREE.Group>(null)
+  const spawnTimerRef = useRef(0)
+
+  // Pre-allocated ring states
+  const ringStatesRef = useRef<RingState[]>(
+    Array.from({ length: MAX_RINGS }, () => ({
+      age: 0,
+      duration: 3.5,
+      rotation: new THREE.Euler(),
+      color: new THREE.Color('#00DFFF'),
+      active: false,
+    }))
+  )
+
+  const ringGeometry = useMemo(() => {
+    return new THREE.RingGeometry(radius, radius + 0.08, 64)
+  }, [radius])
+
+  const ringMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        uProgress: { value: 0.0 },
+        uIntensity: { value: 0.0 },
+        uColor: { value: new THREE.Color('#00DFFF') },
+      },
+      vertexShader: `
+        uniform float uProgress;
+        varying vec2 vUv;
+
+        void main() {
+          vUv = uv;
+          // Scale ring outward from radius (1.0x) to 2.1x radius
+          float scale = 1.0 + uProgress * 1.1;
+          vec3 scaledPos = position * vec3(scale, scale, 1.0);
+
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(scaledPos, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float uProgress;
+        uniform float uIntensity;
+        uniform vec3 uColor;
+        varying vec2 vUv;
+
+        void main() {
+          // Fade in during first 10%, fade out over remaining 90%
+          float fadeIn = smoothstep(0.0, 0.1, uProgress);
+          float fadeOut = 1.0 - smoothstep(0.1, 1.0, uProgress);
+          float alpha = fadeIn * fadeOut * (0.35 + uIntensity * 0.45);
+
+          gl_FragColor = vec4(uColor * (1.2 + uIntensity * 0.8), alpha);
+        }
+      `,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
+    })
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      ringGeometry.dispose()
+      ringMaterial.dispose()
+    }
+  }, [ringGeometry, ringMaterial])
+
+  useFrame((_, delta) => {
+    spawnTimerRef.current += delta
+
+    // Spawn frequency: Idle = 1 ring every 4.0s, Max Intensity = 1 ring every 0.6s
+    const spawnInterval = 4.0 - intensity * 3.4
+
+    if (spawnTimerRef.current >= spawnInterval) {
+      spawnTimerRef.current = 0
+
+      // Find an inactive slot
+      const slot = ringStatesRef.current.find((r) => !r.active)
+      if (slot) {
+        slot.active = true
+        slot.age = 0
+        slot.duration = 3.5 - intensity * 1.8 // Expands faster at high intensity
+        slot.rotation.set(
+          Math.random() * Math.PI,
+          Math.random() * Math.PI,
+          Math.random() * Math.PI
+        )
+
+        // Color sample matching intensity (cyan at idle, electric pink/violet at high intensity)
+        if (intensity > 0.5) {
+          slot.color.set('#00DFFF').lerp(new THREE.Color('#FF007F'), (intensity - 0.5) * 2.0)
+        } else {
+          slot.color.set('#00DFFF')
+        }
+      }
+    }
+
+    // Update active ring meshes
+    if (ringsRef.current) {
+      ringsRef.current.children.forEach((mesh, index) => {
+        const state = ringStatesRef.current[index]
+        if (state.active) {
+          state.age += delta
+          const progress = Math.min(1.0, state.age / state.duration)
+
+          if (progress >= 1.0) {
+            state.active = false
+            mesh.visible = false
+          } else {
+            mesh.visible = true
+            mesh.rotation.copy(state.rotation)
+
+            // Update mesh uniforms via single material clone or per-mesh property
+            const ringMesh = mesh as THREE.Mesh<THREE.RingGeometry, THREE.ShaderMaterial>
+            if (ringMesh.material) {
+              ringMesh.material.uniforms.uProgress.value = progress
+              ringMesh.material.uniforms.uIntensity.value = intensity
+              ringMesh.material.uniforms.uColor.value.copy(state.color)
+            }
+          }
+        } else {
+          mesh.visible = false
+        }
+      })
+    }
+  })
+
+  // Pre-instantiate 6 ring meshes with cloned materials for individual uniform tracking
+  const ringMeshes = useMemo(() => {
+    return Array.from({ length: MAX_RINGS }).map((_, i) => (
+      <mesh key={i} geometry={ringGeometry} material={ringMaterial.clone()} visible={false} />
+    ))
+  }, [ringGeometry, ringMaterial])
+
+  return <group ref={ringsRef}>{ringMeshes}</group>
+}
+
 export interface JarvisGlobeProps {
   pointCount?: number
   radius?: number
+  intensity?: number // 0.0 (Idle) to 1.0 (Speaking/Listening)
 }
 
-function CorePointSphere({ pointCount = 40000, radius = 1.8 }: JarvisGlobeProps) {
+function CorePointSphere({ pointCount = 40000, radius = 1.8, intensity = 0.0 }: JarvisGlobeProps) {
   const groupRef = useRef<THREE.Group>(null)
   const frameCountRef = useRef(0)
   const lastFpsTimeRef = useRef(performance.now())
@@ -318,7 +460,7 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8 }: JarvisGlobeProps)
     })
   }, [])
 
-  // 7. Phase 4 Detached Particle ShaderMaterial (Normal Drift + Recycled Cyclic Respawning)
+  // 7. Detached Particle ShaderMaterial
   const detachedMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: { uTime: { value: 0.0 } },
@@ -439,13 +581,13 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8 }: JarvisGlobeProps)
     dustMaterial,
   ])
 
-  // Phase 4 Frame Loop & Performance Monitoring
+  // Phase 5 Frame Loop
   useFrame((_, delta) => {
     frameCountRef.current += 1
     const now = performance.now()
     if (now - lastFpsTimeRef.current >= 3000) {
       const calculatedFps = Math.round((frameCountRef.current * 1000) / (now - lastFpsTimeRef.current))
-      console.log(`[Phase 4 Performance] FPS: ${calculatedFps} | Main Points: ${pointCount} | Detached Slots: 3000 | Dust Points: 2000`)
+      console.log(`[Phase 5 Performance] FPS: ${calculatedFps} | Intensity: ${intensity.toFixed(2)} | Wave Rings: Active`)
       frameCountRef.current = 0
       lastFpsTimeRef.current = now
     }
@@ -466,24 +608,74 @@ function CorePointSphere({ pointCount = 40000, radius = 1.8 }: JarvisGlobeProps)
       <points geometry={mainGeometry} material={mainMaterial} />
       {/* 2. Sparse Interior Star Points */}
       <points geometry={starGeometry} material={starMaterial} />
-      {/* 3. Phase 4 Outward Energy-Shedding Detached Drift Particles */}
+      {/* 3. Outward Energy-Shedding Detached Drift Particles */}
       <points geometry={detachedGeometry} material={detachedMaterial} />
-      {/* 4. Phase 4 Subtle Background Micro-Dust */}
+      {/* 4. Subtle Background Micro-Dust */}
       <points geometry={dustGeometry} material={dustMaterial} />
+      {/* 5. Phase 5 Expanding Wave Rings */}
+      <ExpandingWaveRings intensity={intensity} radius={radius} />
     </group>
   )
 }
 
-export default function JarvisGlobe() {
+export default function JarvisGlobe({ intensity: externalIntensity }: { intensity?: number }) {
+  const [manualIntensity, setManualIntensity] = useState<number>(0.0)
+  
+  // Environment variable debug panel gate
+  const showDebugPanel = import.meta.env.VITE_GLOBE_DEBUG_PANEL === 'true'
+
+  const activeIntensity = externalIntensity !== undefined ? externalIntensity : manualIntensity
+
   return (
     <div className="w-full h-full relative overflow-visible bg-black">
+      {/* Manual Intensity Dev Controller (Visible if VITE_GLOBE_DEBUG_PANEL=true) */}
+      {showDebugPanel && (
+        <div className="absolute top-3 left-3 z-50 flex flex-col gap-2 bg-black/80 border border-white/10 rounded-xl p-3 text-xs text-white/90 shadow-2xl backdrop-blur-md max-w-xs">
+          <div className="flex items-center justify-between gap-4 font-mono">
+            <span className="text-white/60 uppercase tracking-wider text-[10px]">Wave Ring Intensity</span>
+            <span className="text-[#00DFFF] font-bold">{(activeIntensity * 100).toFixed(0)}%</span>
+          </div>
+
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.05"
+            value={manualIntensity}
+            onChange={(e) => setManualIntensity(parseFloat(e.target.value))}
+            className="w-full accent-[#00DFFF] cursor-pointer"
+          />
+
+          <div className="flex items-center gap-1 mt-1">
+            <button
+              onClick={() => setManualIntensity(0.0)}
+              className="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[9px] uppercase tracking-wider font-mono text-white/80"
+            >
+              Idle (0%)
+            </button>
+            <button
+              onClick={() => setManualIntensity(0.5)}
+              className="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[9px] uppercase tracking-wider font-mono text-white/80"
+            >
+              Listening (50%)
+            </button>
+            <button
+              onClick={() => setManualIntensity(1.0)}
+              className="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[9px] uppercase tracking-wider font-mono text-white/80"
+            >
+              Speaking (100%)
+            </button>
+          </div>
+        </div>
+      )}
+
       <Canvas
         camera={{ position: [0, 0, 6.0], fov: 50, near: 0.1, far: 1000 }}
         gl={{ antialias: true, alpha: true }}
       >
         <ambientLight intensity={0.4} />
 
-        <CorePointSphere pointCount={40000} radius={1.8} />
+        <CorePointSphere pointCount={40000} radius={1.8} intensity={activeIntensity} />
 
         <OrbitControls
           enableZoom={true}
