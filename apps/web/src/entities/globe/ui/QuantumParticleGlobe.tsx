@@ -4,6 +4,7 @@ import { OrbitControls } from '@react-three/drei'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import * as THREE from 'three'
 import { useAudioAnalyser } from '../../../shared/audio/useAudioAnalyser'
+import { useGlobeSettings } from '../../../shared/globe/useGlobeSettings'
 
 export type QualityTier = 'low' | 'medium' | 'high' | 'ultra'
 export type AssistantState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'success' | 'warning' | 'error'
@@ -58,7 +59,6 @@ interface StateMultiplier {
   noiseSpeed: number
   rimBoost: number
   pulseSpeed: number
-  colorTint: THREE.Color | null
 }
 
 const STATE_MULTIPLIERS: Record<AssistantState, StateMultiplier> = {
@@ -68,7 +68,6 @@ const STATE_MULTIPLIERS: Record<AssistantState, StateMultiplier> = {
     noiseSpeed: 0.5,
     rimBoost: 1.8,
     pulseSpeed: 0.8,
-    colorTint: null,
   },
   listening: {
     rotSpeed: 0.002,
@@ -76,7 +75,6 @@ const STATE_MULTIPLIERS: Record<AssistantState, StateMultiplier> = {
     noiseSpeed: 1.2,
     rimBoost: 2.8,
     pulseSpeed: 1.5,
-    colorTint: new THREE.Color('#00FFCC'),
   },
   thinking: {
     rotSpeed: 0.0045,
@@ -84,7 +82,6 @@ const STATE_MULTIPLIERS: Record<AssistantState, StateMultiplier> = {
     noiseSpeed: 2.2,
     rimBoost: 3.2,
     pulseSpeed: 3.0,
-    colorTint: new THREE.Color('#FF00FF'),
   },
   speaking: {
     rotSpeed: 0.0018,
@@ -92,7 +89,6 @@ const STATE_MULTIPLIERS: Record<AssistantState, StateMultiplier> = {
     noiseSpeed: 1.4,
     rimBoost: 2.4,
     pulseSpeed: 2.0,
-    colorTint: new THREE.Color('#FFD700'),
   },
   success: {
     rotSpeed: 0.0015,
@@ -100,7 +96,6 @@ const STATE_MULTIPLIERS: Record<AssistantState, StateMultiplier> = {
     noiseSpeed: 0.8,
     rimBoost: 2.2,
     pulseSpeed: 1.2,
-    colorTint: new THREE.Color('#10B981'),
   },
   warning: {
     rotSpeed: 0.0022,
@@ -108,7 +103,6 @@ const STATE_MULTIPLIERS: Record<AssistantState, StateMultiplier> = {
     noiseSpeed: 1.5,
     rimBoost: 2.5,
     pulseSpeed: 2.2,
-    colorTint: new THREE.Color('#F59E0B'),
   },
   error: {
     rotSpeed: 0.0035,
@@ -116,7 +110,6 @@ const STATE_MULTIPLIERS: Record<AssistantState, StateMultiplier> = {
     noiseSpeed: 2.8,
     rimBoost: 3.5,
     pulseSpeed: 3.5,
-    colorTint: new THREE.Color('#FF0055'),
   },
 }
 
@@ -267,23 +260,23 @@ function QuantumParticleSphere({
   const dustRef = useRef<THREE.Points>(null)
   const groupRef = useRef<THREE.Group>(null)
 
-  // Live Web Audio Analyser
   const { voiceLevel } = useAudioAnalyser()
+  const storeSettings = useGlobeSettings()
 
   const frameCountRef = useRef(0)
   const lastTimeRef = useRef(performance.now())
 
   const stateConfig = STATE_MULTIPLIERS[assistantState]
 
-  // Geometries
   const mainGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
-    const { positions, colors, sizes } = generateFibonacciSphere(qualityConfig.mainPoints, radius)
+    const activePoints = storeSettings.particleCount ? Math.min(storeSettings.particleCount, qualityConfig.mainPoints) : qualityConfig.mainPoints
+    const { positions, colors, sizes } = generateFibonacciSphere(activePoints, radius)
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
     geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
     return geo
-  }, [qualityConfig.mainPoints, radius])
+  }, [qualityConfig.mainPoints, storeSettings.particleCount, radius])
 
   const detachedGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
@@ -307,12 +300,11 @@ function QuantumParticleSphere({
     return geo
   }, [qualityConfig.dustPoints])
 
-  // Main Sphere Shader Material
   const mainMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
         uTime: { value: 0.0 },
-        uSizeScale: { value: 1.0 },
+        uSizeScale: { value: storeSettings.particleSize ?? 1.0 },
         uNoiseStrength: { value: stateConfig.noiseStrength },
         uNoiseSpeed: { value: stateConfig.noiseSpeed },
         uNoiseScale: { value: 1.2 },
@@ -401,7 +393,6 @@ function QuantumParticleSphere({
           vColor = color;
           vec3 normalVec = normalize(position);
           
-          // Voice amplitude boosts noise strength dynamically
           float dynamicNoise = uNoiseStrength + uVoiceLevel * 0.15;
           float noiseVal = snoise(position * uNoiseScale + vec3(0.0, uTime * uNoiseSpeed, 0.0));
           vec3 displacedPos = position + normalVec * (noiseVal * dynamicNoise);
@@ -438,9 +429,8 @@ function QuantumParticleSphere({
       blending: THREE.AdditiveBlending,
       vertexColors: true,
     })
-  }, [])
+  }, [storeSettings.particleSize])
 
-  // Detached Material
   const detachedMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: { uTime: { value: 0.0 } },
@@ -482,7 +472,6 @@ function QuantumParticleSphere({
     })
   }, [])
 
-  // Dust Material
   const dustMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: { uTime: { value: 0.0 } },
@@ -600,6 +589,21 @@ export default function QuantumParticleGlobe() {
   const config = QUALITY_PRESETS[qualityTier]
   const totalPoints = config.mainPoints + config.detachedPoints + config.dustPoints
 
+  // WebGL Context Loss & Recovery Handling
+  const handleCreated = ({ gl }: { gl: THREE.WebGLRenderer }) => {
+    const canvas = gl.domElement
+    const handleContextLost = (event: Event) => {
+      event.preventDefault()
+      console.warn('[QuantumParticleGlobe] WebGL context lost. Attempting recovery...')
+    }
+    const handleContextRestored = () => {
+      console.log('[QuantumParticleGlobe] WebGL context restored successfully.')
+    }
+
+    canvas.addEventListener('webglcontextlost', handleContextLost, false)
+    canvas.addEventListener('webglcontextrestored', handleContextRestored, false)
+  }
+
   return (
     <div className="w-full h-full relative overflow-visible bg-black">
       {/* Dev Control Overlay: Performance Tier & AI State Selector */}
@@ -654,6 +658,7 @@ export default function QuantumParticleGlobe() {
       <Canvas
         camera={{ position: [0, 0, 6.2], fov: 45 }}
         gl={{ antialias: true, alpha: true }}
+        onCreated={handleCreated}
       >
         <ambientLight intensity={0.4} />
 
