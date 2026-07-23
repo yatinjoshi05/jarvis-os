@@ -1,7 +1,54 @@
-import { useMemo, useRef, useEffect } from 'react'
+import { useMemo, useRef, useEffect, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
+import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import * as THREE from 'three'
+
+export type QualityTier = 'low' | 'medium' | 'high' | 'ultra'
+
+export interface QualityConfig {
+  mainPoints: number
+  detachedPoints: number
+  dustPoints: number
+  enableBloom: boolean
+  bloomIntensity: number
+  bloomThreshold: number
+}
+
+export const QUALITY_PRESETS: Record<QualityTier, QualityConfig> = {
+  low: {
+    mainPoints: 20000,
+    detachedPoints: 0,
+    dustPoints: 0,
+    enableBloom: false,
+    bloomIntensity: 0.0,
+    bloomThreshold: 0.2,
+  },
+  medium: {
+    mainPoints: 50000,
+    detachedPoints: 3000,
+    dustPoints: 1000,
+    enableBloom: true,
+    bloomIntensity: 1.0,
+    bloomThreshold: 0.15,
+  },
+  high: {
+    mainPoints: 100000,
+    detachedPoints: 6000,
+    dustPoints: 2500,
+    enableBloom: true,
+    bloomIntensity: 1.3,
+    bloomThreshold: 0.12,
+  },
+  ultra: {
+    mainPoints: 150000,
+    detachedPoints: 10000,
+    dustPoints: 4000,
+    enableBloom: true,
+    bloomIntensity: 1.6,
+    bloomThreshold: 0.10,
+  },
+}
 
 /**
  * Fibonacci Sphere Point Generator
@@ -22,8 +69,7 @@ function generateFibonacciSphere(count: number, radius: number) {
   const cBottom = new THREE.Color('#FFD700')    // Gold/Orange
 
   for (let i = 0; i < count; i++) {
-    // Normalized height y from +1 to -1
-    const y = 1 - (i / (count - 1)) * 2
+    const y = 1 - (i / Math.max(1, count - 1)) * 2
     const radiusAtY = Math.sqrt(Math.max(0, 1 - y * y))
 
     const theta = (2 * Math.PI * i) / phi
@@ -35,8 +81,7 @@ function generateFibonacciSphere(count: number, radius: number) {
     positions[i * 3 + 1] = y * radius
     positions[i * 3 + 2] = z * radius
 
-    // Map normalized Y (-1 to +1 -> 0 to 1) to multi-stop color gradient
-    const t = y * 0.5 + 0.5 // 1 at top pole, 0 at bottom pole
+    const t = y * 0.5 + 0.5
 
     const col = new THREE.Color()
     if (t > 0.75) {
@@ -57,10 +102,9 @@ function generateFibonacciSphere(count: number, radius: number) {
     colors[i * 3 + 1] = col.g
     colors[i * 3 + 2] = col.b
 
-    // Vary point sizes slightly for depth variation
     const seed = Math.sin(i * 12.9898 + y * 78.233) * 43758.5453
     const noiseFactor = (seed - Math.floor(seed))
-    sizes[i] = 0.018 + noiseFactor * 0.024
+    sizes[i] = 0.016 + noiseFactor * 0.022
   }
 
   return { positions, colors, sizes }
@@ -68,9 +112,16 @@ function generateFibonacciSphere(count: number, radius: number) {
 
 /**
  * Detached Outer Particle Field (Layer C)
- * Secondary recycled particle pool drifting outside the main sphere surface (radius ~1.9 to ~2.6).
  */
 function generateDetachedParticles(count: number, baseRadius: number) {
+  if (count <= 0) {
+    return {
+      positions: new Float32Array(0),
+      colors: new Float32Array(0),
+      sizes: new Float32Array(0),
+    }
+  }
+
   const positions = new Float32Array(count * 3)
   const colors = new Float32Array(count * 3)
   const sizes = new Float32Array(count)
@@ -115,9 +166,16 @@ function generateDetachedParticles(count: number, baseRadius: number) {
 
 /**
  * Micro Dust Field (Layer D)
- * Sparse background stars/dust (radius ~3.0 to ~6.5) providing spatial depth.
  */
 function generateMicroDust(count: number) {
+  if (count <= 0) {
+    return {
+      positions: new Float32Array(0),
+      colors: new Float32Array(0),
+      sizes: new Float32Array(0),
+    }
+  }
+
   const positions = new Float32Array(count * 3)
   const colors = new Float32Array(count * 3)
   const sizes = new Float32Array(count)
@@ -134,7 +192,6 @@ function generateMicroDust(count: number) {
     positions[i * 3 + 1] = r * Math.cos(phi)
     positions[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta)
 
-    // Subtle blue-white tint
     colors[i * 3] = 0.7 + Math.random() * 0.3
     colors[i * 3 + 1] = 0.85 + Math.random() * 0.15
     colors[i * 3 + 2] = 1.0
@@ -146,66 +203,72 @@ function generateMicroDust(count: number) {
 }
 
 export interface QuantumParticleSphereProps {
-  pointCount?: number
-  detachedCount?: number
-  dustCount?: number
+  qualityConfig: QualityConfig
   radius?: number
   noiseStrength?: number
   noiseSpeed?: number
   noiseScale?: number
   rimBoost?: number
+  onFpsUpdate?: (fps: number) => void
 }
 
 function QuantumParticleSphere({
-  pointCount = 35000,
-  detachedCount = 4500,
-  dustCount = 2000,
+  qualityConfig,
   radius = 1.8,
   noiseStrength = 0.06,
   noiseSpeed = 0.5,
   noiseScale = 1.2,
   rimBoost = 1.8,
+  onFpsUpdate,
 }: QuantumParticleSphereProps) {
   const pointsRef = useRef<THREE.Points>(null)
   const detachedRef = useRef<THREE.Points>(null)
   const dustRef = useRef<THREE.Points>(null)
   const groupRef = useRef<THREE.Group>(null)
 
-  // 1. Allocate main sphere buffer geometry
+  // Performance FPS tracking
+  const frameCountRef = useRef(0)
+  const lastTimeRef = useRef(performance.now())
+
+  // Main sphere buffer geometry
   const mainGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
-    const { positions, colors, sizes } = generateFibonacciSphere(pointCount, radius)
+    const { positions, colors, sizes } = generateFibonacciSphere(qualityConfig.mainPoints, radius)
 
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
     geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
 
     return geo
-  }, [pointCount, radius])
+  }, [qualityConfig.mainPoints, radius])
 
-  // 2. Allocate detached particles geometry (Layer C)
+  // Detached particles geometry
   const detachedGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
-    const { positions, colors, sizes } = generateDetachedParticles(detachedCount, radius)
+    const { positions, colors, sizes } = generateDetachedParticles(qualityConfig.detachedPoints, radius)
 
-    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
-    geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
+    if (positions.length > 0) {
+      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+      geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+      geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
+    }
 
     return geo
-  }, [detachedCount, radius])
+  }, [qualityConfig.detachedPoints, radius])
 
-  // 3. Allocate micro dust geometry (Layer D)
+  // Micro dust geometry
   const dustGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
-    const { positions, colors, sizes } = generateMicroDust(dustCount)
+    const { positions, colors, sizes } = generateMicroDust(qualityConfig.dustPoints)
 
-    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
-    geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
+    if (positions.length > 0) {
+      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+      geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+      geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
+    }
 
     return geo
-  }, [dustCount])
+  }, [qualityConfig.dustPoints])
 
   // Main Sphere Shader Material
   const mainMaterial = useMemo(() => {
@@ -337,7 +400,7 @@ function QuantumParticleSphere({
     })
   }, [noiseStrength, noiseSpeed, noiseScale, rimBoost])
 
-  // Detached Particles Shader Material (Layer C)
+  // Detached Shader Material
   const detachedMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
@@ -352,14 +415,12 @@ function QuantumParticleSphere({
         void main() {
           vColor = color;
           
-          // Slow organic wander for detached particles
           vec3 pos = position;
           pos.x += sin(uTime * 0.6 + position.y * 2.0) * 0.08;
           pos.y += cos(uTime * 0.4 + position.x * 2.0) * 0.08;
           pos.z += sin(uTime * 0.5 + position.z * 2.0) * 0.08;
 
           vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-          
           vAlpha = 0.35 + 0.35 * sin(uTime * 1.2 + position.x * 5.0);
 
           gl_PointSize = size * (260.0 / -mvPosition.z);
@@ -385,7 +446,7 @@ function QuantumParticleSphere({
     })
   }, [])
 
-  // Micro Dust Shader Material (Layer D)
+  // Dust Shader Material
   const dustMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
@@ -442,14 +503,22 @@ function QuantumParticleSphere({
   }, [mainGeometry, detachedGeometry, dustGeometry, mainMaterial, detachedMaterial, dustMaterial])
 
   useFrame((_, delta) => {
+    // Track FPS
+    frameCountRef.current += 1
+    const now = performance.now()
+    if (now - lastTimeRef.current >= 1000) {
+      const calculatedFps = Math.round((frameCountRef.current * 1000) / (now - lastTimeRef.current))
+      if (onFpsUpdate) onFpsUpdate(calculatedFps)
+      frameCountRef.current = 0
+      lastTimeRef.current = now
+    }
+
     if (mainMaterial) mainMaterial.uniforms.uTime.value += delta
     if (detachedMaterial) detachedMaterial.uniforms.uTime.value += delta
     if (dustMaterial) dustMaterial.uniforms.uTime.value += delta
 
     if (groupRef.current) {
       groupRef.current.rotation.y += 0.0012
-
-      // Gentle global breathing scale pulse
       const time = mainMaterial ? mainMaterial.uniforms.uTime.value : 0
       const pulse = 1.0 + Math.sin(time * 0.8) * 0.018
       groupRef.current.scale.set(pulse, pulse, pulse)
@@ -458,21 +527,57 @@ function QuantumParticleSphere({
 
   return (
     <group ref={groupRef}>
-      {/* 1. Main Point Cloud Sphere */}
       <points ref={pointsRef} geometry={mainGeometry} material={mainMaterial} />
 
-      {/* 2. Detached Outer Particles (Layer C) */}
-      <points ref={detachedRef} geometry={detachedGeometry} material={detachedMaterial} />
+      {qualityConfig.detachedPoints > 0 && (
+        <points ref={detachedRef} geometry={detachedGeometry} material={detachedMaterial} />
+      )}
 
-      {/* 3. Micro Dust Background Field (Layer D) */}
-      <points ref={dustRef} geometry={dustGeometry} material={dustMaterial} />
+      {qualityConfig.dustPoints > 0 && (
+        <points ref={dustRef} geometry={dustGeometry} material={dustMaterial} />
+      )}
     </group>
   )
 }
 
 export default function QuantumParticleGlobe() {
+  const [qualityTier, setQualityTier] = useState<QualityTier>('high')
+  const [fps, setFps] = useState(60)
+
+  const config = QUALITY_PRESETS[qualityTier]
+  const totalPoints = config.mainPoints + config.detachedPoints + config.dustPoints
+
   return (
     <div className="w-full h-full relative overflow-visible bg-black">
+      {/* Dev Performance & Quality Tier Overlay */}
+      <div className="absolute top-3 left-3 z-50 flex flex-col gap-2 bg-black/80 border border-white/10 rounded-xl p-3 text-xs text-white/90 shadow-2xl backdrop-blur-md">
+        <div className="flex items-center justify-between gap-4 font-mono">
+          <span className="text-white/60 uppercase tracking-wider text-[10px]">Quality Tier</span>
+          <span className="text-[#00DFFF] font-bold">{fps} FPS</span>
+        </div>
+
+        <div className="flex items-center gap-1 mt-1">
+          {(['low', 'medium', 'high', 'ultra'] as QualityTier[]).map((tier) => (
+            <button
+              key={tier}
+              onClick={() => setQualityTier(tier)}
+              className={
+                qualityTier === tier
+                  ? 'px-2.5 py-1 rounded-md bg-[#00DFFF]/20 border border-[#00DFFF] text-[#00DFFF] font-bold text-[10px] uppercase tracking-wider'
+                  : 'px-2.5 py-1 rounded-md border border-white/10 text-white/50 hover:text-white text-[10px] uppercase tracking-wider'
+              }
+            >
+              {tier}
+            </button>
+          ))}
+        </div>
+
+        <div className="text-[10px] font-mono text-white/40 mt-1 flex flex-col gap-0.5">
+          <div>Points: {totalPoints.toLocaleString()}</div>
+          <div>Bloom: {config.enableBloom ? 'ON' : 'OFF'}</div>
+        </div>
+      </div>
+
       <Canvas
         camera={{ position: [0, 0, 6.2], fov: 45 }}
         gl={{ antialias: true, alpha: true }}
@@ -480,15 +585,24 @@ export default function QuantumParticleGlobe() {
         <ambientLight intensity={0.4} />
 
         <QuantumParticleSphere
-          pointCount={35000}
-          detachedCount={4500}
-          dustCount={2000}
+          qualityConfig={config}
           radius={1.8}
           noiseStrength={0.06}
           noiseSpeed={0.5}
           noiseScale={1.2}
           rimBoost={1.8}
+          onFpsUpdate={setFps}
         />
+
+        {config.enableBloom && (
+          <EffectComposer>
+            <Bloom
+              intensity={config.bloomIntensity}
+              luminanceThreshold={config.bloomThreshold}
+              luminanceSmoothing={0.85}
+            />
+          </EffectComposer>
+        )}
 
         <OrbitControls
           enableZoom={true}
