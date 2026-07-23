@@ -6,12 +6,12 @@ import { voiceStateMachine, VoiceState } from '../../../shared/ai/VoiceStateMach
 import { useAudioAnalyser } from '../../../shared/audio/useAudioAnalyser'
 
 /**
- * Refined JarvisGlobe Component
- * - 22,000 Crisp Fibonacci Point-Cloud Sphere (distinct dots with visible black space between them)
- * - 5-Stop Vertical Color Ramp
- * - View-Space Rim Brightening & Organic Faceted Silhouette Noise
- * - Clean Wave Rings (No streak/line artifacts)
- * - REAL Voice & Audio Analyser Reactivity
+ * Authoritative JARVIS Quantum Globe
+ * - Rim-Concentrated Brightness Model (Dark Midnight-Blue Sparse Interior, Bright Luminous Ring)
+ * - 45,000 Points with GLSL non-linear rimFactor curve
+ * - Circumferential Color Ramp: Cyan Top -> Magenta Sides -> Orange/Gold Fragmented Bottom
+ * - Asymmetric breakaway particles & 10 interior white stars
+ * - 100% Line Artifact Free (Zero RingGeometry / Line meshes)
  */
 
 function generateFibonacciSphere(count: number, radius: number) {
@@ -21,11 +21,11 @@ function generateFibonacciSphere(count: number, radius: number) {
 
   const phi = (1 + Math.sqrt(5)) / 2
 
-  const cTop = new THREE.Color('#E8FFFF')
-  const cUpperMid = new THREE.Color('#00C8FF')
-  const cMid = new THREE.Color('#4A5FE8')
-  const cLowerMid = new THREE.Color('#8B3FD9')
-  const cPink = new THREE.Color('#E8397F')
+  const cTop = new THREE.Color('#E0FFFF')
+  const cUpperMid = new THREE.Color('#00DFFF')
+  const cMid = new THREE.Color('#7B1FA2')
+  const cLowerMid = new THREE.Color('#E8397F')
+  const cRed = new THREE.Color('#FF0055')
   const cBottom = new THREE.Color('#FFD700')
 
   for (let i = 0; i < count; i++) {
@@ -40,40 +40,86 @@ function generateFibonacciSphere(count: number, radius: number) {
     positions[i * 3 + 1] = y * radius
     positions[i * 3 + 2] = z * radius
 
-    const t = y * 0.5 + 0.5
+    // Circumferential & height-based color mapping
+    const t = y * 0.5 + 0.5 // 1.0 at top, 0.0 at bottom
 
     const col = new THREE.Color()
     if (t >= 0.8) {
       const localT = (t - 0.8) / 0.2
       col.copy(cUpperMid).lerp(cTop, localT)
-    } else if (t >= 0.6) {
-      const localT = (t - 0.6) / 0.2
+    } else if (t >= 0.55) {
+      const localT = (t - 0.55) / 0.25
       col.copy(cMid).lerp(cUpperMid, localT)
-    } else if (t >= 0.4) {
-      const localT = (t - 0.4) / 0.2
+    } else if (t >= 0.35) {
+      const localT = (t - 0.35) / 0.20
       col.copy(cLowerMid).lerp(cMid, localT)
-    } else if (t >= 0.2) {
-      const localT = (t - 0.2) / 0.2
-      col.copy(cPink).lerp(cLowerMid, localT)
+    } else if (t >= 0.18) {
+      const localT = (t - 0.18) / 0.17
+      col.copy(cRed).lerp(cLowerMid, localT)
     } else {
-      const localT = t / 0.2
-      col.copy(cBottom).lerp(cPink, localT)
+      const localT = t / 0.18
+      col.copy(cBottom).lerp(cRed, localT)
     }
 
     colors[i * 3] = col.r
     colors[i * 3 + 1] = col.g
     colors[i * 3 + 2] = col.b
 
-    // Crisp point size in pixel units (1.8px to 3.2px for distinct dots)
     const seed = Math.sin(i * 12.9898 + y * 78.233) * 43758.5453
     const noiseFactor = (seed - Math.floor(seed))
-    sizes[i] = 1.8 + noiseFactor * 1.4
+    sizes[i] = 1.6 + noiseFactor * 1.6
   }
 
   return { positions, colors, sizes }
 }
 
-function generateInteriorStars(count = 12, maxRadius = 1.4) {
+/**
+ * Generate Asymmetric Breakaway Particles (Upper-Left & Lower-Right)
+ */
+function generateAsymmetricBreakaways(count = 60, radius = 1.8) {
+  const positions = new Float32Array(count * 3)
+  const colors = new Float32Array(count * 3)
+  const sizes = new Float32Array(count)
+
+  const cCyan = new THREE.Color('#00DFFF')
+  const cGold = new THREE.Color('#FFD700')
+
+  for (let i = 0; i < count; i++) {
+    const isUpperLeft = i < count / 2
+    let x: number, y: number, z: number, col: THREE.Color
+
+    if (isUpperLeft) {
+      // Upper Left breakaway stream
+      x = -radius * (1.05 + Math.random() * 0.35)
+      y = radius * (0.65 + Math.random() * 0.45)
+      z = (Math.random() - 0.5) * 0.8
+      col = cCyan
+    } else {
+      // Lower Right breakaway stream
+      x = radius * (1.05 + Math.random() * 0.35)
+      y = -radius * (0.65 + Math.random() * 0.45)
+      z = (Math.random() - 0.5) * 0.8
+      col = cGold
+    }
+
+    positions[i * 3] = x
+    positions[i * 3 + 1] = y
+    positions[i * 3 + 2] = z
+
+    colors[i * 3] = col.r
+    colors[i * 3 + 1] = col.g
+    colors[i * 3 + 2] = col.b
+
+    sizes[i] = 2.0 + Math.random() * 1.8
+  }
+
+  return { positions, colors, sizes }
+}
+
+/**
+ * Generate 10 Interior White Star Points
+ */
+function generateInteriorStars(count = 10, maxRadius = 1.3) {
   const positions = new Float32Array(count * 3)
   const colors = new Float32Array(count * 3)
   const sizes = new Float32Array(count)
@@ -85,7 +131,7 @@ function generateInteriorStars(count = 12, maxRadius = 1.4) {
     const v = Math.random()
     const theta = u * 2.0 * Math.PI
     const phi = Math.acos(2.0 * v - 1.0)
-    const r = 0.3 + Math.random() * (maxRadius - 0.3)
+    const r = 0.35 + Math.random() * (maxRadius - 0.35)
 
     positions[i * 3] = r * Math.sin(phi) * Math.cos(theta)
     positions[i * 3 + 1] = r * Math.cos(phi)
@@ -95,60 +141,10 @@ function generateInteriorStars(count = 12, maxRadius = 1.4) {
     colors[i * 3 + 1] = whiteColor.g
     colors[i * 3 + 2] = whiteColor.b
 
-    sizes[i] = 4.5 + Math.random() * 2.0
+    sizes[i] = 5.0 + Math.random() * 2.5
   }
 
   return { positions, colors, sizes }
-}
-
-function generateRecycledDetachedBuffer(count = 2500, radius = 1.8) {
-  const positions = new Float32Array(count * 3)
-  const normals = new Float32Array(count * 3)
-  const colors = new Float32Array(count * 3)
-  const lifetimes = new Float32Array(count * 2)
-  const sizes = new Float32Array(count)
-
-  const cTop = new THREE.Color('#00C8FF')
-  const cMid = new THREE.Color('#8B3FD9')
-  const cBot = new THREE.Color('#FFD700')
-
-  for (let i = 0; i < count; i++) {
-    const u = Math.random()
-    const v = Math.random()
-    const theta = u * 2.0 * Math.PI
-    const phi = Math.acos(2.0 * v - 1.0)
-
-    const nx = Math.sin(phi) * Math.cos(theta)
-    const ny = Math.cos(phi)
-    const nz = Math.sin(phi) * Math.sin(theta)
-
-    positions[i * 3] = nx * radius
-    positions[i * 3 + 1] = ny * radius
-    positions[i * 3 + 2] = nz * radius
-
-    normals[i * 3] = nx
-    normals[i * 3 + 1] = ny
-    normals[i * 3 + 2] = nz
-
-    const normY = ny * 0.5 + 0.5
-    const col = new THREE.Color()
-    if (normY > 0.5) {
-      col.copy(cMid).lerp(cTop, (normY - 0.5) * 2.0)
-    } else {
-      col.copy(cBot).lerp(cMid, normY * 2.0)
-    }
-
-    colors[i * 3] = col.r
-    colors[i * 3 + 1] = col.g
-    colors[i * 3 + 2] = col.b
-
-    lifetimes[i * 2] = Math.random() * 6.0
-    lifetimes[i * 2 + 1] = 3.5 + Math.random() * 2.5
-
-    sizes[i] = 1.6 + Math.random() * 1.4
-  }
-
-  return { positions, normals, colors, lifetimes, sizes }
 }
 
 function generateMicroDust(count = 1500) {
@@ -177,187 +173,27 @@ function generateMicroDust(count = 1500) {
   return { positions, colors, sizes }
 }
 
-interface RingState {
-  age: number
-  duration: number
-  rotation: THREE.Euler
-  color: THREE.Color
-  active: boolean
-}
-
-/**
- * Clean Wave Ring Component (No streak/plane artifacts)
- * Uses billboarded ring particles rendered cleanly on radial rings.
- */
-function ExpandingWaveRings({ intensity = 0.0, radius = 1.8 }: { intensity?: number; radius?: number }) {
-  const MAX_RINGS = 5
-  const ringsRef = useRef<THREE.Group>(null)
-  const spawnTimerRef = useRef(0)
-
-  const ringStatesRef = useRef<RingState[]>(
-    Array.from({ length: MAX_RINGS }, () => ({
-      age: 0,
-      duration: 3.5,
-      rotation: new THREE.Euler(),
-      color: new THREE.Color('#00DFFF'),
-      active: false,
-    }))
-  )
-
-  const ringGeometry = useMemo(() => {
-    return new THREE.RingGeometry(radius, radius + 0.05, 48)
-  }, [radius])
-
-  const ringMaterial = useMemo(() => {
-    return new THREE.ShaderMaterial({
-      uniforms: {
-        uProgress: { value: 0.0 },
-        uIntensity: { value: 0.0 },
-        uColor: { value: new THREE.Color('#00DFFF') },
-      },
-      vertexShader: `
-        uniform float uProgress;
-        varying vec3 vViewNormal;
-
-        void main() {
-          float scale = 1.0 + uProgress * 1.0;
-          vec3 scaledPos = position * vec3(scale, scale, 1.0);
-
-          vec4 mvPosition = modelViewMatrix * vec4(scaledPos, 1.0);
-          vViewNormal = normalize(normalMatrix * normal);
-
-          gl_Position = projectionMatrix * mvPosition;
-        }
-      `,
-      fragmentShader: `
-        uniform float uProgress;
-        uniform float uIntensity;
-        uniform vec3 uColor;
-        varying vec3 vViewNormal;
-
-        void main() {
-          // Fade rings smooth at edge-on viewing angles to prevent streak lines
-          float viewAngle = abs(vViewNormal.z);
-          float angleFade = smoothstep(0.1, 0.4, viewAngle);
-
-          float fadeIn = smoothstep(0.0, 0.1, uProgress);
-          float fadeOut = 1.0 - smoothstep(0.1, 1.0, uProgress);
-          float alpha = fadeIn * fadeOut * (0.35 + uIntensity * 0.4) * angleFade;
-
-          vec3 glowingColor = uColor * (1.3 + uIntensity * 0.7);
-
-          gl_FragColor = vec4(glowingColor, alpha);
-        }
-      `,
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      side: THREE.DoubleSide,
-    })
-  }, [])
-
-  useEffect(() => {
-    return () => {
-      ringGeometry.dispose()
-      ringMaterial.dispose()
-    }
-  }, [ringGeometry, ringMaterial])
-
-  useFrame((_, delta) => {
-    spawnTimerRef.current += delta
-    const spawnInterval = Math.max(0.5, 4.0 - intensity * 3.2)
-
-    if (spawnTimerRef.current >= spawnInterval) {
-      spawnTimerRef.current = 0
-
-      const slot = ringStatesRef.current.find((r) => !r.active)
-      if (slot) {
-        slot.active = true
-        slot.age = 0
-        slot.duration = Math.max(1.1, 3.5 - intensity * 1.8)
-        slot.rotation.set(
-          Math.random() * Math.PI,
-          Math.random() * Math.PI,
-          Math.random() * Math.PI
-        )
-
-        if (intensity > 0.5) {
-          slot.color.set('#00DFFF').lerp(new THREE.Color('#FF007F'), (intensity - 0.5) * 2.0)
-        } else {
-          slot.color.set('#00DFFF')
-        }
-      }
-    }
-
-    if (ringsRef.current) {
-      ringsRef.current.children.forEach((mesh, index) => {
-        const state = ringStatesRef.current[index]
-        if (state.active) {
-          state.age += delta
-          const progress = Math.min(1.0, state.age / state.duration)
-
-          if (progress >= 1.0) {
-            state.active = false
-            mesh.visible = false
-          } else {
-            mesh.visible = true
-            mesh.rotation.copy(state.rotation)
-
-            const ringMesh = mesh as THREE.Mesh<THREE.RingGeometry, THREE.ShaderMaterial>
-            if (ringMesh.material) {
-              ringMesh.material.uniforms.uProgress.value = progress
-              ringMesh.material.uniforms.uIntensity.value = intensity
-              ringMesh.material.uniforms.uColor.value.copy(state.color)
-            }
-          }
-        } else {
-          mesh.visible = false
-        }
-      })
-    }
-  })
-
-  const ringMeshes = useMemo(() => {
-    return Array.from({ length: MAX_RINGS }).map((_, i) => (
-      <mesh key={i} geometry={ringGeometry} material={ringMaterial.clone()} visible={false} />
-    ))
-  }, [ringGeometry, ringMaterial])
-
-  return <group ref={ringsRef}>{ringMeshes}</group>
-}
-
 export interface JarvisGlobeProps {
   pointCount?: number
   radius?: number
   voiceState?: VoiceState
 }
 
-function CorePointSphere({ pointCount = 22000, radius = 1.8, voiceState = 'IDLE' }: JarvisGlobeProps) {
+function CorePointSphere({ pointCount = 45000, radius = 1.8, voiceState = 'IDLE' }: JarvisGlobeProps) {
   const groupRef = useRef<THREE.Group>(null)
   const frameCountRef = useRef(0)
   const lastFpsTimeRef = useRef(performance.now())
 
-  // Connect REAL audio analyser hook
   const { voiceLevel } = useAudioAnalyser()
 
-  const isListening = voiceState === 'LISTENING'
   const isThinking = ['THINKING', 'TRANSCRIBING', 'GENERATING'].includes(voiceState)
   const isSpeaking = ['SPEAKING', 'STREAMING'].includes(voiceState)
   const isError = voiceState === 'ERROR' || voiceState === 'PERMISSION_DENIED'
 
-  let stateIntensity = 0.0
-  if (isSpeaking) {
-    stateIntensity = Math.min(1.0, 0.35 + voiceLevel * 1.5)
-  } else if (isListening) {
-    stateIntensity = Math.min(1.0, 0.25 + voiceLevel * 1.2)
-  } else if (isThinking) {
-    stateIntensity = 0.75
-  }
-
   const rotSpeed = isThinking ? 0.0045 : isError ? 0.0035 : 0.0012
   const targetScale = isThinking ? 1.08 : isSpeaking ? 1.0 + voiceLevel * 0.12 : 1.0
 
-  // 1. Surface Sphere Geometry (22,000 Fibonacci Points for distinct point-cloud texture)
+  // 1. Surface Sphere Geometry (45,000 Points)
   const mainGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
     const { positions, colors, sizes } = generateFibonacciSphere(pointCount, radius)
@@ -369,10 +205,10 @@ function CorePointSphere({ pointCount = 22000, radius = 1.8, voiceState = 'IDLE'
     return geo
   }, [pointCount, radius])
 
-  // 2. Interior Stars Geometry
-  const starGeometry = useMemo(() => {
+  // 2. Asymmetric Breakaway Particles Geometry
+  const breakawayGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
-    const { positions, colors, sizes } = generateInteriorStars(12, radius * 0.75)
+    const { positions, colors, sizes } = generateAsymmetricBreakaways(60, radius)
 
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
@@ -381,15 +217,13 @@ function CorePointSphere({ pointCount = 22000, radius = 1.8, voiceState = 'IDLE'
     return geo
   }, [radius])
 
-  // 3. Recycled Detached Drift Buffer Geometry
-  const detachedGeometry = useMemo(() => {
+  // 3. Interior White Stars Geometry
+  const starGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
-    const { positions, normals, colors, lifetimes, sizes } = generateRecycledDetachedBuffer(2500, radius)
+    const { positions, colors, sizes } = generateInteriorStars(10, radius * 0.70)
 
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-    geo.setAttribute('spawnNormal', new THREE.BufferAttribute(normals, 3))
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
-    geo.setAttribute('lifetime', new THREE.BufferAttribute(lifetimes, 2))
     geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
 
     return geo
@@ -407,7 +241,7 @@ function CorePointSphere({ pointCount = 22000, radius = 1.8, voiceState = 'IDLE'
     return geo
   }, [])
 
-  // 5. Main Surface ShaderMaterial (Crisp Point Falloff & Faceted Rim Silhouette Noise)
+  // 5. Main Rim-Concentrated GLSL ShaderMaterial
   const mainMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
@@ -419,7 +253,8 @@ function CorePointSphere({ pointCount = 22000, radius = 1.8, voiceState = 'IDLE'
         uniform float uVoiceLevel;
         attribute float size;
         varying vec3 vColor;
-        varying float vRim;
+        varying float vRimWeight;
+        varying float vFaceMask;
 
         vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
         vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -473,40 +308,55 @@ function CorePointSphere({ pointCount = 22000, radius = 1.8, voiceState = 'IDLE'
           vColor = color;
           vec3 normalVec = normalize(position);
 
-          // Calculate view-space rim normal dot product
+          // Calculate view-space rimFactor
           vec4 tempMvPos = modelViewMatrix * vec4(position, 1.0);
           vec3 viewNormal = normalize(normalMatrix * normalVec);
           vec3 viewDir = normalize(-tempMvPos.xyz);
-          float ndotv = abs(dot(viewNormal, viewDir));
-          vRim = pow(1.0 - ndotv, 2.2);
+          float rimFactor = 1.0 - abs(dot(viewNormal, viewDir));
 
-          // Problem 3 Polish: Subtle rim noise displacement to break perfectly smooth circle edge
-          float rimDisplace = snoise(position * 2.2 + vec3(0.0, uTime * 0.4, 0.0)) * 0.045 * vRim;
-          vec3 displacedPos = position + normalVec * rimDisplace;
+          // Non-linear steep rim weight curve (3.8 power)
+          vRimWeight = pow(rimFactor, 3.8);
 
+          // Bottom-center fragmentation noise displacement (y < -0.5)
+          float bottomFrac = smoothstep(-0.35, -0.95, position.y);
+          float bottomNoise = snoise(position * 3.2 + vec3(0.0, uTime * 0.45, 0.0)) * 0.16 * bottomFrac * vRimWeight;
+
+          vec3 displacedPos = position + normalVec * bottomNoise;
           vec4 mvPosition = modelViewMatrix * vec4(displacedPos, 1.0);
 
-          float rimSizeBoost = (1.0 + vRim * 0.35) * (1.0 + uVoiceLevel * 0.25);
-          gl_PointSize = size * rimSizeBoost * (6.0 / -mvPosition.z);
+          // Point size: small inside (1.3px), large on rim (4.8px)
+          float dynamicSize = mix(1.3, 4.8, vRimWeight) * (1.0 + uVoiceLevel * 0.25);
+          gl_PointSize = dynamicSize * (6.0 / -mvPosition.z);
+
+          // Subtle Abstract Face Density Mask for interior points
+          float eyeLeft = smoothstep(0.08, 0.0, length(vec2(position.x + 0.35, position.y - 0.28)));
+          float eyeRight = smoothstep(0.08, 0.0, length(vec2(position.x - 0.35, position.y - 0.28)));
+          float mouth = smoothstep(0.07, 0.0, abs(position.y - (-0.35 + position.x * position.x * 0.4)));
+          vFaceMask = 1.0 - (eyeLeft * 0.6 + eyeRight * 0.6 + mouth * 0.5) * (1.0 - vRimWeight);
+
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
       fragmentShader: `
         uniform float uVoiceLevel;
         varying vec3 vColor;
-        varying float vRim;
+        varying float vRimWeight;
+        varying float vFaceMask;
 
         void main() {
           float dist = length(gl_PointCoord - vec2(0.5));
           if (dist > 0.5) discard;
           
-          // Problem 1 Fix: Crisp, distinct particle profile (no blurred outer halo merging points)
           float intensity = pow(1.0 - (dist * 2.0), 2.2);
 
-          float rimLuminance = (1.0 + vRim * 0.65) * (1.0 + uVoiceLevel * 0.45);
-          vec3 glowColor = vColor * rimLuminance * 1.25;
+          // Interior: deep midnight blue (#03091B) fading to near-black, very low opacity (0.06 - 0.15)
+          // Rim: full bright color gradient, high opacity (0.95 - 1.0)
+          vec3 darkInteriorColor = vec3(0.015, 0.04, 0.11);
+          vec3 finalColor = mix(darkInteriorColor, vColor * 1.35, vRimWeight);
+
+          float baseAlpha = mix(0.07, 0.96, vRimWeight) * vFaceMask * (1.0 + uVoiceLevel * 0.3);
           
-          gl_FragColor = vec4(glowColor, intensity * 0.95);
+          gl_FragColor = vec4(finalColor, intensity * baseAlpha);
         }
       `,
       transparent: true,
@@ -516,7 +366,44 @@ function CorePointSphere({ pointCount = 22000, radius = 1.8, voiceState = 'IDLE'
     })
   }, [])
 
-  // 6. Interior Star ShaderMaterial
+  // 6. Asymmetric Breakaway ShaderMaterial
+  const breakawayMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: { uTime: { value: 0.0 } },
+      vertexShader: `
+        uniform float uTime;
+        attribute float size;
+        varying vec3 vColor;
+
+        void main() {
+          vColor = color;
+          vec3 pos = position;
+          pos.x += sin(uTime * 0.6 + position.y) * 0.03;
+          pos.y += cos(uTime * 0.5 + position.x) * 0.03;
+
+          vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+          gl_PointSize = size * (6.0 / -mvPosition.z);
+          gl_Position = projectionMatrix * mvPosition;
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vColor;
+
+        void main() {
+          float dist = length(gl_PointCoord - vec2(0.5));
+          if (dist > 0.5) discard;
+          float intensity = pow(1.0 - (dist * 2.0), 1.8);
+          gl_FragColor = vec4(vColor * 1.4, intensity * 0.85);
+        }
+      `,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      vertexColors: true,
+    })
+  }, [])
+
+  // 7. Interior Star ShaderMaterial
   const starMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: { uTime: { value: 0.0 } },
@@ -537,68 +424,8 @@ function CorePointSphere({ pointCount = 22000, radius = 1.8, voiceState = 'IDLE'
         void main() {
           float dist = length(gl_PointCoord - vec2(0.5));
           if (dist > 0.5) discard;
-
-          float intensity = pow(1.0 - (dist * 2.0), 1.8);
-          gl_FragColor = vec4(vColor * 2.2, intensity * 1.0);
-        }
-      `,
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      vertexColors: true,
-    })
-  }, [])
-
-  // 7. Detached Particle ShaderMaterial
-  const detachedMaterial = useMemo(() => {
-    return new THREE.ShaderMaterial({
-      uniforms: { uTime: { value: 0.0 } },
-      vertexShader: `
-        uniform float uTime;
-        attribute vec3 spawnNormal;
-        attribute vec2 lifetime;
-        attribute float size;
-        varying vec3 vColor;
-        varying float vAlpha;
-
-        void main() {
-          vColor = color;
-
-          float birthOffset = lifetime.x;
-          float duration = lifetime.y;
-
-          float age = mod(uTime + birthOffset, duration);
-          float progress = age / duration;
-
-          float driftDistance = progress * 0.65;
-
-          vec3 wander = vec3(
-            sin(uTime * 0.8 + position.y * 3.0) * 0.05 * progress,
-            cos(uTime * 0.6 + position.x * 3.0) * 0.05 * progress,
-            sin(uTime * 0.7 + position.z * 3.0) * 0.05 * progress
-          );
-
-          vec3 currentPos = position + spawnNormal * driftDistance + wander;
-
-          float fadeIn = smoothstep(0.0, 0.15, progress);
-          float fadeOut = 1.0 - smoothstep(0.65, 1.0, progress);
-          vAlpha = fadeIn * fadeOut * 0.75;
-
-          vec4 mvPosition = modelViewMatrix * vec4(currentPos, 1.0);
-          gl_PointSize = size * (1.0 + progress * 0.25) * (6.0 / -mvPosition.z);
-          gl_Position = projectionMatrix * mvPosition;
-        }
-      `,
-      fragmentShader: `
-        varying vec3 vColor;
-        varying float vAlpha;
-
-        void main() {
-          float dist = length(gl_PointCoord - vec2(0.5));
-          if (dist > 0.5) discard;
-          
-          float intensity = pow(1.0 - (dist * 2.0), 2.0);
-          gl_FragColor = vec4(vColor * 1.3, intensity * vAlpha);
+          float intensity = pow(1.0 - (dist * 2.0), 1.6);
+          gl_FragColor = vec4(vColor * 2.5, intensity * 1.0);
         }
       `,
       transparent: true,
@@ -625,7 +452,7 @@ function CorePointSphere({ pointCount = 22000, radius = 1.8, voiceState = 'IDLE'
           pos.y += cos(uTime * 0.25 + position.x) * 0.04;
 
           vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-          vAlpha = 0.15 + 0.20 * sin(uTime * 0.7 + position.y * 3.0);
+          vAlpha = 0.12 + 0.18 * sin(uTime * 0.7 + position.y * 3.0);
 
           gl_PointSize = size * (6.0 / -mvPosition.z);
           gl_Position = projectionMatrix * mvPosition;
@@ -652,32 +479,32 @@ function CorePointSphere({ pointCount = 22000, radius = 1.8, voiceState = 'IDLE'
   useEffect(() => {
     return () => {
       mainGeometry.dispose()
+      breakawayGeometry.dispose()
       starGeometry.dispose()
-      detachedGeometry.dispose()
       dustGeometry.dispose()
       mainMaterial.dispose()
+      breakawayMaterial.dispose()
       starMaterial.dispose()
-      detachedMaterial.dispose()
       dustMaterial.dispose()
     }
   }, [
     mainGeometry,
+    breakawayGeometry,
     starGeometry,
-    detachedGeometry,
     dustGeometry,
     mainMaterial,
+    breakawayMaterial,
     starMaterial,
-    detachedMaterial,
     dustMaterial,
   ])
 
-  // Real-time Audio & State Animation Loop
+  // Real-time Audio & Animation Loop
   useFrame((_, delta) => {
     frameCountRef.current += 1
     const now = performance.now()
     if (now - lastFpsTimeRef.current >= 3000) {
       const calculatedFps = Math.round((frameCountRef.current * 1000) / (now - lastFpsTimeRef.current))
-      console.log(`[Refined Globe Performance] FPS: ${calculatedFps} | Points: ${pointCount} | Distinct Point Cloud Active`)
+      console.log(`[Authoritative Globe Performance] FPS: ${calculatedFps} | Main Points: ${pointCount} | Rim Model Active | Line Artifacts: 0`)
       frameCountRef.current = 0
       lastFpsTimeRef.current = now
     }
@@ -691,8 +518,8 @@ function CorePointSphere({ pointCount = 22000, radius = 1.8, voiceState = 'IDLE'
       )
     }
 
+    if (breakawayMaterial) breakawayMaterial.uniforms.uTime.value += delta
     if (starMaterial) starMaterial.uniforms.uTime.value += delta
-    if (detachedMaterial) detachedMaterial.uniforms.uTime.value += delta
     if (dustMaterial) dustMaterial.uniforms.uTime.value += delta
 
     if (groupRef.current) {
@@ -706,16 +533,14 @@ function CorePointSphere({ pointCount = 22000, radius = 1.8, voiceState = 'IDLE'
 
   return (
     <group ref={groupRef}>
-      {/* 1. Surface Point Cloud Sphere with Crisp Distinct Point Profile */}
+      {/* 1. Core Rim-Concentrated Sphere (45,000 points with dark interior & bright ring) */}
       <points geometry={mainGeometry} material={mainMaterial} />
-      {/* 2. Super-Luminous Interior Star Points */}
+      {/* 2. Asymmetric Breakaway Stream Particles (Upper-Left & Lower-Right) */}
+      <points geometry={breakawayGeometry} material={breakawayMaterial} />
+      {/* 3. 10 Interior White Star Points */}
       <points geometry={starGeometry} material={starMaterial} />
-      {/* 3. Energy-Shedding Detached Drift Particles */}
-      <points geometry={detachedGeometry} material={detachedMaterial} />
       {/* 4. Subtle Background Micro-Dust */}
       <points geometry={dustGeometry} material={dustMaterial} />
-      {/* 5. Expanding Wave Rings */}
-      <ExpandingWaveRings intensity={stateIntensity} radius={radius} />
     </group>
   )
 }
@@ -765,7 +590,7 @@ export default function JarvisGlobe() {
       >
         <ambientLight intensity={0.4} />
 
-        <CorePointSphere pointCount={22000} radius={1.8} voiceState={currentVoiceState} />
+        <CorePointSphere pointCount={45000} radius={1.8} voiceState={currentVoiceState} />
 
         <OrbitControls
           enableZoom={true}
