@@ -66,8 +66,89 @@ function generateFibonacciSphere(count: number, radius: number) {
   return { positions, colors, sizes }
 }
 
+/**
+ * Detached Outer Particle Field (Layer C)
+ * Secondary recycled particle pool drifting outside the main sphere surface (radius ~1.9 to ~2.6).
+ */
+function generateDetachedParticles(count: number, baseRadius: number) {
+  const positions = new Float32Array(count * 3)
+  const colors = new Float32Array(count * 3)
+  const sizes = new Float32Array(count)
+
+  const cTop = new THREE.Color('#00DFFF')
+  const cMid = new THREE.Color('#FF0055')
+  const cBot = new THREE.Color('#FFD700')
+
+  for (let i = 0; i < count; i++) {
+    const u = Math.random()
+    const v = Math.random()
+    const theta = u * 2.0 * Math.PI
+    const phi = Math.acos(2.0 * v - 1.0)
+
+    const r = baseRadius * (1.05 + Math.random() * 0.45)
+
+    const x = r * Math.sin(phi) * Math.cos(theta)
+    const y = r * Math.cos(phi)
+    const z = r * Math.sin(phi) * Math.sin(theta)
+
+    positions[i * 3] = x
+    positions[i * 3 + 1] = y
+    positions[i * 3 + 2] = z
+
+    const normY = (y / r) * 0.5 + 0.5
+    const col = new THREE.Color()
+    if (normY > 0.5) {
+      col.copy(cMid).lerp(cTop, (normY - 0.5) * 2.0)
+    } else {
+      col.copy(cBot).lerp(cMid, normY * 2.0)
+    }
+
+    colors[i * 3] = col.r
+    colors[i * 3 + 1] = col.g
+    colors[i * 3 + 2] = col.b
+
+    sizes[i] = 0.012 + Math.random() * 0.02
+  }
+
+  return { positions, colors, sizes }
+}
+
+/**
+ * Micro Dust Field (Layer D)
+ * Sparse background stars/dust (radius ~3.0 to ~6.5) providing spatial depth.
+ */
+function generateMicroDust(count: number) {
+  const positions = new Float32Array(count * 3)
+  const colors = new Float32Array(count * 3)
+  const sizes = new Float32Array(count)
+
+  for (let i = 0; i < count; i++) {
+    const u = Math.random()
+    const v = Math.random()
+    const theta = u * 2.0 * Math.PI
+    const phi = Math.acos(2.0 * v - 1.0)
+
+    const r = 2.8 + Math.random() * 3.5
+
+    positions[i * 3] = r * Math.sin(phi) * Math.cos(theta)
+    positions[i * 3 + 1] = r * Math.cos(phi)
+    positions[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta)
+
+    // Subtle blue-white tint
+    colors[i * 3] = 0.7 + Math.random() * 0.3
+    colors[i * 3 + 1] = 0.85 + Math.random() * 0.15
+    colors[i * 3 + 2] = 1.0
+
+    sizes[i] = 0.008 + Math.random() * 0.015
+  }
+
+  return { positions, colors, sizes }
+}
+
 export interface QuantumParticleSphereProps {
   pointCount?: number
+  detachedCount?: number
+  dustCount?: number
   radius?: number
   noiseStrength?: number
   noiseSpeed?: number
@@ -77,6 +158,8 @@ export interface QuantumParticleSphereProps {
 
 function QuantumParticleSphere({
   pointCount = 35000,
+  detachedCount = 4500,
+  dustCount = 2000,
   radius = 1.8,
   noiseStrength = 0.06,
   noiseSpeed = 0.5,
@@ -84,9 +167,12 @@ function QuantumParticleSphere({
   rimBoost = 1.8,
 }: QuantumParticleSphereProps) {
   const pointsRef = useRef<THREE.Points>(null)
+  const detachedRef = useRef<THREE.Points>(null)
+  const dustRef = useRef<THREE.Points>(null)
+  const groupRef = useRef<THREE.Group>(null)
 
-  // 1. Allocate buffer geometry
-  const geometry = useMemo(() => {
+  // 1. Allocate main sphere buffer geometry
+  const mainGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
     const { positions, colors, sizes } = generateFibonacciSphere(pointCount, radius)
 
@@ -97,8 +183,32 @@ function QuantumParticleSphere({
     return geo
   }, [pointCount, radius])
 
-  // 2. Custom Shader Material with 3D Simplex Noise + Rim Energy Boost
-  const material = useMemo(() => {
+  // 2. Allocate detached particles geometry (Layer C)
+  const detachedGeometry = useMemo(() => {
+    const geo = new THREE.BufferGeometry()
+    const { positions, colors, sizes } = generateDetachedParticles(detachedCount, radius)
+
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+    geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
+
+    return geo
+  }, [detachedCount, radius])
+
+  // 3. Allocate micro dust geometry (Layer D)
+  const dustGeometry = useMemo(() => {
+    const geo = new THREE.BufferGeometry()
+    const { positions, colors, sizes } = generateMicroDust(dustCount)
+
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+    geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
+
+    return geo
+  }, [dustCount])
+
+  // Main Sphere Shader Material
+  const mainMaterial = useMemo(() => {
     return new THREE.ShaderMaterial({
       uniforms: {
         uTime: { value: 0.0 },
@@ -120,7 +230,6 @@ function QuantumParticleSphere({
         varying vec3 vColor;
         varying float vRim;
 
-        // GLSL Simplex 3D Noise Implementation
         vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
         vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
         vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
@@ -191,21 +300,16 @@ function QuantumParticleSphere({
           
           vec3 normalVec = normalize(position);
           
-          // 3D Simplex surface noise displacement along normal
           float noiseVal = snoise(position * uNoiseScale + vec3(0.0, uTime * uNoiseSpeed, 0.0));
           vec3 displacedPos = position + normalVec * (noiseVal * uNoiseStrength);
 
           vec4 mvPosition = modelViewMatrix * vec4(displacedPos, 1.0);
 
-          // View-space normal dot product for rim calculation
           vec3 viewNormal = normalize(normalMatrix * normalVec);
           vec3 viewDir = normalize(-mvPosition.xyz);
           float ndotv = abs(dot(viewNormal, viewDir));
           
-          // Rim factor is high near silhouette edge (1.0 - ndotv)
           vRim = pow(1.0 - ndotv, 2.2);
-
-          // Boost point size at the rim edge
           float sizeFactor = 1.0 + vRim * uRimBoost;
           
           gl_PointSize = size * uSizeScale * sizeFactor * (300.0 / -mvPosition.z);
@@ -220,10 +324,7 @@ function QuantumParticleSphere({
           float dist = length(gl_PointCoord - vec2(0.5));
           if (dist > 0.5) discard;
           
-          // Smooth gaussian circle falloff
           float intensity = pow(1.0 - (dist * 2.0), 1.8);
-          
-          // Edge rim boost increases opacity and glow
           float rimLuminance = 1.0 + vRim * 1.5;
           
           gl_FragColor = vec4(vColor * rimLuminance, intensity * 0.95);
@@ -236,28 +337,136 @@ function QuantumParticleSphere({
     })
   }, [noiseStrength, noiseSpeed, noiseScale, rimBoost])
 
+  // Detached Particles Shader Material (Layer C)
+  const detachedMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0.0 },
+      },
+      vertexShader: `
+        uniform float uTime;
+        attribute float size;
+        varying vec3 vColor;
+        varying float vAlpha;
+
+        void main() {
+          vColor = color;
+          
+          // Slow organic wander for detached particles
+          vec3 pos = position;
+          pos.x += sin(uTime * 0.6 + position.y * 2.0) * 0.08;
+          pos.y += cos(uTime * 0.4 + position.x * 2.0) * 0.08;
+          pos.z += sin(uTime * 0.5 + position.z * 2.0) * 0.08;
+
+          vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+          
+          vAlpha = 0.35 + 0.35 * sin(uTime * 1.2 + position.x * 5.0);
+
+          gl_PointSize = size * (260.0 / -mvPosition.z);
+          gl_Position = projectionMatrix * mvPosition;
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vColor;
+        varying float vAlpha;
+
+        void main() {
+          float dist = length(gl_PointCoord - vec2(0.5));
+          if (dist > 0.5) discard;
+          
+          float intensity = pow(1.0 - (dist * 2.0), 2.0);
+          gl_FragColor = vec4(vColor, intensity * vAlpha);
+        }
+      `,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      vertexColors: true,
+    })
+  }, [])
+
+  // Micro Dust Shader Material (Layer D)
+  const dustMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0.0 },
+      },
+      vertexShader: `
+        uniform float uTime;
+        attribute float size;
+        varying vec3 vColor;
+        varying float vAlpha;
+
+        void main() {
+          vColor = color;
+          
+          vec3 pos = position;
+          pos.x += sin(uTime * 0.2 + position.z) * 0.05;
+          pos.y += cos(uTime * 0.25 + position.x) * 0.05;
+
+          vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+          vAlpha = 0.15 + 0.15 * sin(uTime * 0.8 + position.y * 3.0);
+
+          gl_PointSize = size * (240.0 / -mvPosition.z);
+          gl_Position = projectionMatrix * mvPosition;
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vColor;
+        varying float vAlpha;
+
+        void main() {
+          float dist = length(gl_PointCoord - vec2(0.5));
+          if (dist > 0.5) discard;
+          
+          float intensity = 1.0 - (dist * 2.0);
+          gl_FragColor = vec4(vColor, intensity * vAlpha);
+        }
+      `,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      vertexColors: true,
+    })
+  }, [])
+
   useEffect(() => {
     return () => {
-      geometry.dispose()
-      material.dispose()
+      mainGeometry.dispose()
+      detachedGeometry.dispose()
+      dustGeometry.dispose()
+      mainMaterial.dispose()
+      detachedMaterial.dispose()
+      dustMaterial.dispose()
     }
-  }, [geometry, material])
+  }, [mainGeometry, detachedGeometry, dustGeometry, mainMaterial, detachedMaterial, dustMaterial])
 
   useFrame((_, delta) => {
-    if (material) {
-      material.uniforms.uTime.value += delta
-    }
-    if (pointsRef.current) {
-      pointsRef.current.rotation.y += 0.0012
+    if (mainMaterial) mainMaterial.uniforms.uTime.value += delta
+    if (detachedMaterial) detachedMaterial.uniforms.uTime.value += delta
+    if (dustMaterial) dustMaterial.uniforms.uTime.value += delta
+
+    if (groupRef.current) {
+      groupRef.current.rotation.y += 0.0012
+
+      // Gentle global breathing scale pulse
+      const time = mainMaterial ? mainMaterial.uniforms.uTime.value : 0
+      const pulse = 1.0 + Math.sin(time * 0.8) * 0.018
+      groupRef.current.scale.set(pulse, pulse, pulse)
     }
   })
 
   return (
-    <points
-      ref={pointsRef}
-      geometry={geometry}
-      material={material}
-    />
+    <group ref={groupRef}>
+      {/* 1. Main Point Cloud Sphere */}
+      <points ref={pointsRef} geometry={mainGeometry} material={mainMaterial} />
+
+      {/* 2. Detached Outer Particles (Layer C) */}
+      <points ref={detachedRef} geometry={detachedGeometry} material={detachedMaterial} />
+
+      {/* 3. Micro Dust Background Field (Layer D) */}
+      <points ref={dustRef} geometry={dustGeometry} material={dustMaterial} />
+    </group>
   )
 }
 
@@ -272,6 +481,8 @@ export default function QuantumParticleGlobe() {
 
         <QuantumParticleSphere
           pointCount={35000}
+          detachedCount={4500}
+          dustCount={2000}
           radius={1.8}
           noiseStrength={0.06}
           noiseSpeed={0.5}
