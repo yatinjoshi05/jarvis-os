@@ -36,6 +36,9 @@ export class MemoryManager {
     };
 
     await provider.save(record);
+    if (scope === 'persistent') {
+      await this.evictOldMemories(100);
+    }
     memoryEventEmitter.emit(MemoryEvents.MEMORY_CREATED, record);
     return id;
   }
@@ -108,6 +111,55 @@ export class MemoryManager {
   public async setConversation(id: string, conversation: Conversation): Promise<void> {
     shortTermMemory.setActiveConversationId(id);
     await shortTermMemory.saveConversation(conversation);
+  }
+
+  // User Preferences memory accessors
+  public async getPreference(key: string): Promise<any> {
+    try {
+      const provider = memoryRouter.getProvider('persistent');
+      const records = await provider.loadByKey(key, 'persistent');
+      const record = records.find((r) => r.category === 'preference');
+      return record ? record.value : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  public async setPreference(key: string, value: any): Promise<void> {
+    try {
+      const provider = memoryRouter.getProvider('persistent');
+      const records = await provider.loadByKey(key, 'persistent');
+      const record = records.find((r) => r.category === 'preference');
+      if (record) {
+        await this.updateMemory(record.id, value, undefined, 'persistent');
+      } else {
+        await this.saveMemory(key, value, 'preference', 'persistent');
+      }
+    } catch (_) { /* ignore */ }
+  }
+
+  // Evict least accessed persistent memories if count exceeds limit
+  public async evictOldMemories(limit = 100): Promise<void> {
+    try {
+      const provider = memoryRouter.getProvider('persistent');
+      const records = await provider.search('', 'persistent');
+      if (records.length <= limit) return;
+
+      const sorted = [...records].sort((a, b) => {
+        const impA = a.metadata?.importance ?? 5;
+        const impB = b.metadata?.importance ?? 5;
+        if (impA !== impB) return impA - impB;
+        return (a.metadata?.lastAccessed ?? 0) - (b.metadata?.lastAccessed ?? 0);
+      });
+
+      const toRemoveCount = records.length - limit;
+      const toRemove = sorted.slice(0, toRemoveCount);
+      for (const r of toRemove) {
+        await provider.delete(r.id);
+      }
+    } catch (e) {
+      console.error('[MemoryManager] Eviction failed:', e);
+    }
   }
 
   // Working Memory accessors

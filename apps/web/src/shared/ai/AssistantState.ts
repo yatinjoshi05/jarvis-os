@@ -8,6 +8,7 @@ class AssistantState {
   private _response = '';
   private _caption = '';
   private _error = '';
+  private _streamingResponse = '';
 
   constructor() {
     voiceStateMachine.subscribe(() => {
@@ -118,6 +119,15 @@ class AssistantState {
     this.notify();
   }
 
+  public get streamingResponse() {
+    return this._streamingResponse;
+  }
+
+  public set streamingResponse(val: string) {
+    this._streamingResponse = val;
+    this.notify();
+  }
+
   public handleStateTransition(nextState: VoiceState) {
     if (nextState === 'IDLE') {
       this._error = '';
@@ -189,6 +199,7 @@ class AssistantState {
     this._response = '';
     this._caption = '';
     this._error = '';
+    this._streamingResponse = '';
     voiceStateMachine.transitionTo('IDLE');
   }
 }
@@ -207,6 +218,7 @@ export function useAssistantState() {
     error: assistantState.error,
     muted: assistantState.muted,
     permissionDenied: assistantState.permissionDenied,
+    streamingResponse: assistantState.streamingResponse,
   });
 
   useEffect(() => {
@@ -222,6 +234,7 @@ export function useAssistantState() {
         error: assistantState.error,
         muted: assistantState.muted,
         permissionDenied: assistantState.permissionDenied,
+        streamingResponse: assistantState.streamingResponse,
       });
     });
   }, []);

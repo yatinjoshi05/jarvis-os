@@ -22,12 +22,14 @@ class RetryManager {
 
         // Check if error is non-retryable
         const status = error?.status || error?.statusCode;
-        if (status === 401 || status === 403 || status === 404) {
+        // Authentication, quota, missing resource, and timeout errors require
+        // user/configuration action; retrying them only delays the UI error.
+        if (status === 401 || status === 403 || status === 404 || status === 408 || status === 429) {
           throw error;
         }
 
         const msg = String(error?.message || error);
-        if (msg.includes('401') || msg.includes('403') || msg.includes('404')) {
+        if (msg.includes('401') || msg.includes('403') || msg.includes('404') || msg.includes('408') || msg.includes('429') || msg.includes('RESOURCE_EXHAUSTED')) {
           throw error;
         }
 

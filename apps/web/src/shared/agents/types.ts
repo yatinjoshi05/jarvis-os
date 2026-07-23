@@ -7,6 +7,7 @@ export type AgentState =
   | 'Waiting'
   | 'Completed'
   | 'Failed'
+  | 'Error'
   | 'Stopped';
 
 export type AgentRole =
@@ -15,7 +16,10 @@ export type AgentRole =
   | 'researcher'
   | 'browser_executor'
   | 'communicator'
-  | 'system_operator';
+  | 'system_operator'
+  | 'agent_architect'
+  | 'system_supervisor'
+  | 'voice_communicator';
 
 export type CommunicationMessage = {
   id: string;

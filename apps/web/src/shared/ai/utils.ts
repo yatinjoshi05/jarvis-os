@@ -31,7 +31,7 @@ export class AIUtils {
    * Helper to validate API keys and URLs.
    */
   public static validateConfig(providerId: string, config: { apiKey?: string; baseUrl?: string }): boolean {
-    if (providerId === 'gemini' || providerId === 'openai' || providerId === 'claude') {
+    if (providerId === 'openai' || providerId === 'claude') {
       if (!config.apiKey) return false;
     }
     if (config.baseUrl) {

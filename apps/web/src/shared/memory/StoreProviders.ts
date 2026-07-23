@@ -66,6 +66,8 @@ export class LocalStorageProvider implements MemoryProvider {
     const lowerQuery = query.toLowerCase();
 
     try {
+      const searchTerms = lowerQuery.split(/\s+/).filter(t => t.length > 2 && !['what', 'are', 'the', 'how', 'who', 'why', 'can', 'you', 'for', 'and'].includes(t));
+
       for (let i = 0; i < localStorage.length; i++) {
         const itemKey = localStorage.key(i);
         if (itemKey && itemKey.startsWith(this.prefix)) {
@@ -80,8 +82,17 @@ export class LocalStorageProvider implements MemoryProvider {
                 ? record.value 
                 : MemoryUtils.safeStringify(record.value);
 
-              if (record.key.toLowerCase().includes(lowerQuery) || content.toLowerCase().includes(lowerQuery)) {
-                list.push(record);
+              const searchableText = `${record.key} ${content}`.toLowerCase();
+
+              if (searchTerms.length === 0) {
+                if (record.key.toLowerCase().includes(lowerQuery) || content.toLowerCase().includes(lowerQuery)) {
+                  list.push(record);
+                }
+              } else {
+                const isMatch = searchTerms.some(term => searchableText.includes(term));
+                if (isMatch) {
+                  list.push(record);
+                }
               }
             }
           }
@@ -164,6 +175,7 @@ export class InMemoryProvider implements MemoryProvider {
   public async search(query: string, scope?: MemoryScope, category?: MemoryCategory): Promise<MemoryRecord[]> {
     const list: MemoryRecord[] = [];
     const lowerQuery = query.toLowerCase();
+    const searchTerms = lowerQuery.split(/\s+/).filter(t => t.length > 2 && !['what', 'are', 'the', 'how', 'who', 'why', 'can', 'you', 'for', 'and'].includes(t));
 
     for (const record of this.storage.values()) {
       if (scope && record.scope !== scope) continue;
@@ -173,8 +185,17 @@ export class InMemoryProvider implements MemoryProvider {
         ? record.value
         : MemoryUtils.safeStringify(record.value);
 
-      if (record.key.toLowerCase().includes(lowerQuery) || content.toLowerCase().includes(lowerQuery)) {
-        list.push(record);
+      const searchableText = `${record.key} ${content}`.toLowerCase();
+
+      if (searchTerms.length === 0) {
+        if (record.key.toLowerCase().includes(lowerQuery) || content.toLowerCase().includes(lowerQuery)) {
+          list.push(record);
+        }
+      } else {
+        const isMatch = searchTerms.some(term => searchableText.includes(term));
+        if (isMatch) {
+          list.push(record);
+        }
       }
     }
     return list;

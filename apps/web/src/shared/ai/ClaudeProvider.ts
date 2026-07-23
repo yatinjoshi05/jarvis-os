@@ -53,7 +53,7 @@ export class ClaudeProvider implements AIProvider {
         return text;
       });
     } catch (error) {
-      throw ErrorManager.mapProviderError('ClaudeProvider', error);
+      throw ErrorManager.mapProviderError('ClaudeProvider', error, config.baseUrl);
     }
   }
 
@@ -128,7 +128,7 @@ export class ClaudeProvider implements AIProvider {
         }
       });
     } catch (error) {
-      throw ErrorManager.mapProviderError('ClaudeProvider', error);
+      throw ErrorManager.mapProviderError('ClaudeProvider', error, config.baseUrl);
     }
   }
 

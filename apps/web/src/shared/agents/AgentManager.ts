@@ -6,6 +6,8 @@ import { workflowManager } from './WorkflowManager';
 import { toolManager } from './ToolManager';
 import { capabilityManager } from './CapabilityManager';
 import { agentLogger } from './AgentLogger';
+import { autonomySafetyManager } from './safety/AutonomySafetyManager';
+import { selfUpdateManager } from './safety/SelfUpdateManager';
 
 // Import initial agent implementations
 import { FinancialAgent } from './impl/FinancialAgent';
@@ -20,6 +22,11 @@ import { WhatsAppAgent } from './impl/WhatsAppAgent';
 import { KnowledgeAgent } from './impl/KnowledgeAgent';
 import { DocumentAgent } from './impl/DocumentAgent';
 import { TerminalAgent } from './impl/TerminalAgent';
+import { CRMAgent } from './impl/CRMAgent';
+import { TradingAgent } from './impl/TradingAgent';
+import { MetaAgent } from './impl/MetaAgent';
+import { SupervisorAgent } from './impl/SupervisorAgent';
+import { CallingAgent } from './impl/CallingAgent';
 
 export class AgentManager {
   public registry = agentRegistry;
@@ -28,13 +35,15 @@ export class AgentManager {
   public tools = toolManager;
   public capabilities = capabilityManager;
   public logger = agentLogger;
+  public safety = autonomySafetyManager;
+  public selfUpdate = selfUpdateManager;
 
   constructor() {
     this.init();
   }
 
   private init() {
-    // Seed and register the 12 initial agents
+    // Seed and register initial agents
     this.registerAgent(new FinancialAgent());
     this.registerAgent(new InsuranceAgent());
     this.registerAgent(new InvestmentAgent());
@@ -47,6 +56,11 @@ export class AgentManager {
     this.registerAgent(new KnowledgeAgent());
     this.registerAgent(new DocumentAgent());
     this.registerAgent(new TerminalAgent());
+    this.registerAgent(new CRMAgent());
+    this.registerAgent(new TradingAgent());
+    this.registerAgent(new MetaAgent());
+    this.registerAgent(new SupervisorAgent());
+    this.registerAgent(new CallingAgent());
   }
 
   // Public coordinator APIs

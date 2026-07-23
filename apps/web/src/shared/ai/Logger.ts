@@ -1,5 +1,11 @@
 export class AILogger {
-  private isDev = import.meta.env.DEV;
+  private isDev = (() => {
+    try {
+      return Boolean((import.meta as any)?.env?.DEV);
+    } catch (_) {
+      return false;
+    }
+  })();
 
   public info(namespace: string, message: string, ...args: any[]) {
     this.log('info', namespace, message, ...args);
@@ -37,3 +43,13 @@ export class AILogger {
 }
 
 export const aiLogger = new AILogger();
+
+export const latencyTracker = {
+  startTime: 0,
+  start() {
+    this.startTime = Date.now();
+  },
+  getElapsed(): number {
+    return this.startTime ? Date.now() - this.startTime : 0;
+  }
+};

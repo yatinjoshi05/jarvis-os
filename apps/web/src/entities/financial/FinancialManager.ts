@@ -12,7 +12,6 @@ import {
 import { FinancialCalculators } from './calculators';
 import { FinancialRecommendations } from './recommendations';
 import { financialEventEmitter, FinancialEntityEvents } from './events';
-import { ProfileNotFoundError } from './errors';
 import { FinancialUtils } from './utils';
 import { financialTimeline } from './timeline';
 import { financialKnowledgeEngine } from './knowledge';
@@ -74,14 +73,43 @@ export class FinancialManager {
   }
 
   private getActiveUserId(userId?: string): string {
-    const activeId = userId || authenticationManager.getCurrentUser()?.id;
-    if (!activeId) {
-      throw new ProfileNotFoundError('No active user session and no userId provided.');
-    }
-    return activeId;
+    return userId || authenticationManager.getCurrentUser()?.id || 'usr_guest';
   }
 
   // ─── PROFILE LIFECYCLE ───────────────────────────────────────
+
+  public createDefaultProfile(userId: string = 'usr_guest'): CustomerProfile {
+    const defaultProfile: CustomerProfile = {
+      id: `prof_${userId}`,
+      userId,
+      personalInfo: {
+        fullName: 'Guest User',
+        occupation: 'Guest',
+        age: 30,
+        dependentsCount: 0
+      },
+      financialMetrics: {
+        annualIncome: 75000,
+        monthlyExpenses: 3500,
+        totalAssets: 10000,
+        totalLiabilities: 0
+      },
+      riskScore: 5.0,
+      riskCategory: 'moderate',
+      investmentExperience: 'basic',
+      goals: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    };
+
+    this.profiles.set(userId, defaultProfile);
+    this.saveData();
+
+    financialEventEmitter.emit(FinancialEntityEvents.FINANCIAL_PROFILE_UPDATED, defaultProfile);
+    this.syncProfileToMemory(defaultProfile);
+
+    return defaultProfile;
+  }
 
   public createProfile(
     userId: string,
@@ -117,10 +145,7 @@ export class FinancialManager {
 
   public updateProfile(userId: string, updates: Partial<CustomerProfile>): CustomerProfile {
     const activeUserId = this.getActiveUserId(userId);
-    const profile = this.profiles.get(activeUserId);
-    if (!profile) {
-      throw new ProfileNotFoundError(activeUserId);
-    }
+    const profile = this.getProfile(activeUserId);
 
     Object.assign(profile, updates);
     profile.updatedAt = Date.now();
@@ -139,9 +164,9 @@ export class FinancialManager {
 
   public getProfile(userId?: string): CustomerProfile {
     const activeUserId = this.getActiveUserId(userId);
-    const profile = this.profiles.get(activeUserId);
+    let profile = this.profiles.get(activeUserId);
     if (!profile) {
-      throw new ProfileNotFoundError(activeUserId);
+      profile = this.createDefaultProfile(activeUserId);
     }
     return profile;
   }
@@ -159,10 +184,7 @@ export class FinancialManager {
 
   public addGoal(userId: string, goal: Omit<Goal, 'id' | 'isCompleted'>): Goal {
     const activeUserId = this.getActiveUserId(userId);
-    const profile = this.profiles.get(activeUserId);
-    if (!profile) {
-      throw new ProfileNotFoundError(activeUserId);
-    }
+    const profile = this.getProfile(activeUserId);
 
     const newGoal: Goal = {
       ...goal,
@@ -192,10 +214,7 @@ export class FinancialManager {
 
   public updateGoal(userId: string, goalId: string, updates: Partial<Goal>): Goal {
     const activeUserId = this.getActiveUserId(userId);
-    const profile = this.profiles.get(activeUserId);
-    if (!profile) {
-      throw new ProfileNotFoundError(activeUserId);
-    }
+    const profile = this.getProfile(activeUserId);
 
     const goal = profile.goals.find((g) => g.id === goalId);
     if (!goal) {
@@ -228,10 +247,7 @@ export class FinancialManager {
 
   public deleteGoal(userId: string, goalId: string) {
     const activeUserId = this.getActiveUserId(userId);
-    const profile = this.profiles.get(activeUserId);
-    if (!profile) {
-      throw new ProfileNotFoundError(activeUserId);
-    }
+    const profile = this.getProfile(activeUserId);
 
     profile.goals = profile.goals.filter((g) => g.id !== goalId);
     profile.updatedAt = Date.now();

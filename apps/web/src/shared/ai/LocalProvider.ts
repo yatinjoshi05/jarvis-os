@@ -45,7 +45,7 @@ export class LocalProvider implements AIProvider {
         return text;
       });
     } catch (error) {
-      throw ErrorManager.mapProviderError('LocalProvider', error);
+      throw ErrorManager.mapProviderError('LocalProvider', error, config.baseUrl);
     }
   }
 
@@ -112,7 +112,7 @@ export class LocalProvider implements AIProvider {
         }
       });
     } catch (error) {
-      throw ErrorManager.mapProviderError('LocalProvider', error);
+      throw ErrorManager.mapProviderError('LocalProvider', error, config.baseUrl);
     }
   }
 
@@ -127,7 +127,9 @@ export class LocalProvider implements AIProvider {
   async healthCheck(): Promise<boolean> {
     const config = AI_CONFIG.providers.local;
     try {
-      const response = await fetch(`${config.baseUrl}/models`);
+      const response = await fetch(`${config.baseUrl}/models`, {
+        signal: AbortSignal.timeout(3000)
+      });
       this.status = response.ok ? 'online' : 'offline';
       return response.ok;
     } catch (_) {

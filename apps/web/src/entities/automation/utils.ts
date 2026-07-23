@@ -2,26 +2,57 @@ import { Job } from './interfaces';
 
 export class AutomationUtils {
   // ─── SCHEDULER HELPERS ──────────────────────────────────────
-  
+
   /**
-   * Simulates calculating the next trigger timestamp from a cron expression.
+   * Calculates the next trigger timestamp from a real 5-field cron expression.
+   * Field order: minute hour dom month dow
+   * Supports: wildcard (*), exact (N), step (asterisk/N), range (a-b), list (a,b,c).
+   * Lookahead capped at 10080 minutes (7 days) for safety.
    */
   public static parseCronToNextTime(cron: string): number {
-    const now = Date.now();
-    
-    // Quick mock parsing for common intervals
-    if (cron.startsWith('*/5')) {
-      return now + 5 * 60 * 1000; // 5 minutes
+    const fields = cron.trim().split(/\s+/);
+    if (fields.length !== 5) return Date.now() + 60000;
+
+    const [minF, hourF, domF, monF, dowF] = fields;
+
+    const matchField = (expr: string, value: number): boolean => {
+      if (expr === '*') return true;
+      for (const part of expr.split(',')) {
+        if (part.startsWith('*/')) {
+          const step = parseInt(part.slice(2), 10);
+          if (!isNaN(step) && step > 0 && value % step === 0) return true;
+        } else if (part.includes('-')) {
+          const [lo, hi] = part.split('-').map(Number);
+          if (value >= lo && value <= hi) return true;
+        } else {
+          const n = parseInt(part, 10);
+          // day-of-week: 0 and 7 both represent Sunday
+          if (!isNaN(n) && (n === value || (n === 7 && value === 0))) return true;
+        }
+      }
+      return false;
+    };
+
+    // Start 1 minute into the future; seconds are irrelevant for cron
+    const candidate = new Date(Date.now() + 60000);
+    candidate.setSeconds(0, 0);
+
+    const MAX_MINUTES = 10080; // 7 days
+    for (let i = 0; i < MAX_MINUTES; i++) {
+      if (
+        matchField(monF, candidate.getMonth() + 1) &&
+        matchField(domF, candidate.getDate()) &&
+        matchField(dowF, candidate.getDay()) &&
+        matchField(hourF, candidate.getHours()) &&
+        matchField(minF, candidate.getMinutes())
+      ) {
+        return candidate.getTime();
+      }
+      candidate.setTime(candidate.getTime() + 60000);
     }
-    if (cron.startsWith('0 0')) {
-      return now + 24 * 3600 * 1000; // 1 day
-    }
-    if (cron.startsWith('0 *')) {
-      return now + 3600 * 1000; // 1 hour
-    }
-    
-    // Default fallback: 1 minute
-    return now + 60 * 1000;
+
+    // Fallback: 1 day (should never reach here with a valid cron)
+    return Date.now() + 86400000;
   }
 
   // ─── QUEUE HELPERS ──────────────────────────────────────────
@@ -65,7 +96,7 @@ export class AutomationUtils {
       const value = key.split('.').reduce((acc: any, part: string) => {
         return acc ? acc[part] : undefined;
       }, vars);
-      
+
       return value !== undefined ? String(value) : `{{${key}}}`;
     });
   }
@@ -78,7 +109,7 @@ export class AutomationUtils {
   public static generateSignature(payload: any, secret?: string): string {
     const raw = typeof payload === 'string' ? payload : JSON.stringify(payload);
     const key = secret || 'jarvis_default_webhook_secret';
-    
+
     // Simple fast checksum hash simulation
     let hash = 0;
     const combined = raw + key;

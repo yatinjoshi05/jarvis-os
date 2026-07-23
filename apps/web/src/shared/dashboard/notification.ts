@@ -30,6 +30,26 @@ class NotificationManager {
 
     dashboardEventEmitter.emit(DashboardEvents.NOTIFICATION_CREATED, newNotif);
 
+    // Trigger native desktop notification in Tauri
+    const isTauri = typeof window !== 'undefined' && !!(window as any).__TAURI__;
+    if (isTauri) {
+      (async () => {
+        try {
+          const { isPermissionGranted, requestPermission, sendNotification } = await import('@tauri-apps/plugin-notification');
+          let granted = await isPermissionGranted();
+          if (!granted) {
+            const result = await requestPermission();
+            granted = result === 'granted';
+          }
+          if (granted) {
+            sendNotification({ title, body: message });
+          }
+        } catch (e) {
+          console.error('[Notification] Failed to send native notification:', e);
+        }
+      })();
+    }
+
     if (duration > 0) {
       setTimeout(() => {
         this.dismiss(id);

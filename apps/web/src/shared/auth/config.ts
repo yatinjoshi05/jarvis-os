@@ -1,3 +1,17 @@
+function getEnv(key: string): string {
+  try {
+    const metaEnv = (import.meta as any)?.env;
+    if (metaEnv && key in metaEnv) return metaEnv[key] || '';
+  } catch (_) {}
+  try {
+    const g = globalThis as any;
+    if (g.process?.env && key in g.process.env) {
+      return g.process.env[key] || '';
+    }
+  } catch (_) {}
+  return '';
+}
+
 export const AUTH_CONFIG = {
   providers: {
     credentials: {
@@ -5,12 +19,12 @@ export const AUTH_CONFIG = {
       requireStrength: true,
     },
     google: {
-      isEnabled: (import.meta.env.VITE_AUTH_GOOGLE_ENABLED === 'true') || false,
-      clientId: (import.meta.env.VITE_AUTH_GOOGLE_CLIENT_ID as string) || '',
+      isEnabled: getEnv('VITE_AUTH_GOOGLE_ENABLED') === 'true',
+      clientId: getEnv('VITE_AUTH_GOOGLE_CLIENT_ID'),
     },
     github: {
-      isEnabled: (import.meta.env.VITE_AUTH_GITHUB_ENABLED === 'true') || false,
-      clientId: (import.meta.env.VITE_AUTH_GITHUB_CLIENT_ID as string) || '',
+      isEnabled: getEnv('VITE_AUTH_GITHUB_ENABLED') === 'true',
+      clientId: getEnv('VITE_AUTH_GITHUB_CLIENT_ID'),
     },
     microsoft: {
       isEnabled: false,

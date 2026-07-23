@@ -1,8 +1,6 @@
 /**
- * Public API for the coding module.
+ * Public API for the Coding Agent feature module.
+ * Re-exports core Coding Agent entities and manager.
  */
-export * from './types';
-export * from './interfaces';
-export * from './constants';
-export * from './events';
-export * from './errors';
+export * from '../../entities/coding';
+export { default as codingAgentManager } from '../../entities/coding/CodingAgentManager';

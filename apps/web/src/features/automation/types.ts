@@ -1,4 +1,1 @@
-/**
- * Types of triggers supported in automations.
- */
-export type TriggerType = 'schedule' | 'event' | 'webhook';
+export * from '../../entities/automation/types';

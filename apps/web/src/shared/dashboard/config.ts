@@ -1,7 +1,7 @@
 export const DASHBOARD_CONFIG = {
   defaultTheme: {
     mode: 'dark' as const,
-    accentColor: '#FFD400', // Yellow
+    accentColor: '#FF0055', // Pink accent from Nebula palette
   },
   defaultPanels: {
     leftSidebar: true,

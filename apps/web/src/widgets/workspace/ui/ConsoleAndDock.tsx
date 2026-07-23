@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Send, Mic, Plus, Terminal, Folder, Chrome, Code2, Sparkles, FileText, Binary, LineChart } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Send, Mic, Plus, Terminal, Folder, Chrome, Code2, Sparkles, FileText, Binary, LineChart, Users } from 'lucide-react'
 import { motion } from 'framer-motion'
 
-import { assistantState, useAssistantState, speechRecognitionManager, aiResponseManager } from '../../../shared/ai/AIManager'
+import { assistantState, useAssistantState, speechRecognitionManager, aiResponseManager, voiceManager } from '../../../shared/ai/AIManager'
 
 export default function ConsoleAndDock() {
+  const navigate = useNavigate()
   const { listening, thinking, transcript } = useAssistantState()
   const [command, setCommand] = useState('')
 
@@ -31,14 +33,10 @@ export default function ConsoleAndDock() {
 
   const handleMicClick = () => {
     if (listening) {
-      speechRecognitionManager.stop()
-      assistantState.listening = false
+      voiceManager.stopListening()
       aiResponseManager.respond()
     } else {
-      speechRecognitionManager.stop()
-      speechRecognitionManager.clear()
-      assistantState.startListening()
-      speechRecognitionManager.start()
+      voiceManager.startListening()
     }
   }
 
@@ -47,9 +45,10 @@ export default function ConsoleAndDock() {
       {/* Input Bar row */}
       <div className="w-full flex items-center space-x-2.5">
         <div className={`flex-1 flex items-center justify-between bg-black border ${
-          listening ? 'border-[#FFD400] shadow-[0_0_15px_rgba(255,212,0,0.2)]' : 'border-[#FFD400]/40'
-        } rounded-full px-5 py-2.5 h-10 text-xs shadow-[0_0_15px_rgba(255,212,0,0.05)] transition-all duration-300`}>
+          listening ? 'border-[#FF0055] shadow-[0_0_15px_rgba(255,0,85,0.25)]' : 'border-white/15'
+        } rounded-full px-5 py-2.5 h-10 text-xs shadow-[0_0_15px_rgba(255,0,85,0.02)] transition-all duration-300`}>
           <input
+            id="console-input"
             type="text"
             value={command}
             onChange={(e) => setCommand(e.target.value)}
@@ -72,7 +71,7 @@ export default function ConsoleAndDock() {
           <button
             onClick={sendCommand}
             disabled={thinking}
-            className={`text-[#FFD400] hover:text-white transition-colors pl-2 ${
+            className={`text-[#FF0055] hover:text-white transition-colors pl-2 ${
               thinking ? 'opacity-30 cursor-not-allowed' : ''
             }`}
           >
@@ -83,10 +82,10 @@ export default function ConsoleAndDock() {
         <button
           onClick={handleMicClick}
           disabled={thinking}
-          className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all duration-300 shadow-[0_0_12px_rgba(255,212,0,0.15)] ${
+          className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all duration-300 ${
             listening
-              ? 'bg-[#FFD400] text-black border-[#FFD400] animate-pulse'
-              : 'bg-[#FFD400]/10 border-[#FFD400]/40 text-[#FFD400] hover:bg-[#FFD400]/20'
+              ? 'bg-gradient-to-br from-[#FF0055] to-[#FF5500] text-white border-none animate-pulse shadow-[0_0_15px_rgba(255,0,85,0.4)]'
+              : 'bg-[#FF0055]/10 border-[#FF0055]/40 text-[#FF0055] hover:bg-[#FF0055]/20 shadow-[0_0_12px_rgba(255,0,85,0.1)]'
           } ${thinking ? 'opacity-30 cursor-not-allowed' : ''}`}
         >
           <Mic size={15} />
@@ -96,18 +95,20 @@ export default function ConsoleAndDock() {
       {/* Floating App Dock */}
       <div className="flex items-center bg-black/60 border border-white/10 px-4 py-2 rounded-2xl space-x-3.5 shadow-[0_4px_30px_rgba(0,0,0,0.9)] backdrop-blur-md">
         {[
-          { icon: <Terminal size={14} /> },
-          { icon: <Folder size={14} /> },
-          { icon: <Chrome size={14} /> },
-          { icon: <Code2 size={14} /> },
-          { icon: <Sparkles size={14} /> },
-          { icon: <FileText size={14} /> },
-          { icon: <Binary size={14} /> },
-          { icon: <LineChart size={14} /> }
+          { icon: <Terminal size={14} />, path: '/terminal' },
+          { icon: <Folder size={14} />, path: '/files' },
+          { icon: <Chrome size={14} />, path: '/browser' },
+          { icon: <Code2 size={14} />, path: '/coding' },
+          { icon: <Sparkles size={14} />, path: '/chat' },
+          { icon: <FileText size={14} />, path: '/memory' },
+          { icon: <Binary size={14} />, path: '/devices' },
+          { icon: <LineChart size={14} />, path: '/trading' },
+          { icon: <Users size={14} />, path: '/crm' }
         ].map((app, idx) => (
           <motion.button
             key={idx}
-            className="w-8 h-8 rounded-lg bg-white/5 border border-white/5 text-white/60 flex items-center justify-center hover:bg-[#FFD400]/10 hover:border-[#FFD400]/30 hover:text-[#FFD400] transition-colors"
+            onClick={() => navigate(app.path)}
+            className="w-8 h-8 rounded-lg bg-white/5 border border-white/5 text-white/60 flex items-center justify-center hover:bg-white/10 hover:border-[#5A5670]/40 hover:text-white transition-colors"
             whileHover={{ scale: 1.15, y: -2 }}
             transition={{ type: 'spring', stiffness: 400, damping: 15 }}
           >
@@ -115,7 +116,10 @@ export default function ConsoleAndDock() {
           </motion.button>
         ))}
         <div className="w-[1px] h-4 bg-white/10" />
-        <button className="w-8 h-8 rounded-lg bg-white/5 border border-white/5 text-white/40 flex items-center justify-center hover:text-white transition-colors">
+        <button 
+          onClick={() => navigate('/settings')}
+          className="w-8 h-8 rounded-lg bg-white/5 border border-white/5 text-white/40 flex items-center justify-center hover:text-white transition-colors"
+        >
           <Plus size={13} />
         </button>
       </div>

@@ -1,33 +1,38 @@
-import { GoogleGenAI } from "@google/genai";
 import { AIProvider, ProviderRequestOptions } from "./AIProvider";
 import { AI_CONFIG } from "./config";
 import { retryManager } from "./RetryManager";
 import { ErrorManager } from "./ErrorManager";
-import { aiLogger } from "./Logger";
+import { identitySettings } from "./IdentitySettings";
 
 export class GeminiProvider implements AIProvider {
-  private client: GoogleGenAI | null = null;
-  private abortController: AbortController | null = null;
+  protected abortController: AbortController | null = null;
   public status: 'online' | 'offline' = 'online';
 
   constructor() {
-    this.initClient();
+    this.status = 'online';
   }
 
-  private initClient() {
-    const apiKey = AI_CONFIG.providers.gemini.apiKey;
-    if (!apiKey) {
-      aiLogger.warn('GeminiProvider', 'VITE_GEMINI_API_KEY is missing.');
-      this.status = 'offline';
-      return;
-    }
-    try {
-      this.client = new GoogleGenAI({ apiKey });
-      this.status = 'online';
-    } catch (e) {
-      aiLogger.error('GeminiProvider', 'Failed to initialize GoogleGenAI client', e);
-      this.status = 'offline';
-    }
+  private resolveModel(options?: ProviderRequestOptions): string {
+    return options?.model || AI_CONFIG.providers.gemini.model;
+  }
+
+  private buildRequestBody(
+    prompt: string,
+    options?: ProviderRequestOptions
+  ): Record<string, unknown> {
+    const contents = this.formatContents(prompt, options?.history);
+    const body: Record<string, unknown> = { contents };
+
+    const identityDirective = identitySettings.getFormattedSystemInstructions();
+    const systemText = options?.context?.trim();
+    const fullSystemInstruction = systemText
+      ? `${identityDirective}\n\n${systemText}`
+      : identityDirective;
+
+    body['system_instruction'] = { parts: [{ text: fullSystemInstruction }] };
+
+    body['generationConfig'] = { maxOutputTokens: AI_CONFIG.maxTokens };
+    return body;
   }
 
   async generateResponse(
@@ -35,33 +40,37 @@ export class GeminiProvider implements AIProvider {
     onChunk?: (chunk: string) => void,
     options?: ProviderRequestOptions
   ): Promise<string> {
-    if (!this.client) {
-      throw ErrorManager.createError('GeminiProvider', 'Client not initialized', 401);
-    }
-
     this.abortController = new AbortController();
+    const model = this.resolveModel(options);
+    const body = this.buildRequestBody(prompt, options);
 
     try {
       return await retryManager.execute(async () => {
-        const systemInstruction = options?.context || '';
-        const contents = this.formatContents(prompt, options?.history);
-
-        const response = await this.client!.models.generateContent({
-          model: AI_CONFIG.providers.gemini.model,
-          contents,
-          config: {
-            systemInstruction: systemInstruction || undefined,
-          }
+        const response = await fetch('/api/chat/gemini', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model,
+            stream: false,
+            ...body
+          }),
+          signal: this.abortController?.signal
         });
 
-        const text = response.text || '';
+        if (!response.ok) {
+          const errText = await response.text().catch(() => '(no body)');
+          throw { name: 'GeminiServerError', message: `[GeminiServer] HTTP ${response.status}: ${errText}`, status: response.status, responseBody: errText };
+        }
+
+        const json = await response.json() as any;
+        const text = (json?.candidates?.[0]?.content?.parts?.[0]?.text as string) || '';
         if (onChunk && text) {
           onChunk(text);
         }
         return text;
       });
     } catch (error) {
-      throw ErrorManager.mapProviderError('GeminiProvider', error);
+      throw ErrorManager.mapProviderError('GeminiProvider', error, '/api/chat/gemini');
     }
   }
 
@@ -70,37 +79,57 @@ export class GeminiProvider implements AIProvider {
     onChunk: (chunk: string) => void,
     options?: ProviderRequestOptions
   ): Promise<void> {
-    if (!this.client) {
-      throw ErrorManager.createError('GeminiProvider', 'Client not initialized', 401);
-    }
-
     this.abortController = new AbortController();
+    const model = this.resolveModel(options);
+    const body = this.buildRequestBody(prompt, options);
 
     try {
       await retryManager.execute(async () => {
-        const systemInstruction = options?.context || '';
-        const contents = this.formatContents(prompt, options?.history);
-
-        const stream = await this.client!.models.generateContentStream({
-          model: AI_CONFIG.providers.gemini.model,
-          contents,
-          config: {
-            systemInstruction: systemInstruction || undefined,
-          }
+        const response = await fetch('/api/chat/gemini', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model,
+            stream: true,
+            ...body
+          }),
+          signal: this.abortController?.signal
         });
 
-        for await (const chunk of stream) {
-          if (this.abortController?.signal.aborted) {
-            break;
-          }
-          const text = chunk.text || '';
-          if (text) {
-            onChunk(text);
+        if (!response.ok) {
+          const errText = await response.text().catch(() => '(no body)');
+          throw { name: 'GeminiServerError', message: `[GeminiServer] HTTP ${response.status}: ${errText}`, status: response.status, responseBody: errText };
+        }
+        if (!response.body) throw new Error('[GeminiServer] No response body for streaming');
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() ?? '';
+
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed.startsWith('data: ')) continue;
+            const jsonStr = trimmed.slice(6);
+            if (jsonStr === '[DONE]') continue;
+            try {
+              const parsed = JSON.parse(jsonStr) as any;
+              const text = parsed?.candidates?.[0]?.content?.parts?.[0]?.text;
+              if (typeof text === 'string' && text) onChunk(text);
+            } catch {
+              // Malformed SSE line — skip silently
+            }
           }
         }
       });
     } catch (error) {
-      throw ErrorManager.mapProviderError('GeminiProvider', error);
+      throw ErrorManager.mapProviderError('GeminiProvider', error, '/api/chat/gemini');
     }
   }
 
@@ -108,39 +137,47 @@ export class GeminiProvider implements AIProvider {
     if (this.abortController) {
       this.abortController.abort();
       this.abortController = null;
-      aiLogger.info('GeminiProvider', 'Request cancelled');
     }
   }
 
   async healthCheck(): Promise<boolean> {
-    if (!this.client) return false;
     try {
-      await this.client.models.generateContent({
-        model: AI_CONFIG.providers.gemini.model,
-        contents: 'ping',
+      const response = await fetch('/api/chat/gemini', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: AI_CONFIG.providers.gemini.fastModel,
+          stream: false,
+          contents: [{ role: 'user', parts: [{ text: 'ping' }] }],
+          generationConfig: { maxOutputTokens: 1 }
+        }),
+        signal: AbortSignal.timeout(5000)
       });
-      this.status = 'online';
-      return true;
-    } catch (e) {
+      this.status = response.ok ? 'online' : 'offline';
+      return response.ok;
+    } catch {
       this.status = 'offline';
       return false;
     }
   }
 
-  private formatContents(prompt: string, history?: Array<{ role: string; content: string }>) {
-    const contents: any[] = [];
+  private formatContents(
+    prompt: string,
+    history?: Array<{ role: string; content: string }>
+  ): Array<{ role: string; parts: Array<{ text: string }> }> {
+    const contents: Array<{ role: string; parts: Array<{ text: string }> }> = [];
+
     if (history) {
       for (const msg of history) {
+        if (msg.role === 'system') continue;
         contents.push({
           role: msg.role === 'user' ? 'user' : 'model',
-          parts: [{ text: msg.content }]
+          parts: [{ text: msg.content }],
         });
       }
     }
-    contents.push({
-      role: 'user',
-      parts: [{ text: prompt }]
-    });
+
+    contents.push({ role: 'user', parts: [{ text: prompt }] });
     return contents;
   }
 }

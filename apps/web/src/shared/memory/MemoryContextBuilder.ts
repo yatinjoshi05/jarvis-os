@@ -2,13 +2,14 @@ import { shortTermMemory } from './ShortTermMemory';
 import { workingMemory } from './WorkingMemory';
 import { MemorySearch } from './MemorySearch';
 import { MemoryUtils } from './utils';
+import { SystemContextService } from '../system/SystemContextService';
 
 export class MemoryContextBuilder {
   /**
    * Compiles the memory context into a prompt-ready context string.
    */
   public static async buildContext(userPrompt?: string): Promise<string> {
-    let contextStr = '=== CONTEXTUAL AI MEMORY ===\n\n';
+    let contextStr = SystemContextService.getSystemEnvironmentContext() + '=== CONTEXTUAL AI MEMORY ===\n\n';
 
     // 1. Working Memory (Objectives & Current Task)
     const objective = workingMemory.getObjective();

@@ -4,6 +4,7 @@ import { OpenAIProvider } from "./OpenAIProvider";
 import { ClaudeProvider } from "./ClaudeProvider";
 import { OllamaProvider } from "./OllamaProvider";
 import { LocalProvider } from "./LocalProvider";
+import { NvidiaProvider } from "./NvidiaProvider";
 
 export class ProviderFactory {
   private static registry: Map<string, new () => AIProvider> = new Map();
@@ -15,6 +16,7 @@ export class ProviderFactory {
     this.registry.set('claude', ClaudeProvider);
     this.registry.set('ollama', OllamaProvider);
     this.registry.set('local', LocalProvider);
+    this.registry.set('nvidia', NvidiaProvider);
   }
 
   public static register(id: string, providerClass: new () => AIProvider) {

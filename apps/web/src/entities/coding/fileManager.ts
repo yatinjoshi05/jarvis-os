@@ -6,9 +6,18 @@ import { browserEventEmitter, BrowserEvents } from '../browser/events';
 
 export class FileManager {
   private files = new Map<string, SourceFile>();
+  private recentFilesList: string[] = [];
 
   constructor() {
     this.seedDefaultFiles();
+  }
+
+  private addToRecent(path: string) {
+    this.recentFilesList = [path, ...this.recentFilesList.filter((p) => p !== path)].slice(0, 5);
+  }
+
+  public getRecentFiles(): string[] {
+    return this.recentFilesList;
   }
 
   private seedDefaultFiles() {
@@ -47,6 +56,7 @@ export class FileManager {
       throw new FileMissingError(path);
     }
 
+    this.addToRecent(path);
     browserEventEmitter.emit(BrowserEvents.FILE_OPENED, { path });
     return file;
   }
@@ -67,6 +77,7 @@ export class FileManager {
     };
 
     this.files.set(path, newFile);
+    this.addToRecent(path);
     
     browserEventEmitter.emit(BrowserEvents.FILE_UPDATED, { path });
     return newFile;

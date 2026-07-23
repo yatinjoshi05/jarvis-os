@@ -4,6 +4,8 @@ import { captionManager } from './CaptionManager';
 import { voiceSettings } from './VoiceSettings';
 import { VOICE_CONFIG } from './config';
 import { speechQueue } from './SpeechQueue';
+import { aiLogger, latencyTracker } from './Logger';
+import { elevenLabsProvider } from './ElevenLabsProvider';
 
 const SPEECH_START_TIMEOUT_MS = 1200;
 
@@ -13,6 +15,10 @@ class TextToSpeechManager {
   private cancelled = false;
   private queueResolve?: () => void;
   private currentAudioElement: HTMLAudioElement | null = null;
+
+  constructor() {
+    elevenLabsProvider.setFallbackHandler((sentence) => this.speakBrowserSynthesis(sentence));
+  }
 
   // ─── Public API ───────────────────────────────────────────────
 
@@ -42,6 +48,9 @@ class TextToSpeechManager {
   cancel() {
     this.cancelled = true;
     this.isProcessing = false;
+
+    // Cancel ElevenLabs provider request & playback
+    elevenLabsProvider.cancel();
 
     // Stop browser speech synthesis
     try {
@@ -110,8 +119,8 @@ class TextToSpeechManager {
     const settings = voiceSettings.settings;
     const provider = settings.ttsProvider;
 
-    if (provider === 'elevenlabs' && VOICE_CONFIG.elevenlabs.apiKey) {
-      return this.speakExternalElevenLabs(sentence);
+    if (provider === 'elevenlabs') {
+      return elevenLabsProvider.speak(sentence);
     } else if (provider === 'openai' && VOICE_CONFIG.openai.apiKey) {
       return this.speakExternalOpenAI(sentence);
     } else {
@@ -162,6 +171,8 @@ class TextToSpeechManager {
       utterance.onstart = () => {
         if (startTimeoutId) clearTimeout(startTimeoutId);
 
+        aiLogger.info('LatencyMetrics', `TTS start / Total time (elapsed: ${latencyTracker.getElapsed()}ms)`);
+
         const words = sentence.split(/\s+/).filter(Boolean).length;
         const maxDurationMs = (words * 400) + 2000;
         endTimeoutId = setTimeout(() => {
@@ -211,52 +222,6 @@ class TextToSpeechManager {
         console.error('[JARVIS TTS] browser speak() failed:', e);
         captionManager.markComplete();
         finish();
-      }
-    });
-  }
-
-  private speakExternalElevenLabs(sentence: string): Promise<void> {
-    return new Promise<void>(async (resolve) => {
-      const config = VOICE_CONFIG.elevenlabs;
-
-      captionManager.start(
-        sentence,
-        (cap) => assistantState.setCaption(cap),
-        () => {}
-      );
-
-      try {
-        voiceStateMachine.transitionTo('SPEAKING');
-        const response = await fetch(`${config.baseUrl}/text-to-speech/${config.voiceId}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'xi-api-key': config.apiKey
-          },
-          body: JSON.stringify({
-            text: sentence,
-            model_id: 'eleven_monolingual_v1',
-            voice_settings: {
-              stability: 0.5,
-              similarity_boost: 0.75
-            }
-          })
-        });
-
-        if (!response.ok) {
-          throw new Error(`ElevenLabs returned HTTP ${response.status}`);
-        }
-
-        const blob = await response.blob();
-        if (this.cancelled) {
-          resolve();
-          return;
-        }
-
-        await this.playAudioBlob(blob, resolve);
-      } catch (err) {
-        console.error('[JARVIS TTS] ElevenLabs playback failed, falling back to Browser Synthesis:', err);
-        this.speakBrowserSynthesis(sentence).then(resolve);
       }
     });
   }
@@ -330,7 +295,9 @@ class TextToSpeechManager {
         cleanup();
       };
 
-      audio.play().catch((err) => {
+      audio.play().then(() => {
+        aiLogger.info('LatencyMetrics', `TTS start / Total time (elapsed: ${latencyTracker.getElapsed()}ms)`);
+      }).catch((err) => {
         console.error('[JARVIS TTS] Audio play failed:', err);
         cleanup();
       });

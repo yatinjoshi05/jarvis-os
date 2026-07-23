@@ -30,7 +30,7 @@ export class OpenAIProvider implements AIProvider {
             'Authorization': `Bearer ${config.apiKey}`
           },
           body: JSON.stringify({
-            model: config.model,
+            model: options?.model || config.model,
             messages,
             stream: false
           }),
@@ -49,7 +49,7 @@ export class OpenAIProvider implements AIProvider {
         return text;
       });
     } catch (error) {
-      throw ErrorManager.mapProviderError('OpenAIProvider', error);
+      throw ErrorManager.mapProviderError('OpenAIProvider', error, config.baseUrl);
     }
   }
 
@@ -75,7 +75,7 @@ export class OpenAIProvider implements AIProvider {
             'Authorization': `Bearer ${config.apiKey}`
           },
           body: JSON.stringify({
-            model: config.model,
+            model: options?.model || config.model,
             messages,
             stream: true
           }),
@@ -122,7 +122,7 @@ export class OpenAIProvider implements AIProvider {
         }
       });
     } catch (error) {
-      throw ErrorManager.mapProviderError('OpenAIProvider', error);
+      throw ErrorManager.mapProviderError('OpenAIProvider', error, config.baseUrl);
     }
   }
 

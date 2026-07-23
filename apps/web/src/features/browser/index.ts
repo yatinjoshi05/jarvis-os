@@ -1,8 +1,6 @@
 /**
- * Public API for the browser module.
+ * Public API for the Browser Agent feature module.
+ * Re-exports core Browser Agent entities and manager.
  */
-export * from './types';
-export * from './interfaces';
-export * from './constants';
-export * from './events';
-export * from './errors';
+export * from '../../entities/browser';
+export { default as browserAgentManager } from '../../entities/browser/BrowserAgentManager';

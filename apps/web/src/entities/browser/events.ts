@@ -7,7 +7,8 @@ export const BrowserEvents = {
   FILE_UPDATED: 'browser:file_updated',
   PROJECT_ANALYZED: 'browser:project_analyzed',
   CODE_GENERATED: 'browser:code_generated',
-  CODE_REVIEW_COMPLETED: 'browser:code_review_completed'
+  CODE_REVIEW_COMPLETED: 'browser:code_review_completed',
+  DOWNLOAD_COMPLETED: 'browser:download_completed'
 } as const;
 
 export type BrowserEvent = typeof BrowserEvents[keyof typeof BrowserEvents];

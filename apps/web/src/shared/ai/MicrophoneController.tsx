@@ -1,25 +1,17 @@
 import { useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
-
 import { microphoneManager } from './MicrophoneManager'
-import { aiEngine } from '../graphics/Globe/AIEngine'
 
 export default function MicrophoneController() {
   useEffect(() => {
-    microphoneManager.requestPermission()
-
-    return () => {
-      microphoneManager.stop()
+    // Request permission if not already active
+    if (!microphoneManager.hasActiveStream) {
+      microphoneManager.requestPermission().catch(() => {})
     }
   }, [])
 
   useFrame(() => {
     microphoneManager.update()
-
-    aiEngine.voiceLevel = microphoneManager.voiceLevel
-
-    aiEngine.listening =
-      microphoneManager.voiceLevel > 0.02
   })
 
   return null

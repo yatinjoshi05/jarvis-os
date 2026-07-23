@@ -22,13 +22,15 @@ export class ThemeManager {
     const next = { ...current, accentColor: color };
     dashboardStore.setState({ theme: next });
 
-    // Apply custom styling hook to root document style
-    document.documentElement.style.setProperty('--color-accent', color);
+    if (typeof document !== 'undefined') {
+      document.documentElement.style.setProperty('--color-accent', color);
+    }
 
     dashboardEventEmitter.emit(DashboardEvents.THEME_CHANGED, next);
   }
 
   public applyThemeToDOM(mode: 'light' | 'dark' | 'system') {
+    if (typeof window === 'undefined') return;
     const root = window.document.documentElement;
     root.classList.remove('light', 'dark');
 
@@ -43,7 +45,9 @@ export class ThemeManager {
   public init() {
     const theme = this.getTheme();
     this.applyThemeToDOM(theme.mode);
-    document.documentElement.style.setProperty('--color-accent', theme.accentColor);
+    if (typeof document !== 'undefined') {
+      document.documentElement.style.setProperty('--color-accent', theme.accentColor);
+    }
   }
 }
 

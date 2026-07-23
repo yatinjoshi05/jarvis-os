@@ -1,4 +1,5 @@
 import { assistantState } from './AssistantState';
+import { voiceStateMachine } from './VoiceStateMachine';
 
 export type MicrophoneState =
   | 'idle'
@@ -17,6 +18,7 @@ class MicrophoneManager {
   public state: MicrophoneState = 'idle';
   public voiceLevel = 0;
   public isMuted = false;
+  private lastErrorMessage = '';
   private currentDeviceId = '';
 
   // VAD/Noise filtering states
@@ -25,12 +27,14 @@ class MicrophoneManager {
 
   async requestPermission(deviceId?: string): Promise<boolean> {
     if (this.stream && (!deviceId || this.currentDeviceId === deviceId)) {
+      console.info('[MicrophoneManager] Reusing the active microphone stream.');
       return true;
     }
 
     this.stop();
 
     try {
+      console.info('[MicrophoneManager] Requesting microphone permission.');
       this.state = 'requesting';
       const constraints: MediaStreamConstraints = {
         audio: {
@@ -42,9 +46,14 @@ class MicrophoneManager {
       };
 
       this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+      console.info('[MicrophoneManager] Microphone permission granted and stream opened.');
       this.currentDeviceId = deviceId || '';
+      this.lastErrorMessage = '';
 
       this.audioContext = new AudioContext();
+      if (this.audioContext.state === 'suspended') {
+        await this.audioContext.resume().catch(() => {});
+      }
       this.source = this.audioContext.createMediaStreamSource(this.stream);
       this.analyser = this.audioContext.createAnalyser();
       this.analyser.fftSize = 256;
@@ -62,10 +71,36 @@ class MicrophoneManager {
 
       return true;
     } catch (error) {
-      console.error('[MicrophoneManager] Permission or initialization error:', error);
-      this.state = 'denied';
-      assistantState.setPermissionDenied();
+      const name = error instanceof DOMException ? error.name : 'UnknownError';
+      this.lastErrorMessage = this.describeError(name);
+      console.error(`[MicrophoneManager] Microphone setup failed (${name}):`, error);
+      this.state = name === 'NotAllowedError' || name === 'SecurityError' ? 'denied' : 'idle';
+      if (this.state === 'denied') assistantState.setPermissionDenied();
       return false;
+    }
+  }
+
+  public getLastErrorMessage(): string {
+    return this.lastErrorMessage || 'Microphone is unavailable. Please try again.';
+  }
+
+  public get hasActiveStream(): boolean {
+    return !!this.stream && this.stream.getAudioTracks().some((track) => track.readyState === 'live');
+  }
+
+  private describeError(name: string): string {
+    switch (name) {
+      case 'NotAllowedError':
+      case 'SecurityError':
+        return 'Microphone permission was denied. Allow microphone access and try again.';
+      case 'NotFoundError':
+        return 'No microphone was found. Connect or select a microphone and try again.';
+      case 'NotReadableError':
+        return 'The microphone is busy or unavailable. Close other apps using it and try again.';
+      case 'OverconstrainedError':
+        return 'The selected microphone is unavailable. Choose another input device and try again.';
+      default:
+        return 'Microphone setup failed. Please check your microphone and try again.';
     }
   }
 
@@ -121,6 +156,10 @@ class MicrophoneManager {
       return;
     }
 
+    if (this.audioContext && this.audioContext.state === 'suspended') {
+      this.audioContext.resume().catch(() => {});
+    }
+
     this.analyser.getByteTimeDomainData(this.dataArray as any);
 
     let sum = 0;
@@ -133,13 +172,16 @@ class MicrophoneManager {
     this.voiceLevel += (rms - this.voiceLevel) * 0.25;
 
     // Noise Filter: Detect transient spike vs sustained speech
-    const energyThreshold = 0.025;
+    const isSpeaking = voiceStateMachine.state === 'SPEAKING' || voiceStateMachine.state === 'STREAMING';
+    const energyThreshold = isSpeaking ? 0.3 : 0.025;
+    const requiredDuration = isSpeaking ? 500 : 150;
+
     if (this.voiceLevel > energyThreshold) {
       if (this.energySpikeTime === 0) {
         this.energySpikeTime = Date.now();
       } else {
         const spikeDuration = Date.now() - this.energySpikeTime;
-        if (spikeDuration > 150) {
+        if (spikeDuration > requiredDuration) {
           this.speechDetected = true;
         }
       }

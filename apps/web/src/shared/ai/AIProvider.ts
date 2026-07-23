@@ -1,6 +1,8 @@
 export interface ProviderRequestOptions {
   context?: string;
   history?: Array<{ role: string; content: string }>;
+  /** Model override — resolved by AIRouter via prompt complexity classifier. */
+  model?: string;
 }
 
 export interface AIProvider {

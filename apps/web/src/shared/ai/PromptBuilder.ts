@@ -1,3 +1,5 @@
+import { identitySettings } from './IdentitySettings';
+
 export interface PromptConfig {
   systemPrompt?: string;
   history?: Array<{ role: string; content: string }>;
@@ -11,9 +13,12 @@ export class PromptBuilder {
   public static buildPrompt(config: PromptConfig): string {
     let prompt = '';
 
-    if (config.systemPrompt) {
-      prompt += `System: ${config.systemPrompt}\n\n`;
-    }
+    const identityDirective = identitySettings.getFormattedSystemInstructions();
+    const systemPromptCombined = config.systemPrompt
+      ? `${identityDirective}\n\n${config.systemPrompt}`
+      : identityDirective;
+
+    prompt += `System: ${systemPromptCombined}\n\n`;
 
     if (config.memory) {
       prompt += `Context/Memory:\n${config.memory}\n\n`;
@@ -41,3 +46,4 @@ export class PromptBuilder {
     return prompt;
   }
 }
+

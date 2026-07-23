@@ -48,7 +48,7 @@ export default function JarvisHeartbeat() {
 
     // Smooth transition values
     let currentAmpFactor = 0
-    let currentColor = { r: 255, g: 212, b: 0 } // Gold base
+    let currentColor = { r: 0, g: 223, b: 255 } // Blue base
     let currentGlow = 12
 
     const resizeCanvas = () => {
@@ -81,7 +81,7 @@ export default function JarvisHeartbeat() {
       const centerY = height / 2
 
       // Determine Target State
-      let targetColor = { r: 255, g: 212, b: 0 } // Default Gold
+      let targetColor = { r: 0, g: 223, b: 255 } // Default Blue
       let targetGlow = 12
       let targetAmpFactor = 1.0
 
@@ -94,15 +94,15 @@ export default function JarvisHeartbeat() {
         targetGlow = 15
         targetAmpFactor = 0.8
       } else if (listening) {
-        targetColor = { r: 16, g: 185, b: 129 }
+        targetColor = { r: 0, g: 255, b: 204 } // Cyan/Blue-Green
         targetGlow = 18
         targetAmpFactor = 1.2
       } else if (thinking) {
-        targetColor = { r: 255, g: 212, b: 0 }
+        targetColor = { r: 136, g: 0, b: 255 } // Purple
         targetGlow = 15
         targetAmpFactor = 0.7
       } else if (speaking) {
-        targetColor = { r: 255, g: 212, b: 0 }
+        targetColor = { r: 255, g: 0, b: 255 } // Magenta
         targetGlow = 18
         targetAmpFactor = 1.0
       }

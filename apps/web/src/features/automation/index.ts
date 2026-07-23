@@ -1,8 +1,6 @@
 /**
- * Public API for the automation module.
+ * Public API for the Automation feature module.
+ * Re-exports core automation entities and manager.
  */
-export * from './types';
-export * from './interfaces';
-export * from './constants';
-export * from './events';
-export * from './errors';
+export * from '../../entities/automation';
+export { default as automationManager } from '../../entities/automation/AutomationManager';

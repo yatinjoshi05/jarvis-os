@@ -4,6 +4,8 @@ import { assistantState } from './AssistantState'
 import { speechRecognitionManager } from './SpeechRecognitionManager'
 import { aiResponseManager } from './AIResponseManager'
 import { voiceStateMachine } from './VoiceStateMachine'
+import { VOICE_CONFIG } from './config'
+import { voiceManager } from './VoiceManager'
 
 /**
  * SpeechRecognitionController — mounts once inside NeuralGlobe's Canvas.
@@ -33,7 +35,11 @@ export default function SpeechRecognitionController() {
         // JARVIS is idle — restart passive listening (with a small delay so
         // any speech synthesis audio has time to decay)
         setTimeout(() => {
-          if (voiceStateMachine.state === 'IDLE' && !speechRecognitionManager.listening) {
+          if (
+            voiceStateMachine.state === 'IDLE' &&
+            !speechRecognitionManager.listening &&
+            !speechRecognitionManager.isStarting
+          ) {
             speechRecognitionManager.start()
           }
         }, 600)
@@ -71,9 +77,9 @@ export default function SpeechRecognitionController() {
           // ── Active command capture ─────────────────────────────
           assistantState.updateTranscript(transcript)
 
-          // Silence detection: submit after 1500ms of no new words
+          // Silence detection: submit after silenceTimeoutMs of no new words
           if (silenceTimeout) clearTimeout(silenceTimeout)
-          silenceTimeout = setTimeout(handleCommand, 1500)
+          silenceTimeout = setTimeout(handleCommand, VOICE_CONFIG.silenceTimeoutMs)
 
         } else if (assistantState.state === 'IDLE') {
           // ── Passive wake word detection ────────────────────────
@@ -95,22 +101,9 @@ export default function SpeechRecognitionController() {
               aiResponseManager.respond()
             } else {
               // Wake word only — switch to active listening mode
-              assistantState.startListening()
-              speechRecognitionManager.start()
+              voiceManager.startListening()
             }
           }
-        }
-
-      } else if (event.type === 'end') {
-        // Auto-restart recognition if we're in a state that needs it
-        const state = voiceStateMachine.state
-        if (state === 'LISTENING' || state === 'IDLE') {
-          // Small debounce to prevent rapid restart loops
-          setTimeout(() => {
-            if (!speechRecognitionManager.listening) {
-              speechRecognitionManager.start()
-            }
-          }, 200)
         }
 
       } else if (event.type === 'error') {
@@ -125,7 +118,9 @@ export default function SpeechRecognitionController() {
     // ── Initial start ───────────────────────────────────────────
     const state = voiceStateMachine.state
     if (state === 'IDLE' || state === 'LISTENING') {
-      speechRecognitionManager.start()
+      if (!speechRecognitionManager.listening && !speechRecognitionManager.isStarting) {
+        speechRecognitionManager.start()
+      }
     }
 
     return () => {

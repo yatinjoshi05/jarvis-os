@@ -1,9 +1,7 @@
 import { voiceStateMachine } from './VoiceStateMachine';
-import { textToSpeechManager } from './TextToSpeechManager';
-import { speechRecognitionManager } from './SpeechRecognitionManager';
-import { assistantState } from './AssistantState';
 import { microphoneManager } from './MicrophoneManager';
-import { VOICE_CONFIG } from './config';
+import { voiceSettings } from './VoiceSettings';
+import { voiceManager } from './VoiceManager';
 
 class InterruptManager {
   private checkInterval: ReturnType<typeof setInterval> | null = null;
@@ -12,7 +10,7 @@ class InterruptManager {
     this.stopMonitoring();
 
     this.checkInterval = setInterval(() => {
-      if (!VOICE_CONFIG.autoInterrupt) return;
+      if (!voiceSettings.settings.autoInterrupt) return;
 
       const state = voiceStateMachine.state;
       // We only interrupt if JARVIS is speaking or streaming output
@@ -33,19 +31,7 @@ class InterruptManager {
   }
 
   public triggerInterruption() {
-    // 1. Voice immediately stops
-    textToSpeechManager.cancel();
-    
-    // 2. Clear current captions and transition state
-    assistantState.setCaption('');
-    voiceStateMachine.transitionTo('INTERRUPTED');
-
-    // 3. Microphone/Recognition immediately activates
-    setTimeout(() => {
-      assistantState.startListening();
-      speechRecognitionManager.clear();
-      speechRecognitionManager.start();
-    }, 100);
+    voiceManager.interrupt();
   }
 }
 

@@ -30,6 +30,7 @@ export class AutomationManager {
   private workflows = new Map<string, Workflow>();
   private runs = new Map<string, WorkflowRun>();
   private logs: { timestamp: number; type: string; message: string; details?: any }[] = [];
+  private cronTimer: ReturnType<typeof setInterval> | null = null;
 
   constructor() {
     this.loadData();
@@ -39,6 +40,41 @@ export class AutomationManager {
 
     this.hookCRMEvents();
     this.hookFinancialEvents();
+    this.startCronLoop();
+
+    // Seed default Welcome Notification workflow if none exist
+    if (this.workflows.size === 0) {
+      this.createWorkflow(
+        'Lead Welcome Auto-Notification',
+        { type: 'event', eventName: 'crm:lead_created' },
+        [
+          {
+            id: 'step_welcome_email',
+            type: 'email',
+            payload: {
+              to: '{{lead.email}}',
+              subject: 'Welcome to Jarvis OS, {{lead.name}}!',
+              text: 'Hello {{lead.name}},\n\nThank you for signing up. An advisor has been assigned to contact you.'
+            }
+          },
+          {
+            id: 'step_delay',
+            type: 'delay',
+            payload: { delayMs: 2000 }
+          },
+          {
+            id: 'step_agent_alert',
+            type: 'notification',
+            payload: {
+              userId: 'usr_guest',
+              title: 'Action Required: New Lead',
+              message: 'A new lead has registered. Please review the lead profile inside the CRM board.',
+              channels: ['in-app']
+            }
+          }
+        ]
+      );
+    }
   }
 
   private loadData() {
@@ -122,6 +158,49 @@ export class AutomationManager {
         this.executeWorkflow(wf.id, contextData).catch(() => {});
       }
     });
+  }
+
+  // ─── CRON SCHEDULER LOOP ─────────────────────────────────────
+
+  /**
+   * Starts a recurring 60-second timer that evaluates all scheduled (cron) workflows
+   * and fires any whose nextRunAt timestamp is in the past or present.
+   */
+  public startCronLoop() {
+    this.stopCronLoop();
+    this.cronTimer = setInterval(() => {
+      const now = Date.now();
+      this.workflows.forEach((wf) => {
+        if (wf.status !== 'active' || wf.trigger.type !== 'scheduled') return;
+        const cronExpr = wf.trigger.cronExpression;
+        if (!cronExpr) return;
+
+        // Initialize nextRunAt on first tick if not set
+        const nextRunAt: number = (wf as any).nextRunAt ?? AutomationUtils.parseCronToNextTime(cronExpr);
+        if ((wf as any).nextRunAt === undefined) {
+          (wf as any).nextRunAt = nextRunAt;
+          this.workflows.set(wf.id, wf);
+          this.saveData();
+          return;
+        }
+
+        if (now >= nextRunAt) {
+          this.log('cron', `Cron workflow "${wf.name}" triggered at ${new Date(now).toISOString()}`);
+          this.executeWorkflow(wf.id, { cronFiredAt: now }).catch(() => {});
+          // Advance to the next scheduled occurrence
+          (wf as any).nextRunAt = AutomationUtils.parseCronToNextTime(cronExpr);
+          this.workflows.set(wf.id, wf);
+          this.saveData();
+        }
+      });
+    }, 60000); // Check every 60 seconds (1 minute)
+  }
+
+  public stopCronLoop() {
+    if (this.cronTimer) {
+      clearInterval(this.cronTimer);
+      this.cronTimer = null;
+    }
   }
 
   // ─── PUBLIC WORKFLOW API ────────────────────────────────────

@@ -41,7 +41,7 @@ export class OllamaProvider implements AIProvider {
         return text;
       });
     } catch (error) {
-      throw ErrorManager.mapProviderError('OllamaProvider', error);
+      throw ErrorManager.mapProviderError('OllamaProvider', error, config.baseUrl);
     }
   }
 
@@ -101,7 +101,7 @@ export class OllamaProvider implements AIProvider {
         }
       });
     } catch (error) {
-      throw ErrorManager.mapProviderError('OllamaProvider', error);
+      throw ErrorManager.mapProviderError('OllamaProvider', error, config.baseUrl);
     }
   }
 
@@ -116,7 +116,9 @@ export class OllamaProvider implements AIProvider {
   async healthCheck(): Promise<boolean> {
     const config = AI_CONFIG.providers.ollama;
     try {
-      const response = await fetch(`${config.baseUrl}/api/tags`);
+      const response = await fetch(`${config.baseUrl}/api/tags`, {
+        signal: AbortSignal.timeout(3000)
+      });
       this.status = response.ok ? 'online' : 'offline';
       return response.ok;
     } catch (_) {

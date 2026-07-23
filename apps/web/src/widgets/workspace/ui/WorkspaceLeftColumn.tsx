@@ -1,18 +1,23 @@
 import { useRef, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Play, Plus, Chrome, FileText, Code, Monitor, Camera, Mic, Battery, Wifi, Shield } from 'lucide-react'
-import { useAssistantState } from '../../../shared/ai/AIManager'
+import { useAssistantState, aiResponseManager, voiceManager } from '../../../shared/ai/AIManager'
 import JarvisHeartbeat from '../../../shared/ui/heartbeat/JarvisHeartbeat'
 
 interface ActionRowProps {
   label: string
   icon: React.ReactNode
+  onClick?: () => void
 }
 
-function ActionRow({ label, icon }: ActionRowProps) {
+function ActionRow({ label, icon, onClick }: ActionRowProps) {
   return (
-    <div className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-[10px] text-white/80 hover:bg-[#FFD400]/5 hover:border-[#FFD400]/20 hover:text-white transition-all cursor-pointer">
+    <div 
+      onClick={onClick}
+      className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-[10px] text-white/80 hover:bg-[#00DFFF]/5 hover:border-[#00DFFF]/20 hover:text-white transition-all cursor-pointer group"
+    >
       <div className="flex items-center space-x-2.5">
-        <span className="text-[#FFD400]">{icon}</span>
+        <span className="text-[#00DFFF]">{icon}</span>
         <span className="font-medium tracking-wide">{label}</span>
       </div>
       <Play size={8} className="text-white/20 group-hover:text-white/60" />
@@ -38,7 +43,7 @@ function Gauge({ percentage, label }: GaugeProps) {
             cx="22"
             cy="22"
             r={radius}
-            className="stroke-[#FFD400]"
+            className="stroke-[#00DFFF]"
             strokeWidth="2.5"
             fill="transparent"
             strokeDasharray={circumference}
@@ -95,26 +100,26 @@ function JarvisStatusCard() {
     textColor = 'text-red-500'
   } else if (speaking) {
     statusLabel = 'SPEAKING...'
-    dotColor = 'bg-[#FFD400]'
+    dotColor = 'bg-[#FF00FF]'
     dotAnimate = ''
-    textColor = 'text-[#FFD400]'
+    textColor = 'text-[#FF00FF]'
   } else if (thinking) {
     statusLabel = 'THINKING...'
-    dotColor = 'bg-[#FFD400]'
+    dotColor = 'bg-[#8800FF]'
     dotAnimate = 'animate-pulse'
-    textColor = 'text-[#FFD400]'
+    textColor = 'text-[#8800FF]'
   } else if (listening) {
     statusLabel = 'LISTENING...'
-    dotColor = 'bg-[#FFD400]'
+    dotColor = 'bg-[#00FFCC]'
     dotAnimate = 'animate-ping'
-    textColor = 'text-[#FFD400]'
+    textColor = 'text-[#00FFCC]'
   }
 
   return (
     <div className="flex-1 min-h-[140px] flex flex-col justify-between border border-white/10 rounded-xl p-3.5 bg-black/40 transition-all duration-300">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-white/5 pb-1.5 flex-shrink-0">
-        <span className="text-[#FFD400] font-black uppercase text-xs tracking-widest">JARVIS</span>
+        <span className="bg-gradient-to-r from-[#00DFFF] to-[#FF00FF] bg-clip-text text-transparent font-black uppercase text-xs tracking-widest">JARVIS</span>
         <div className={`flex items-center space-x-1 text-[9px] ${textColor} font-bold tracking-widest`}>
           <span className={`w-1.5 h-1.5 rounded-full ${dotColor} ${dotAnimate}`} />
           <span>{statusLabel}</span>
@@ -137,9 +142,9 @@ function JarvisStatusCard() {
                 {caption || '...'}
               </p>
             ) : thinking ? (
-              <p className="text-[9px] text-[#FFD400]/60 italic tracking-widest animate-pulse">THINKING...</p>
+              <p className="text-[9px] text-[#8800FF]/80 italic tracking-widest animate-pulse">THINKING...</p>
             ) : listening ? (
-              <p className="text-[9px] text-[#FFD400]/80 font-semibold tracking-wide">
+              <p className="text-[9px] text-[#00FFCC]/80 font-semibold tracking-wide">
                 {transcript || 'Listening...'}
               </p>
             ) : null}
@@ -150,13 +155,36 @@ function JarvisStatusCard() {
       {/* Footer */}
       <div className="flex items-center justify-between border-t border-white/5 pt-1.5 text-[9px] flex-shrink-0">
         <span className="text-white/40">Wake Word : JARVIS</span>
-        <span className="px-1.5 py-0.5 border border-[#FFD400]/40 bg-[#FFD400]/10 text-[#FFD400] rounded text-[8px] font-bold">ON</span>
+        <span className="px-1.5 py-0.5 border border-[#00FFCC]/40 bg-[#00FFCC]/10 text-[#00FFCC] rounded text-[8px] font-bold">ON</span>
       </div>
     </div>
   )
 }
 
 export default function WorkspaceLeftColumn() {
+  const navigate = useNavigate()
+  const { listening } = useAssistantState()
+
+  const [cpu, setCpu] = useState(12)
+  const [ram, setRam] = useState(32)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCpu(Math.floor(10 + Math.random() * 15))
+      setRam(Math.floor(31 + Math.sin(Date.now() * 0.0001) * 2))
+    }, 3000)
+    return () => clearInterval(timer)
+  }, [])
+
+  const handleVoiceNoteClick = () => {
+    if (listening) {
+      voiceManager.stopListening()
+      aiResponseManager.respond()
+    } else {
+      voiceManager.startListening()
+    }
+  }
+
   return (
     <div className="w-full flex flex-col gap-4 select-none font-mono">
       {/* CARD 1: JARVIS VOICE STATUS (dynamic) */}
@@ -169,12 +197,12 @@ export default function WorkspaceLeftColumn() {
           <Plus size={11} className="text-white/40 hover:text-white cursor-pointer" />
         </div>
         <div className="space-y-1 my-auto">
-          <ActionRow label="Open Chrome" icon={<Chrome size={11} />} />
-          <ActionRow label="Create New File" icon={<FileText size={11} />} />
-          <ActionRow label="AI Code Assistant" icon={<Code size={11} />} />
-          <ActionRow label="System Scan" icon={<Monitor size={11} />} />
-          <ActionRow label="Take Screenshot" icon={<Camera size={11} />} />
-          <ActionRow label="Voice Note" icon={<Mic size={11} />} />
+          <ActionRow label="Open Chrome" icon={<Chrome size={11} />} onClick={() => navigate('/browser')} />
+          <ActionRow label="Create New File" icon={<FileText size={11} />} onClick={() => navigate('/coding')} />
+          <ActionRow label="AI Code Assistant" icon={<Code size={11} />} onClick={() => navigate('/coding')} />
+          <ActionRow label="System Scan" icon={<Monitor size={11} />} onClick={() => navigate('/devices')} />
+          <ActionRow label="Take Screenshot" icon={<Camera size={11} />} onClick={() => alert("Screenshot captured! (Simulated)")} />
+          <ActionRow label="Voice Note" icon={<Mic size={11} />} onClick={handleVoiceNoteClick} />
         </div>
       </div>
 
@@ -187,8 +215,8 @@ export default function WorkspaceLeftColumn() {
 
         {/* 3 Circular Progress Rings */}
         <div className="flex items-center justify-around py-1.5 my-auto">
-          <Gauge percentage={12} label="CPU" />
-          <Gauge percentage={32} label="RAM" />
+          <Gauge percentage={cpu} label="CPU" />
+          <Gauge percentage={ram} label="RAM" />
           <Gauge percentage={67} label="DISK" />
         </div>
 
@@ -200,7 +228,7 @@ export default function WorkspaceLeftColumn() {
             <span className="text-white font-bold">88%</span>
           </div>
           <div className="flex items-center space-x-1">
-            <Wifi size={11} className="text-[#FFD400]" />
+            <Wifi size={11} className="text-[#00FFCC]" />
             <span>NETWORK:</span>
             <span className="text-green-500 font-bold">Good</span>
           </div>

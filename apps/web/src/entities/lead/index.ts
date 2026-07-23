@@ -1,8 +1,5 @@
 /**
- * Public API for the lead module.
+ * Re-exports Lead domain entities from the consolidated CRM core.
  */
-export * from './types';
-export * from './interfaces';
-export * from './constants';
-export * from './events';
-export * from './errors';
+export * from '../crm';
+export { default as crmManager } from '../crm/CRMManager';

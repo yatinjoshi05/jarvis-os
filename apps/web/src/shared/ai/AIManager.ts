@@ -3,6 +3,8 @@ import { conversationManager } from './ConversationManager';
 import { contextManager } from './ContextManager';
 import { aiLogger } from './Logger';
 import { voiceManager } from './VoiceManager';
+import { MemoryCompression } from '../memory/MemoryCompression';
+import { TokenManager } from './TokenManager';
 
 export { useAssistantState, assistantState } from './AssistantState';
 export { speechRecognitionManager } from './SpeechRecognitionManager';
@@ -10,17 +12,34 @@ export { aiResponseManager } from './AIResponseManager';
 export { default as MicrophoneController } from './MicrophoneController';
 export { default as SpeechRecognitionController } from './SpeechRecognitionController';
 export { microphoneManager } from './MicrophoneManager';
+export { voiceManager } from './VoiceManager';
 
 export class AIManager {
+  constructor() {
+    MemoryCompression.registerSummarizer(async (text) => {
+      try {
+        const prompt = `Summarize the key facts, user preferences, and context from this chat history in a concise paragraph:\n\n${text}`;
+        return await aiRouter.generateResponse(prompt);
+      } catch (e) {
+        console.error('[AIManager] LLM summarization failed:', e);
+        return 'Summary compilation failed.';
+      }
+    });
+  }
+
   public async generateResponse(prompt: string, _contextId?: string): Promise<string> {
     aiLogger.info('AIManager', `Generating response for: "${prompt.substring(0, 50)}..."`);
     const context = contextManager.getContextString();
     conversationManager.addUser(prompt);
     
+    const MAX_HISTORY_TOKENS = 2000;
+    const rawHistory = conversationManager.history.filter(m => m.role !== 'system');
+    const trimmedHistory = TokenManager.trimHistory(rawHistory, MAX_HISTORY_TOKENS) as typeof rawHistory;
+
     try {
       const response = await aiRouter.generateResponse(prompt, undefined, {
         context,
-        history: conversationManager.history
+        history: trimmedHistory
       });
       
       conversationManager.addAssistant(response);
@@ -40,6 +59,10 @@ export class AIManager {
     const context = contextManager.getContextString();
     conversationManager.addUser(prompt);
 
+    const MAX_HISTORY_TOKENS = 2000;
+    const rawHistory = conversationManager.history.filter(m => m.role !== 'system');
+    const trimmedHistory = TokenManager.trimHistory(rawHistory, MAX_HISTORY_TOKENS) as typeof rawHistory;
+
     try {
       let fullResponse = '';
       await aiRouter.generateStream(prompt, (chunk) => {
@@ -47,7 +70,7 @@ export class AIManager {
         onChunk(chunk);
       }, {
         context,
-        history: conversationManager.history
+        history: trimmedHistory
       });
 
       conversationManager.addAssistant(fullResponse);
