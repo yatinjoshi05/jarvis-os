@@ -252,13 +252,36 @@ function QuantumParticleSphere({
 
   const stateConfig = STATE_MULTIPLIERS[assistantState]
 
+  // Fix 2: Use qualityConfig.mainPoints directly so point count is not capped to 1,400 legacy store points
   const mainGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
-    const activePoints = storeSettings.particleCount ? Math.min(storeSettings.particleCount, qualityConfig.mainPoints) : qualityConfig.mainPoints
+    const activePoints = qualityConfig.mainPoints
     const { positions, colors, sizes } = generateFibonacciSphere(activePoints, radius)
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
     geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1))
+
+    // Diagnostic bounds logging
+    let minX = Infinity, maxX = -Infinity
+    let minY = Infinity, maxY = -Infinity
+    let minZ = Infinity, maxZ = -Infinity
+    for (let i = 0; i < positions.length; i += 3) {
+      if (positions[i] < minX) minX = positions[i]
+      if (positions[i] > maxX) maxX = positions[i]
+      if (positions[i+1] < minY) minY = positions[i+1]
+      if (positions[i+1] > maxY) maxY = positions[i+1]
+      if (positions[i+2] < minZ) minZ = positions[i+2]
+      if (positions[i+2] > maxZ) maxZ = positions[i+2]
+    }
+    console.log('[QuantumParticleGlobe Diagnostic]', {
+      generatedMainPoints: positions.length / 3,
+      storeParticleCount: storeSettings.particleCount,
+      targetQualityPoints: qualityConfig.mainPoints,
+      bounds: { X: [minX.toFixed(2), maxX.toFixed(2)], Y: [minY.toFixed(2), maxY.toFixed(2)], Z: [minZ.toFixed(2), maxZ.toFixed(2)] },
+      cameraPosition: [0, 0, 6.2],
+      cameraFov: 45,
+    })
+
     return geo
   }, [qualityConfig.mainPoints, storeSettings.particleCount, radius])
 
@@ -402,7 +425,6 @@ function QuantumParticleSphere({
           float dist = length(gl_PointCoord - vec2(0.5));
           if (dist > 0.5) discard;
           
-          // Enhanced gaussian glow intensity & rim luminance for vibrant non-postprocessed rendering
           float intensity = pow(1.0 - (dist * 2.0), 1.6);
           float rimLuminance = 1.0 + vRim * 2.2;
           
@@ -571,6 +593,9 @@ export default function QuantumParticleGlobe() {
   const [assistantState, setAssistantState] = useState<AssistantState>('idle')
   const [fps, setFps] = useState(60)
 
+  // Fix 1: Gate dev overlay behind explicit environment variable flag VITE_GLOBE_DEBUG_PANEL=true
+  const showDebugPanel = import.meta.env.VITE_GLOBE_DEBUG_PANEL === 'true'
+
   const config = QUALITY_PRESETS[qualityTier]
   const totalPoints = config.mainPoints + config.detachedPoints + config.dustPoints
 
@@ -590,53 +615,55 @@ export default function QuantumParticleGlobe() {
 
   return (
     <div className="w-full h-full relative overflow-visible bg-black">
-      {/* Dev Control Overlay: Performance Tier & AI State Selector */}
-      <div className="absolute top-3 left-3 z-50 flex flex-col gap-2.5 bg-black/80 border border-white/10 rounded-xl p-3 text-xs text-white/90 shadow-2xl backdrop-blur-md max-w-xs">
-        <div className="flex items-center justify-between gap-4 font-mono">
-          <span className="text-white/60 uppercase tracking-wider text-[10px]">Quality Tier</span>
-          <span className="text-[#00DFFF] font-bold">{fps} FPS</span>
-        </div>
+      {/* Dev Control Overlay: Gated by VITE_GLOBE_DEBUG_PANEL=true */}
+      {showDebugPanel && (
+        <div className="absolute top-3 left-3 z-50 flex flex-col gap-2.5 bg-black/80 border border-white/10 rounded-xl p-3 text-xs text-white/90 shadow-2xl backdrop-blur-md max-w-xs">
+          <div className="flex items-center justify-between gap-4 font-mono">
+            <span className="text-white/60 uppercase tracking-wider text-[10px]">Quality Tier</span>
+            <span className="text-[#00DFFF] font-bold">{fps} FPS</span>
+          </div>
 
-        <div className="flex items-center gap-1">
-          {(['low', 'medium', 'high', 'ultra'] as QualityTier[]).map((tier) => (
-            <button
-              key={tier}
-              onClick={() => setQualityTier(tier)}
-              className={
-                qualityTier === tier
-                  ? 'px-2.5 py-1 rounded-md bg-[#00DFFF]/20 border border-[#00DFFF] text-[#00DFFF] font-bold text-[10px] uppercase tracking-wider'
-                  : 'px-2.5 py-1 rounded-md border border-white/10 text-white/50 hover:text-white text-[10px] uppercase tracking-wider'
-              }
-            >
-              {tier}
-            </button>
-          ))}
-        </div>
+          <div className="flex items-center gap-1">
+            {(['low', 'medium', 'high', 'ultra'] as QualityTier[]).map((tier) => (
+              <button
+                key={tier}
+                onClick={() => setQualityTier(tier)}
+                className={
+                  qualityTier === tier
+                    ? 'px-2.5 py-1 rounded-md bg-[#00DFFF]/20 border border-[#00DFFF] text-[#00DFFF] font-bold text-[10px] uppercase tracking-wider'
+                    : 'px-2.5 py-1 rounded-md border border-white/10 text-white/50 hover:text-white text-[10px] uppercase tracking-wider'
+                }
+              >
+                {tier}
+              </button>
+            ))}
+          </div>
 
-        <div className="flex items-center justify-between gap-4 font-mono mt-1">
-          <span className="text-white/60 uppercase tracking-wider text-[10px]">AI State Simulation</span>
-        </div>
+          <div className="flex items-center justify-between gap-4 font-mono mt-1">
+            <span className="text-white/60 uppercase tracking-wider text-[10px]">AI State Simulation</span>
+          </div>
 
-        <div className="grid grid-cols-3 gap-1">
-          {(['idle', 'listening', 'thinking', 'speaking', 'success', 'error'] as AssistantState[]).map((st) => (
-            <button
-              key={st}
-              onClick={() => setAssistantState(st)}
-              className={
-                assistantState === st
-                  ? 'px-2 py-1 rounded bg-white/20 border border-white text-white font-bold text-[9px] uppercase tracking-wider text-center'
-                  : 'px-2 py-1 rounded border border-white/10 text-white/50 hover:text-white text-[9px] uppercase tracking-wider text-center'
-              }
-            >
-              {st}
-            </button>
-          ))}
-        </div>
+          <div className="grid grid-cols-3 gap-1">
+            {(['idle', 'listening', 'thinking', 'speaking', 'success', 'error'] as AssistantState[]).map((st) => (
+              <button
+                key={st}
+                onClick={() => setAssistantState(st)}
+                className={
+                  assistantState === st
+                    ? 'px-2 py-1 rounded bg-white/20 border border-white text-white font-bold text-[9px] uppercase tracking-wider text-center'
+                    : 'px-2 py-1 rounded border border-white/10 text-white/50 hover:text-white text-[9px] uppercase tracking-wider text-center'
+                }
+              >
+                {st}
+              </button>
+            ))}
+          </div>
 
-        <div className="text-[10px] font-mono text-white/40 mt-0.5 flex flex-col gap-0.5">
-          <div>Points: {totalPoints.toLocaleString()}</div>
+          <div className="text-[10px] font-mono text-white/40 mt-0.5 flex flex-col gap-0.5">
+            <div>Points: {totalPoints.toLocaleString()}</div>
+          </div>
         </div>
-      </div>
+      )}
 
       <Canvas
         camera={{ position: [0, 0, 6.2], fov: 45 }}
