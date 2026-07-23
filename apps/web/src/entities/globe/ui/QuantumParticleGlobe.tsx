@@ -1,7 +1,6 @@
 import { useMemo, useRef, useEffect, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
-import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import * as THREE from 'three'
 import { useAudioAnalyser } from '../../../shared/audio/useAudioAnalyser'
 import { useGlobeSettings } from '../../../shared/globe/useGlobeSettings'
@@ -13,9 +12,6 @@ export interface QualityConfig {
   mainPoints: number
   detachedPoints: number
   dustPoints: number
-  enableBloom: boolean
-  bloomIntensity: number
-  bloomThreshold: number
 }
 
 export const QUALITY_PRESETS: Record<QualityTier, QualityConfig> = {
@@ -23,33 +19,21 @@ export const QUALITY_PRESETS: Record<QualityTier, QualityConfig> = {
     mainPoints: 20000,
     detachedPoints: 0,
     dustPoints: 0,
-    enableBloom: false,
-    bloomIntensity: 0.0,
-    bloomThreshold: 0.2,
   },
   medium: {
     mainPoints: 50000,
     detachedPoints: 3000,
     dustPoints: 1000,
-    enableBloom: true,
-    bloomIntensity: 1.0,
-    bloomThreshold: 0.15,
   },
   high: {
     mainPoints: 100000,
     detachedPoints: 6000,
     dustPoints: 2500,
-    enableBloom: true,
-    bloomIntensity: 1.3,
-    bloomThreshold: 0.12,
   },
   ultra: {
     mainPoints: 150000,
     detachedPoints: 10000,
     dustPoints: 4000,
-    enableBloom: true,
-    bloomIntensity: 1.6,
-    bloomThreshold: 0.10,
   },
 }
 
@@ -162,7 +146,7 @@ function generateFibonacciSphere(count: number, radius: number) {
 
     const seed = Math.sin(i * 12.9898 + y * 78.233) * 43758.5453
     const noiseFactor = (seed - Math.floor(seed))
-    sizes[i] = 0.016 + noiseFactor * 0.022
+    sizes[i] = 0.018 + noiseFactor * 0.024
   }
 
   return { positions, colors, sizes }
@@ -205,7 +189,7 @@ function generateDetachedParticles(count: number, baseRadius: number) {
     colors[i * 3 + 1] = col.g
     colors[i * 3 + 2] = col.b
 
-    sizes[i] = 0.012 + Math.random() * 0.02
+    sizes[i] = 0.014 + Math.random() * 0.022
   }
 
   return { positions, colors, sizes }
@@ -236,7 +220,7 @@ function generateMicroDust(count: number) {
     colors[i * 3 + 1] = 0.85 + Math.random() * 0.15
     colors[i * 3 + 2] = 1.0
 
-    sizes[i] = 0.008 + Math.random() * 0.015
+    sizes[i] = 0.010 + Math.random() * 0.018
   }
 
   return { positions, colors, sizes }
@@ -406,7 +390,7 @@ function QuantumParticleSphere({
           vRim = pow(1.0 - ndotv, 2.2);
           float sizeFactor = (1.0 + vRim * uRimBoost) * (1.0 + uVoiceLevel * 0.4);
           
-          gl_PointSize = size * uSizeScale * sizeFactor * (300.0 / -mvPosition.z);
+          gl_PointSize = size * uSizeScale * sizeFactor * (320.0 / -mvPosition.z);
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
@@ -418,10 +402,11 @@ function QuantumParticleSphere({
           float dist = length(gl_PointCoord - vec2(0.5));
           if (dist > 0.5) discard;
           
-          float intensity = pow(1.0 - (dist * 2.0), 1.8);
-          float rimLuminance = 1.0 + vRim * 1.5;
+          // Enhanced gaussian glow intensity & rim luminance for vibrant non-postprocessed rendering
+          float intensity = pow(1.0 - (dist * 2.0), 1.6);
+          float rimLuminance = 1.0 + vRim * 2.2;
           
-          gl_FragColor = vec4(vColor * rimLuminance, intensity * 0.95);
+          gl_FragColor = vec4(vColor * rimLuminance * 1.2, intensity * 0.98);
         }
       `,
       transparent: true,
@@ -448,9 +433,9 @@ function QuantumParticleSphere({
           pos.z += sin(uTime * 0.5 + position.z * 2.0) * 0.08;
 
           vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-          vAlpha = 0.35 + 0.35 * sin(uTime * 1.2 + position.x * 5.0);
+          vAlpha = 0.4 + 0.4 * sin(uTime * 1.2 + position.x * 5.0);
 
-          gl_PointSize = size * (260.0 / -mvPosition.z);
+          gl_PointSize = size * (280.0 / -mvPosition.z);
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
@@ -461,8 +446,8 @@ function QuantumParticleSphere({
         void main() {
           float dist = length(gl_PointCoord - vec2(0.5));
           if (dist > 0.5) discard;
-          float intensity = pow(1.0 - (dist * 2.0), 2.0);
-          gl_FragColor = vec4(vColor, intensity * vAlpha);
+          float intensity = pow(1.0 - (dist * 2.0), 1.8);
+          gl_FragColor = vec4(vColor * 1.2, intensity * vAlpha);
         }
       `,
       transparent: true,
@@ -488,9 +473,9 @@ function QuantumParticleSphere({
           pos.y += cos(uTime * 0.25 + position.x) * 0.05;
 
           vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-          vAlpha = 0.15 + 0.15 * sin(uTime * 0.8 + position.y * 3.0);
+          vAlpha = 0.2 + 0.2 * sin(uTime * 0.8 + position.y * 3.0);
 
-          gl_PointSize = size * (240.0 / -mvPosition.z);
+          gl_PointSize = size * (250.0 / -mvPosition.z);
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
@@ -502,7 +487,7 @@ function QuantumParticleSphere({
           float dist = length(gl_PointCoord - vec2(0.5));
           if (dist > 0.5) discard;
           float intensity = 1.0 - (dist * 2.0);
-          gl_FragColor = vec4(vColor, intensity * vAlpha);
+          gl_FragColor = vec4(vColor * 1.1, intensity * vAlpha);
         }
       `,
       transparent: true,
@@ -589,7 +574,6 @@ export default function QuantumParticleGlobe() {
   const config = QUALITY_PRESETS[qualityTier]
   const totalPoints = config.mainPoints + config.detachedPoints + config.dustPoints
 
-  // WebGL Context Loss & Recovery Handling
   const handleCreated = ({ gl }: { gl: THREE.WebGLRenderer }) => {
     const canvas = gl.domElement
     const handleContextLost = (event: Event) => {
@@ -651,7 +635,6 @@ export default function QuantumParticleGlobe() {
 
         <div className="text-[10px] font-mono text-white/40 mt-0.5 flex flex-col gap-0.5">
           <div>Points: {totalPoints.toLocaleString()}</div>
-          <div>Bloom: {config.enableBloom ? 'ON' : 'OFF'}</div>
         </div>
       </div>
 
@@ -668,16 +651,6 @@ export default function QuantumParticleGlobe() {
           radius={1.8}
           onFpsUpdate={setFps}
         />
-
-        <EffectComposer enableNormalPass={false}>
-          <Bloom
-            enabled={config.enableBloom}
-            intensity={config.enableBloom ? config.bloomIntensity : 0}
-            luminanceThreshold={config.bloomThreshold}
-            luminanceSmoothing={0.85}
-            mipmapBlur
-          />
-        </EffectComposer>
 
         <OrbitControls
           enableZoom={true}
