@@ -669,15 +669,15 @@ export default function QuantumParticleGlobe() {
           onFpsUpdate={setFps}
         />
 
-        {config.enableBloom && (
-          <EffectComposer>
-            <Bloom
-              intensity={config.bloomIntensity}
-              luminanceThreshold={config.bloomThreshold}
-              luminanceSmoothing={0.85}
-            />
-          </EffectComposer>
-        )}
+        <EffectComposer enableNormalPass={false}>
+          <Bloom
+            enabled={config.enableBloom}
+            intensity={config.enableBloom ? config.bloomIntensity : 0}
+            luminanceThreshold={config.bloomThreshold}
+            luminanceSmoothing={0.85}
+            mipmapBlur
+          />
+        </EffectComposer>
 
         <OrbitControls
           enableZoom={true}
