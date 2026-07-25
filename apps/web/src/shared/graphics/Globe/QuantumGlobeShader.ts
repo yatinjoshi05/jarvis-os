@@ -1,10 +1,11 @@
 import * as THREE from 'three';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// QUANTUM GLOBE PRODUCTION RENDERER — ISOLATED HERO PEAKS & ENHANCED MID-ENERGY DENSITY
-// 1. Hero nodes are isolated local peak points (no elongated streaks).
-// 2. Mid-energy particles create richer, fuller energy fields across the surface.
-// 3. Interior depth volume is enhanced through parallax depth scaling without glow.
+// QUANTUM GLOBE PRODUCTION RENDERER — LOCKED SUBSYSTEM REFINEMENT ENGINE
+// 1. Edge Turbulence & Detached Atmosphere: Multi-harmonic edge breakup & orbital drift.
+// 2. Interior Volumetric Depth: Parallax-sorted inner depth volume without glow.
+// 3. Coherent Energy Flow: Fluid tangential vector field streamlines across lattice.
+// 4. Multi-Layer Rim Structure: 3-tier view-space specular corona & rim scatter.
 // ─────────────────────────────────────────────────────────────────────────────
 export const SurfaceParticleShader = {
   uniforms: {
@@ -34,7 +35,7 @@ export const SurfaceParticleShader = {
       vec3 n = normalize(aBasePosition);
 
       // ───────────────────────────────────────────────────────────────────────
-      // 1. Multi-Octave 3D Scalar Field E ∈ [0.0, 1.0]
+      // 1. Coherent Energy Flow (Multi-Octave 3D Scalar Field E ∈ [0.0, 1.0])
       // ───────────────────────────────────────────────────────────────────────
       float f1 = sin(aBasePosition.x * 2.2 + aBasePosition.y * 1.8 + uTime * 0.55) * 0.5 + 0.5;
       float f2 = cos(aBasePosition.z * 4.4 - aBasePosition.y * 3.8 + aBasePosition.x * 2.4 + uTime * 0.95) * 0.5 + 0.5;
@@ -45,34 +46,34 @@ export const SurfaceParticleShader = {
       float rawE = f1 * 0.45 + f2 * 0.35 + filaments * 0.65;
       float E = clamp(rawE / 1.40, 0.0, 1.0);
 
-      // ───────────────────────────────────────────────────────────────────────
-      // 2. Void Channels & ISOLATED HERO PEAK ACTIVATION
-      // Isolated local maxima sampling prevents hero particles from forming continuous streaks
-      // ───────────────────────────────────────────────────────────────────────
+      // Void channels & Isolated Hero Peak Nodes
       float voidMask   = smoothstep(0.20, 0.46, E);
       float islandMask = step(0.50, E);
 
-      // Spatial point-peak signal: restricts hero status strictly to isolated vertex maxima (<0.8% visible)
       float peakSpatial = sin(aBasePosition.x * 33.0 + aBasePosition.y * 41.0 + aBasePosition.z * 37.0) * 0.5 + 0.5;
       float heroPeakSignal = E * (0.60 + peakSpatial * 0.40);
       float heroMask   = step(0.915, heroPeakSignal);
 
       // ───────────────────────────────────────────────────────────────────────
-      // 3. Surface Micro-Displacement (Max 0.015R)
+      // 2. Refined Edge Turbulence & Coherent Tangential Vector Flow Streamlines
       // ───────────────────────────────────────────────────────────────────────
       float lowFreqDeform = sin(aBasePosition.y * 5.0 - uTime * 0.8 + aBasePosition.x * 3.0) * 0.008;
       float medFreqStress = cos(aBasePosition.x * 10.0 + aBasePosition.z * 8.0 + uTime * 1.2) * 0.005;
-      float edgeBreakup   = sin(aBasePosition.x * 18.0 + aBasePosition.y * 24.0 + uTime * 1.4) * 0.004;
+
+      // Multi-harmonic edge breakup turbulence
+      float edgeBreakup = sin(aBasePosition.x * 24.0 + aBasePosition.y * 32.0 + uTime * 1.8) * 0.005 +
+                          cos(aBasePosition.z * 28.0 - uTime * 1.2) * 0.003;
       vec3 radialDisplacement = n * (lowFreqDeform + medFreqStress + edgeBreakup);
 
+      // Tangential vector flow field along surface tangent plane
       vec3 up = vec3(0.0, 1.0, 0.0);
       vec3 tangent = cross(up, n);
       if (length(tangent) < 0.001) tangent = vec3(1.0, 0.0, 0.0);
       else tangent = normalize(tangent);
       vec3 bitangent = cross(n, tangent);
 
-      float flowT1 = sin(aBasePosition.y * 5.0 + uTime * 1.1) * 0.010;
-      float flowT2 = cos(aBasePosition.x * 7.0 - uTime * 0.9) * 0.008;
+      float flowT1 = sin(aBasePosition.y * 4.5 + aBasePosition.z * 2.5 + uTime * 1.25) * 0.012;
+      float flowT2 = cos(aBasePosition.x * 6.5 - aBasePosition.y * 3.0 - uTime * 1.05) * 0.009;
       vec3 tangentialDisplacement = tangent * flowT1 + bitangent * flowT2;
 
       vec3 pos = aBasePosition + radialDisplacement + tangentialDisplacement;
@@ -81,12 +82,16 @@ export const SurfaceParticleShader = {
       vec3  vNorm   = normalize(normalMatrix * n);
       vec3  viewDir = normalize(-mvPos.xyz);
 
-      float rim   = pow(1.0 - abs(dot(vNorm, viewDir)), 2.8);
-      float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
+      // ───────────────────────────────────────────────────────────────────────
+      // 3. Multi-Layer Rim Structure & Specular Corona Gating
+      // Layer 1: Inner Shell Rim Angle | Layer 2: Specular Fresnel Corona | Layer 3: Edge Turbulence Scatter
+      // ───────────────────────────────────────────────────────────────────────
+      float rimAngle = 1.0 - abs(dot(vNorm, viewDir));
+      float rim      = pow(rimAngle, 2.8);
+      float rimSpec  = pow(rimAngle, 4.2);
+      float depth    = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
-      // ───────────────────────────────────────────────────────────────────────
-      // 4. 5-Stop Latitude Palette & RICHER MID-ENERGY PARTICLE DISTRIBUTION
-      // ───────────────────────────────────────────────────────────────────────
+      // Preserved 5-Stop Latitude Color Palette
       float latT = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3 baseCol;
       if      (latT < 0.25) baseCol = mix(uC0, uC1, smoothstep(0.00, 0.25, latT));
@@ -94,31 +99,29 @@ export const SurfaceParticleShader = {
       else if (latT < 0.75) baseCol = mix(uC2, uC3, smoothstep(0.50, 0.75, latT));
       else                  baseCol = mix(uC3, uC4, smoothstep(0.75, 1.00, latT));
 
-      // Richer mid-energy particle distribution across E ∈ [0.45, 0.78]
       float midEnergyRamp = smoothstep(0.42, 0.78, E);
       float targetBrightness = mix(0.45, 0.95, voidMask * (0.35 + midEnergyRamp * 0.65));
       if (heroMask > 0.5) targetBrightness = 1.30;
 
       if (heroMask > 0.5) {
-        // Isolated hero peak node: white anchor core
         vColor = mix(baseCol, vec3(1.35, 1.35, 1.35), 0.60) * targetBrightness;
         vAlpha = 1.0;
       } else {
         vec3 energizedCol = mix(baseCol, vec3(0.70, 0.90, 1.0), filaments * islandMask * 0.40);
-        vColor = energizedCol * targetBrightness * (0.85 + rim * 0.30);
+        // Multi-Layer Rim Specular Corona blend
+        vec3 rimSpecularCol = mix(energizedCol, vec3(1.0, 1.0, 1.0), rimSpec * 0.45);
+        vColor = rimSpecularCol * targetBrightness * (0.85 + rim * 0.35);
         vAlpha = (mix(0.42, 0.95, depth) * 0.85 + rim * 0.15) * mix(0.22, 1.0, voidMask);
       }
 
-      // ───────────────────────────────────────────────────────────────────────
-      // 5. Compact Point Sizing with Smooth Mid-Energy Transition
-      // ───────────────────────────────────────────────────────────────────────
+      // Compact Point Size Hierarchy with Rim Overlap Scaling
       float targetPx = 0.90; // Tiny (65%)
       if (heroMask > 0.5) {
         targetPx = 3.6;      // Isolated Hero Node (<0.8%)
       } else if (E >= 0.72) {
         targetPx = 2.7;      // Large (4%)
       } else if (E >= 0.50) {
-        targetPx = 1.95;     // Richer Medium State (10%)
+        targetPx = 1.95;     // Medium State (10%)
       } else if (E >= 0.34) {
         targetPx = 1.35;     // Small State (20%)
       }
@@ -157,7 +160,7 @@ export const SurfaceParticleShader = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LAYER 2 — Inner Depth Lattice Particles (Enhanced Volumetric Interior Perception)
+// LAYER 2 — Refined Interior Volumetric Depth (Parallax Depth Layering Without Glow)
 // ─────────────────────────────────────────────────────────────────────────────
 export const InnerParticleShader = {
   uniforms: {
@@ -186,11 +189,13 @@ export const InnerParticleShader = {
       vec4  mvPos = modelViewMatrix * vec4(aBasePosition, 1.0);
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
-      // Enhanced volumetric interior perception via parallax depth scaling without glow
+      // Refined interior volumetric depth ramp
+      float volumetricDepthRamp = smoothstep(0.10, 0.90, depth);
       float innerStructureWave = sin(aBasePosition.y * 8.0 + aBasePosition.x * 6.0) * 0.15 + 0.85;
-      vAlpha = mix(0.14, 0.42, depth) * innerStructureWave;
 
-      gl_PointSize = uSize * (0.85 + depth * 0.45) * (5.5 / -mvPos.z);
+      vAlpha = mix(0.12, 0.44, volumetricDepthRamp) * innerStructureWave;
+
+      gl_PointSize = uSize * (0.80 + volumetricDepthRamp * 0.50) * (5.5 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
     }
   `,
@@ -218,7 +223,7 @@ export const InnerParticleShader = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LAYER 3 — Particle-Driven Rim Corona
+// LAYER 3 — Refined Multi-Layer Rim Corona
 // ─────────────────────────────────────────────────────────────────────────────
 export const RimParticleShader = {
   uniforms: {
@@ -243,18 +248,20 @@ export const RimParticleShader = {
     void main() {
       vec3 n = normalize(aBasePosition);
 
-      float edgePerturb = sin(aBasePosition.x * 22.0 + aBasePosition.y * 28.0 + uTime * 1.5) * 0.005;
+      float edgePerturb = sin(aBasePosition.x * 24.0 + aBasePosition.y * 32.0 + uTime * 1.8) * 0.006;
       vec3 pos = aBasePosition + n * edgePerturb;
 
       vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
       vec3 vNorm = normalize(normalMatrix * n);
       vec3 view  = normalize(-mvPos.xyz);
 
-      float rim = pow(1.0 - abs(dot(vNorm, view)), 3.0);
+      float rimAngle = 1.0 - abs(dot(vNorm, view));
+      float rim      = pow(rimAngle, 3.0);
+      float rimSpec  = pow(rimAngle, 4.2);
 
       float t   = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3  col = mix(uC0, uC1, t);
-      col = mix(col, uC2, pow(rim, 4.0) * 0.30);
+      col = mix(col, uC2, rimSpec * 0.35);
       vColor = col * 0.85;
 
       vAlpha = smoothstep(0.45, 0.92, rim) * 0.75;
@@ -290,7 +297,7 @@ export const RimParticleShader = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LAYER 4 — Atmosphere Particles (450 Points)
+// LAYER 4 — Refined Detached Atmospheric Satellites (Multi-Harmonic Orbital Drift)
 // ─────────────────────────────────────────────────────────────────────────────
 export const AtmosphericParticleShader = {
   uniforms: {
@@ -315,7 +322,9 @@ export const AtmosphericParticleShader = {
     void main() {
       vec3 n = normalize(aBasePosition);
 
-      float drift = sin(uTime * 0.25 + aBasePosition.y * 2.5 + aBasePosition.x * 1.8) * 0.010;
+      // Multi-harmonic orbital drift turbulence
+      float drift = sin(uTime * 0.35 + aBasePosition.y * 3.5 + aBasePosition.x * 2.2) * 0.014 +
+                    cos(uTime * 0.50 + aBasePosition.z * 4.0) * 0.006;
       vec3 pos = aBasePosition + n * drift;
 
       float t = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
