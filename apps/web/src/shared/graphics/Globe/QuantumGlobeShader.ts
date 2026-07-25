@@ -48,14 +48,34 @@ export const SurfaceParticleShader = {
       // ───────────────────────────────────────────────────────────────────────
       // PHASE 2: CONTRAST QUANTIZATION (Discrete Hotspots & Dark Void Channels)
       // ───────────────────────────────────────────────────────────────────────
-      // Step-function thresholding for discrete energy hotspot islands
       float islandMask = step(0.56, E);
-
-      // Smoothstep ramp for dark void suppression (Dark means dark!)
       float voidMask   = smoothstep(0.25, 0.52, E);
-
-      // Hero energy peak mask threshold
       float heroMask   = step(0.80, E);
+
+      // ───────────────────────────────────────────────────────────────────────
+      // PHASE 3: DYNAMIC PARTICLE STATE CLASSIFICATION (Tiny/Small/Medium/Large/Hero)
+      // Every lattice vertex transitions smoothly between states based solely on E.
+      // ───────────────────────────────────────────────────────────────────────
+      float stateScale = 0.70;      // Default Tiny State (65%)
+      float stateBrightness = 0.40;
+
+      if (E >= 0.80) {
+        // HERO PEAK STATE (1%): Super-Luminous Pure White Anchor
+        stateScale = 3.60;
+        stateBrightness = 2.40;
+      } else if (E >= 0.68) {
+        // LARGE ENERGY NODE STATE (4%)
+        stateScale = 2.20;
+        stateBrightness = 1.60;
+      } else if (E >= 0.56) {
+        // MEDIUM CLUSTER STATE (10%)
+        stateScale = 1.50;
+        stateBrightness = 1.10;
+      } else if (E >= 0.38) {
+        // SMALL LATTICE STATE (20%)
+        stateScale = 1.00;
+        stateBrightness = 0.75;
+      }
 
       // ───────────────────────────────────────────────────────────────────────
       // Tangential Vector Displacement along surface tangent plane (1-2% radius)
@@ -92,14 +112,17 @@ export const SurfaceParticleShader = {
       else if (t < 0.80) baseCol = mix(uC3, uC4, smoothstep(0.60, 0.80, t));
       else               baseCol = mix(uC4, uC5, smoothstep(0.80, 1.00, t));
 
-      // Quantized Luminance: Hotspot islands ignite together, dark voids approach black
-      vec3 energizedCol = mix(baseCol, vec3(0.85, 1.0, 1.0), e3 * islandMask * 0.60);
-      float quantizedLuminance = mix(0.18, 1.45, voidMask * (0.40 + islandMask * 0.60));
+      // Hero Ignition: High-energy peaks burn into pure white core
+      if (heroMask > 0.5) {
+        vColor = vec3(2.2, 2.2, 2.2); // Super-luminous white emission core
+        vAlpha = 1.0;
+      } else {
+        vec3 energizedCol = mix(baseCol, vec3(0.85, 1.0, 1.0), e3 * islandMask * 0.60);
+        vColor = energizedCol * stateBrightness * (0.80 + rim * 0.40);
+        vAlpha = (mix(0.12, 0.95, depth) * 0.80 + rim * 0.20) * mix(0.15, 1.0, voidMask);
+      }
 
-      vColor = energizedCol * quantizedLuminance * (0.80 + rim * 0.40);
-      vAlpha = (mix(0.12, 0.95, depth) * 0.80 + rim * 0.20) * mix(0.15, 1.0, voidMask);
-
-      gl_PointSize = uSize * (1.0 + islandMask * 0.4 + rim * 0.5) * (6.0 / -mvPos.z);
+      gl_PointSize = uSize * stateScale * (1.0 + rim * 0.5) * (6.0 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
     }
   `,
@@ -123,7 +146,7 @@ export const SurfaceParticleShader = {
       float alphaEdge = smoothstep(0.44 + delta, 0.44 - delta, dist);
 
       float alpha = alphaEdge * vAlpha;
-      vec3 finalColor = mix(vColor, vec3(1.0), alphaEdge * 0.20);
+      vec3 finalColor = mix(vColor, vec3(1.0), alphaEdge * 0.25);
 
       gl_FragColor = vec4(finalColor, alpha);
     }
