@@ -100,7 +100,7 @@ Mocked subsystems do not alter core TypeScript field structures. Instead, they a
 
 | Subsystem | Status | Persistance Method | Security / Architecture Rationale |
 | :--- | :--- | :--- | :--- |
-| **3D Quantum Globe** | **Real** | R3F / GLSL Shader State Engine (Commit: `ae9c2bb`) | Multi-harmonic edge breakup turbulence & orbital atmospheric drift, parallax-sorted 3D interior depth ramp (`volumetricDepthRamp`), coherent tangential vector field flow streamlines (`flowT1`, `flowT2`), and 3-tier view-space specular rim corona (`rimSpec`). |
+| **3D Quantum Globe** | **Real** | R3F / GLSL Shader State Engine (Commit: `9482f57`) | Reference-driven reconstruction (matching input_file_0.png): 4-layer multi-shell particle structure (inner volume, front lattice, turbulent rim corona, outer spray), 0.045R view-tangent edge wave crests (top cyan arc & bottom red/amber rim), center-front dark purple grid occlusion, and sub-pixel OLED derivative disc profiles. |
 | **Voice & Speech** | **Real** | Local browser API | Native browser Web Speech API for recognition, ElevenLabs / OpenAI for TTS. |
 | **Computer Control** | **Real** | Rust / Tauri commands | Hard allowlist on folders (Desktop/Documents/Downloads/Pictures) to prevent arbitrary path access. Includes file organize/rename previews. |
 | **PDF & Document Parsing**| **Real** | Rust / Tauri commands | Uses local `pdf-extract` crate for PDF text extraction and headless LibreOffice for DOCX conversion. |
