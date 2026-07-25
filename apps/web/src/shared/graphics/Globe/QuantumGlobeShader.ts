@@ -1,13 +1,13 @@
 import * as THREE from 'three';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// QUANTUM GLOBE PRODUCTION RENDERER — DENSE CRISP INDIVIDUAL PARTICLE LATTICE
-// Pure particle-first renderer: Every dot is individually distinguishable.
-// No smooth shaded surfaces. No painted blobs. No washed-out glow.
+// QUANTUM GLOBE PRODUCTION RENDERER — DENSE ENERGETIC CRISP PARTICLE LATTICE
+// Particle-First Baseline: High particle visibility, crisp OLED dot profiles,
+// increased energy island count, <1% hero nodes, zero smooth emissive patches.
 // ─────────────────────────────────────────────────────────────────────────────
 export const SurfaceParticleShader = {
   uniforms: {
-    uSize:      { value: 1.1 },
+    uSize:      { value: 1.2 },
     uRadius:    { value: 1.15 },
     uTime:      { value: 0.0 },
     uDebugMode: { value: 6 }, // 1: Lattice, 2: Atmosphere, 3: Energy, 4: Compression, 5: Rim, 6: Composite
@@ -33,23 +33,23 @@ export const SurfaceParticleShader = {
       vec3 n = normalize(aBasePosition);
 
       // ───────────────────────────────────────────────────────────────────────
-      // 1. 6–8 Coherent Energy Islands (3D Scalar Energy Field E ∈ [0.0, 1.0])
+      // 1. High-Density Coherent Energy Islands (Multi-Octave 3D Scalar Field E ∈ [0.0, 1.0])
       // ───────────────────────────────────────────────────────────────────────
-      float f1 = sin(aBasePosition.x * 1.6 + aBasePosition.y * 1.2 + uTime * 0.45) * 0.5 + 0.5;
-      float f2 = cos(aBasePosition.z * 3.6 - aBasePosition.y * 3.0 + aBasePosition.x * 1.8 + uTime * 0.8) * 0.5 + 0.5;
-      float filBase = sin(aBasePosition.x * 11.0 + aBasePosition.y * 8.5 - uTime * 1.5) *
-                      cos(aBasePosition.z * 9.5 + aBasePosition.y * 7.0 + uTime * 1.2);
-      float filaments = pow(clamp(filBase * 0.5 + 0.5, 0.0, 1.0), 4.0);
+      float f1 = sin(aBasePosition.x * 2.2 + aBasePosition.y * 1.8 + uTime * 0.55) * 0.5 + 0.5;
+      float f2 = cos(aBasePosition.z * 4.4 - aBasePosition.y * 3.8 + aBasePosition.x * 2.4 + uTime * 0.95) * 0.5 + 0.5;
+      float filBase = sin(aBasePosition.x * 13.0 + aBasePosition.y * 9.5 - uTime * 1.6) *
+                      cos(aBasePosition.z * 11.0 + aBasePosition.y * 8.0 + uTime * 1.3);
+      float filaments = pow(clamp(filBase * 0.5 + 0.5, 0.0, 1.0), 3.5);
 
-      float rawE = f1 * 0.45 + f2 * 0.35 + filaments * 0.60;
+      float rawE = f1 * 0.45 + f2 * 0.35 + filaments * 0.65;
       float E = clamp(rawE / 1.40, 0.0, 1.0);
 
       // ───────────────────────────────────────────────────────────────────────
       // 2. Void Channel Suppression & Discrete Hotspot Islands
       // ───────────────────────────────────────────────────────────────────────
-      float voidMask   = smoothstep(0.28, 0.52, E);
-      float islandMask = step(0.58, E);
-      float heroMask   = step(0.92, E);
+      float voidMask   = smoothstep(0.22, 0.48, E);
+      float islandMask = step(0.54, E);
+      float heroMask   = step(0.92, E); // Hero activation threshold E > 0.92 (<0.8% visible)
 
       // ───────────────────────────────────────────────────────────────────────
       // 3. Surface Micro-Displacement (Max 0.015R)
@@ -88,32 +88,32 @@ export const SurfaceParticleShader = {
       else if (latT < 0.75) baseCol = mix(uC2, uC3, smoothstep(0.50, 0.75, latT));
       else                  baseCol = mix(uC3, uC4, smoothstep(0.75, 1.00, latT));
 
-      // Particle Luminance & Alpha: Preserves individual dot contrast without merging into smooth shapes
-      float targetBrightness = mix(0.35, 0.90, voidMask * (0.35 + islandMask * 0.65));
-      if (heroMask > 0.5) targetBrightness = 1.25;
+      // Enhanced Particle Visibility: High baseline alpha makes lattice dots dense & crisp across the globe
+      float targetBrightness = mix(0.40, 0.95, voidMask * (0.35 + islandMask * 0.65));
+      if (heroMask > 0.5) targetBrightness = 1.30;
 
       if (heroMask > 0.5) {
-        vColor = mix(baseCol, vec3(1.3, 1.3, 1.3), 0.50) * targetBrightness;
+        vColor = mix(baseCol, vec3(1.35, 1.35, 1.35), 0.55) * targetBrightness;
         vAlpha = 1.0;
       } else {
-        vec3 energizedCol = mix(baseCol, vec3(0.70, 0.90, 1.0), filaments * islandMask * 0.35);
+        vec3 energizedCol = mix(baseCol, vec3(0.70, 0.90, 1.0), filaments * islandMask * 0.40);
         vColor = energizedCol * targetBrightness * (0.85 + rim * 0.30);
-        vAlpha = (mix(0.25, 0.90, depth) * 0.85 + rim * 0.15) * mix(0.08, 1.0, voidMask);
+        // Minimum alpha 0.20 in void channels ensures all lattice points remain crisp and visible!
+        vAlpha = (mix(0.40, 0.95, depth) * 0.85 + rim * 0.15) * mix(0.20, 1.0, voidMask);
       }
 
       // ───────────────────────────────────────────────────────────────────────
-      // 5. Crisp Particle Sizing (Tiny: 0.8px, Small: 1.2px, Medium: 1.8px, Large: 2.6px, Hero: 3.5px)
-      // Small diameters guarantee that every particle remains an isolated, distinct dot!
+      // 5. Compact Point Size Hierarchy (Tiny: 0.9px, Small: 1.35px, Medium: 2.0px, Large: 2.8px, Hero: 3.6px)
       // ───────────────────────────────────────────────────────────────────────
-      float targetPx = 0.85; // Tiny (65%)
+      float targetPx = 0.90; // Tiny (65%)
       if (heroMask > 0.5) {
-        targetPx = 3.5;      // Hero (<0.8%)
+        targetPx = 3.6;      // Hero (<0.8%)
       } else if (E >= 0.76) {
-        targetPx = 2.6;      // Large (4%)
+        targetPx = 2.8;      // Large (4%)
       } else if (E >= 0.58) {
-        targetPx = 1.8;      // Medium (10%)
+        targetPx = 2.0;      // Medium (10%)
       } else if (E >= 0.38) {
-        targetPx = 1.2;      // Small (20%)
+        targetPx = 1.35;     // Small (20%)
       }
 
       float rimSizeMultiplier = 1.0 + rim * 0.15;
@@ -138,8 +138,7 @@ export const SurfaceParticleShader = {
       float dist = length(uv);
       if (dist > 0.5) discard;
 
-      // Crisp OLED pixel disc profile with sharp edge dropoff:
-      // Guarantees sub-pixel gaps between adjacent dots so particles NEVER merge into smooth surfaces!
+      // Sub-pixel OLED disc anti-aliasing (crisp discs without smooth emissive patches)
       float delta = fwidth(dist);
       float dotCore = smoothstep(0.40 + delta, 0.32 - delta, dist);
       float dotEdge = smoothstep(0.50 + delta, 0.40 - delta, dist) * 0.25;
@@ -155,7 +154,7 @@ export const SurfaceParticleShader = {
 // ─────────────────────────────────────────────────────────────────────────────
 export const InnerParticleShader = {
   uniforms: {
-    uSize:   { value: 0.9 },
+    uSize:   { value: 0.95 },
     uRadius: { value: 0.82 },
     uC0: { value: new THREE.Color('#0022AA') },
     uC1: { value: new THREE.Color('#5500AA') },
@@ -175,12 +174,12 @@ export const InnerParticleShader = {
       float t   = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3  col = mix(uC0, uC1, smoothstep(0.0, 0.5, t));
       col       = mix(col, uC2, smoothstep(0.5, 1.0, t));
-      vColor    = col * 0.40;
+      vColor    = col * 0.45;
 
       vec4  mvPos = modelViewMatrix * vec4(aBasePosition, 1.0);
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
-      vAlpha = mix(0.08, 0.30, depth);
+      vAlpha = mix(0.12, 0.35, depth);
 
       gl_PointSize = uSize * 1.0 * (5.5 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
@@ -214,7 +213,7 @@ export const InnerParticleShader = {
 // ─────────────────────────────────────────────────────────────────────────────
 export const RimParticleShader = {
   uniforms: {
-    uSize:   { value: 1.1 },
+    uSize:   { value: 1.15 },
     uRadius: { value: 1.16 },
     uTime:   { value: 0.0 },
     uC0: { value: new THREE.Color('#00E8FF') },
@@ -247,12 +246,12 @@ export const RimParticleShader = {
       float t   = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3  col = mix(uC0, uC1, t);
       col = mix(col, uC2, pow(rim, 4.0) * 0.30);
-      vColor = col * 0.80;
+      vColor = col * 0.85;
 
-      vAlpha = smoothstep(0.45, 0.92, rim) * 0.70;
+      vAlpha = smoothstep(0.45, 0.92, rim) * 0.75;
 
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
-      vAlpha *= mix(0.30, 1.0, depth);
+      vAlpha *= mix(0.35, 1.0, depth);
 
       gl_PointSize = uSize * 1.1 * (5.5 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
@@ -286,7 +285,7 @@ export const RimParticleShader = {
 // ─────────────────────────────────────────────────────────────────────────────
 export const AtmosphericParticleShader = {
   uniforms: {
-    uSize:   { value: 0.9 },
+    uSize:   { value: 0.95 },
     uRadius: { value: 1.20 },
     uTime:   { value: 0.0 },
     uC0: { value: new THREE.Color('#00E8FF') },
@@ -313,7 +312,7 @@ export const AtmosphericParticleShader = {
       float t = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3 col = mix(uC0, uC1, smoothstep(0.0, 0.5, t));
       col = mix(col, uC2, smoothstep(0.5, 1.0, t));
-      vColor = col * 0.65;
+      vColor = col * 0.70;
 
       vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
       vec3 vNorm = normalize(normalMatrix * n);
@@ -322,9 +321,9 @@ export const AtmosphericParticleShader = {
       float rim   = pow(1.0 - abs(dot(vNorm, view)), 1.8);
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
-      vAlpha = mix(0.12, 0.22, rim) * mix(0.4, 1.0, depth);
+      vAlpha = mix(0.14, 0.24, rim) * mix(0.4, 1.0, depth);
 
-      gl_PointSize = uSize * 0.9 * (5.5 / -mvPos.z);
+      gl_PointSize = uSize * 0.95 * (5.5 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
     }
   `,
