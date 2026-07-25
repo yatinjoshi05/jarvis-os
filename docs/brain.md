@@ -100,7 +100,7 @@ Mocked subsystems do not alter core TypeScript field structures. Instead, they a
 
 | Subsystem | Status | Persistance Method | Security / Architecture Rationale |
 | :--- | :--- | :--- | :--- |
-| **3D Quantum Globe** | **Real** | R3F / GLSL Shader State Engine (Commit: `cdf1976`) | Single continuous 3D scalar field E in [0, 1] driving contrast quantization (hotspots + dark void channels), 5-tier state classification (Tiny/Small/Medium/Large/Hero), adaptive point sizing, thick point-overlap specular rim corona, and super-luminous white hero bloom emission cores. |
+| **3D Quantum Globe** | **Real** | R3F / GLSL Shader State Engine (Commit: `7542000`) | Exact locked convergence: 42,000 surface points + 7,000 interior points + 450 atmosphere points (49,450 total), point size limits (Tiny 1.0px, Small 1.4px, Medium 2.2px, Large 3.8px, Hero 5.2px, clamped strictly < 6.0px), Hero threshold E > 0.92 (<0.8% visible), 5-stop latitude color palette, 6-8 coherent energy islands with 5-12° dark void channels (RGB ~ 0.02), particle-driven rim (+25% density, +15% point size), max deformation 0.018R. |
 | **Voice & Speech** | **Real** | Local browser API | Native browser Web Speech API for recognition, ElevenLabs / OpenAI for TTS. |
 | **Computer Control** | **Real** | Rust / Tauri commands | Hard allowlist on folders (Desktop/Documents/Downloads/Pictures) to prevent arbitrary path access. Includes file organize/rename previews. |
 | **PDF & Document Parsing**| **Real** | Rust / Tauri commands | Uses local `pdf-extract` crate for PDF text extraction and headless LibreOffice for DOCX conversion. |
