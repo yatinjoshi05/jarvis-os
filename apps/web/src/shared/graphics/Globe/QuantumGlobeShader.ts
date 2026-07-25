@@ -2,8 +2,8 @@ import * as THREE from 'three';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // LAYER 1 — Surface Energy Particles
-// Woven Lat/Long Digital Lattice + Traveling Energy Fields + 1-2% Local Compression
-// + Rim Breakup + Broad Latitude Pulses + Coherent Region Brightness + DEBUG MODES (1-6)
+// Multi-Octave Spectral Energy Field (Global Macro Flow + Medium Rotational Flow
+// + High-Frequency Filaments) + Tangential Vector Flow + Energy-Driven Color
 // ─────────────────────────────────────────────────────────────────────────────
 export const SurfaceParticleShader = {
   uniforms: {
@@ -33,38 +33,52 @@ export const SurfaceParticleShader = {
     void main() {
       vec3 n = normalize(aBasePosition);
 
-      // 2. Local compression/expansion bands (1-2% displacement)
+      // ───────────────────────────────────────────────────────────────────────
+      // 1. Multi-Octave Spectral Energy Field Computation
+      // ───────────────────────────────────────────────────────────────────────
+      // Octave 1: Low-Frequency Global Macro Flow (f ~ 1.8)
+      float f1 = sin(aBasePosition.x * 1.8 + aBasePosition.y * 1.4 + uTime * 0.6) * 0.5 + 0.5;
+
+      // Octave 2: Medium-Frequency Rotational Directional Current (f ~ 4.5)
+      float f2 = cos(aBasePosition.z * 4.5 - aBasePosition.y * 3.8 + aBasePosition.x * 2.2 + uTime * 1.1) * 0.5 + 0.5;
+
+      // Octave 3: High-Frequency Sharp Energy Filaments (f ~ 14.0 with power exponent 5.0)
+      float filamentBase = sin(aBasePosition.x * 14.0 + aBasePosition.y * 11.0 - uTime * 2.0) *
+                           cos(aBasePosition.z * 12.0 + aBasePosition.y * 9.0 + uTime * 1.5);
+      float filaments = pow(clamp(filamentBase * 0.5 + 0.5, 0.0, 1.0), 5.0);
+
+      // Total multi-scale energy magnitude
+      float energyMag = f1 * 0.45 + f2 * 0.35 + filaments * 0.75;
+
+      // ───────────────────────────────────────────────────────────────────────
+      // 2. Tangential Flow Vector Field (1-2% Surface Displacement)
+      // ───────────────────────────────────────────────────────────────────────
+      vec3 up = vec3(0.0, 1.0, 0.0);
+      vec3 tangent = cross(up, n);
+      if (length(tangent) < 0.001) tangent = vec3(1.0, 0.0, 0.0);
+      else tangent = normalize(tangent);
+      vec3 bitangent = cross(n, tangent);
+
+      // Surface flow vector displacement along local tangent plane (1-2% radius)
+      float flowT1 = sin(aBasePosition.y * 6.0 + uTime * 1.3) * 0.015;
+      float flowT2 = cos(aBasePosition.x * 8.0 - uTime * 1.1) * 0.012;
+      vec3 tangentialDisplacement = tangent * flowT1 + bitangent * flowT2;
+
+      // Radial compression (1-2%) & rim edge breakup (0.015 max)
       float compression = sin(aBasePosition.y * 14.0 - uTime * 1.2 + aBasePosition.x * 6.0) * 0.012;
-
-      // 3. Rim breakup perturbation (max 0.015 radius)
       float edgeBreakup = sin(aBasePosition.x * 21.0 + aBasePosition.y * 29.0 + uTime * 1.6) * 0.008;
+      vec3 radialDisplacement = n * (compression + edgeBreakup);
 
-      // 1. Low-frequency 3D energy flow (animating brightness & saturation)
-      float energyField1 = sin(aBasePosition.x * 3.5 + aBasePosition.y * 2.8 + uTime * 0.9) * 0.5 + 0.5;
-      float energyField2 = cos(aBasePosition.z * 4.2 - aBasePosition.y * 3.1 + uTime * 0.7) * 0.5 + 0.5;
-      float coherentVal   = energyField1 * energyField2;
-      float coherentBrightness = mix(0.55, 1.45, coherentVal);
-
-      // 5. Broad latitude energy pulses (traveling along y-axis)
-      float pulsePhase = mod(uTime * 0.5 - aBasePosition.y * 1.5, 6.28318);
-      float latPulse   = pow(sin(pulsePhase) * 0.5 + 0.5, 4.0) * 0.55;
-
-      float totalEnergy = coherentBrightness + latPulse;
-
-      // Position computation based on Debug Mode
+      // Position selection based on Debug Mode
       vec3 pos = aBasePosition;
       if (uDebugMode == 1) {
-        // Pure un-displaced lattice geometry
         pos = aBasePosition;
       } else if (uDebugMode == 4) {
-        // Isolated compression displacement
-        pos = aBasePosition + n * compression;
+        pos = aBasePosition + radialDisplacement;
       } else if (uDebugMode == 5) {
-        // Isolated rim edge breakup
         pos = aBasePosition + n * edgeBreakup;
       } else {
-        // Composite / Energy mode
-        pos = aBasePosition + n * (compression + edgeBreakup);
+        pos = aBasePosition + radialDisplacement + tangentialDisplacement;
       }
 
       vec4  mvPos   = modelViewMatrix * vec4(pos, 1.0);
@@ -74,43 +88,43 @@ export const SurfaceParticleShader = {
       float rim   = pow(1.0 - abs(dot(vNorm, viewDir)), 2.5);
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
-      // Smooth continuous latitude gradient (+y Cyan -> -y Orange/Red)
+      // ───────────────────────────────────────────────────────────────────────
+      // 3. Dynamic Energy-Driven Color & Luminance Modulation
+      // ───────────────────────────────────────────────────────────────────────
       float t = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
-      vec3 col;
-      if      (t < 0.20) col = mix(uC0, uC1, smoothstep(0.00, 0.20, t));
-      else if (t < 0.40) col = mix(uC1, uC2, smoothstep(0.20, 0.40, t));
-      else if (t < 0.60) col = mix(uC2, uC3, smoothstep(0.36, 0.60, t));
-      else if (t < 0.80) col = mix(uC3, uC4, smoothstep(0.60, 0.80, t));
-      else               col = mix(uC4, uC5, smoothstep(0.80, 1.00, t));
+      vec3 baseCol;
+      if      (t < 0.20) baseCol = mix(uC0, uC1, smoothstep(0.00, 0.20, t));
+      else if (t < 0.40) baseCol = mix(uC1, uC2, smoothstep(0.20, 0.40, t));
+      else if (t < 0.60) baseCol = mix(uC2, uC3, smoothstep(0.36, 0.60, t));
+      else if (t < 0.80) baseCol = mix(uC3, uC4, smoothstep(0.60, 0.80, t));
+      else               baseCol = mix(uC4, uC5, smoothstep(0.80, 1.00, t));
 
-      // Color/Alpha output per Debug Mode
+      // Dynamically shift color toward hot cyan/white filament energy peak
+      vec3 energizedCol = mix(baseCol, vec3(0.85, 1.0, 1.0), filaments * 0.70);
+      energizedCol *= (0.65 + energyMag * 0.85);
+
       if (uDebugMode == 1) {
-        // 1: Surface lattice only (clean cyan grid)
         vColor = uC0 * mix(0.5, 1.0, depth);
         vAlpha = mix(0.4, 0.9, depth);
       } else if (uDebugMode == 3) {
-        // 3: Energy field false-color heatmap (Dark Blue -> Bright Cyan -> White)
-        vec3 heatMap = mix(vec3(0.02, 0.08, 0.35), vec3(0.0, 0.95, 1.0), coherentVal);
-        heatMap = mix(heatMap, vec3(1.0, 1.0, 1.0), pow(coherentVal, 3.0));
+        // Multi-octave energy false-color heatmap
+        vec3 heatMap = mix(vec3(0.02, 0.08, 0.35), vec3(0.0, 0.95, 1.0), energyMag / 1.5);
+        heatMap = mix(heatMap, vec3(1.0, 1.0, 1.0), filaments);
         vColor = heatMap;
         vAlpha = mix(0.3, 1.0, depth);
       } else if (uDebugMode == 4) {
-        // 4: Compression field false-color heatmap (Magenta: compressed, Green: expanded)
         float compNorm = compression / 0.012 * 0.5 + 0.5;
         vColor = mix(vec3(1.0, 0.0, 0.8), vec3(0.0, 1.0, 0.4), compNorm);
         vAlpha = mix(0.4, 1.0, depth);
       } else if (uDebugMode == 5) {
-        // 5: Rim breakup false-color highlight (Yellow/Red on edge perturbation)
         float edgeNorm = abs(edgeBreakup) / 0.008;
-        vec3 edgeHeat  = mix(col, vec3(1.0, 0.9, 0.0), edgeNorm * rim);
+        vec3 edgeHeat  = mix(baseCol, vec3(1.0, 0.9, 0.0), edgeNorm * rim);
         vColor = mix(edgeHeat, vec3(1.0, 0.2, 0.0), pow(rim, 3.0));
         vAlpha = (smoothstep(0.3, 0.9, rim) * 0.85 + 0.15) * mix(0.4, 1.0, depth);
       } else {
-        // 6: Final Composite
-        vec3 energizedColor = col * totalEnergy;
-        energizedColor = mix(energizedColor, col * 1.35, latPulse * 0.45);
-        vColor = energizedColor * (0.80 + rim * 0.40);
-        vAlpha = (mix(0.25, 0.90, depth) * 0.80 + rim * 0.20) * (0.75 + energyField1 * 0.35);
+        // Composite Mode
+        vColor = energizedCol * (0.80 + rim * 0.40);
+        vAlpha = (mix(0.25, 0.90, depth) * 0.80 + rim * 0.20) * (0.65 + energyMag * 0.45);
       }
 
       // Constant point size: gl_PointSize = uSize * attenuation
