@@ -2,10 +2,8 @@ import * as THREE from 'three';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // LAYER 1 — Surface Energy Particles
-// Woven Lat/Long Digital Lattice. 6-stop vertical color gradient (Cyan TOP -> Orange/Red BOTTOM).
-// Position animation strictly static (< 0.5% radius). Light/alpha wave animation.
-// Point size strictly constant: gl_PointSize = uSize * (6.0 / -mvPos.z).
-// Fragment shader: Sub-pixel OLED pixel disc, zero blob halo.
+// Woven Lat/Long Digital Lattice + Traveling Energy Fields + 1-2% Local Compression
+// + Rim Breakup + Broad Latitude Pulses + Coherent Region Brightness
 // ─────────────────────────────────────────────────────────────────────────────
 export const SurfaceParticleShader = {
   uniforms: {
@@ -33,21 +31,31 @@ export const SurfaceParticleShader = {
     void main() {
       vec3 n = normalize(aBasePosition);
 
-      // Micro surface position breathing strictly < 0.5% radius for stable geometry
-      float microPulse = sin(uTime * 0.5 + aBasePosition.y * 2.0) * 0.003;
-      vec3 pos = aBasePosition + n * microPulse;
+      // 2. Local compression/expansion bands (1-2% displacement)
+      float compression = sin(aBasePosition.y * 14.0 - uTime * 1.2 + aBasePosition.x * 6.0) * 0.012;
 
-      // Traveling light waves across grid vertices (animating light, not geometry)
-      float wave1 = sin(aBasePosition.y * 8.0 - uTime * 1.8 + aBasePosition.x * 4.0) * 0.5 + 0.5;
-      float wave2 = cos(aBasePosition.z * 10.0 + uTime * 1.4 - aBasePosition.y * 3.0) * 0.5 + 0.5;
-      float lightPulse = mix(0.75, 1.25, wave1 * wave2);
+      // 3. Rim breakup perturbation (max 0.015 radius)
+      float edgeBreakup = sin(aBasePosition.x * 21.0 + aBasePosition.y * 29.0 + uTime * 1.6) * 0.008;
+
+      vec3 pos = aBasePosition + n * (compression + edgeBreakup);
+
+      // 1. Low-frequency 3D energy flow (animating brightness & saturation)
+      float energyField1 = sin(aBasePosition.x * 3.5 + aBasePosition.y * 2.8 + uTime * 0.9) * 0.5 + 0.5;
+      float energyField2 = cos(aBasePosition.z * 4.2 - aBasePosition.y * 3.1 + uTime * 0.7) * 0.5 + 0.5;
+      float coherentBrightness = mix(0.55, 1.45, energyField1 * energyField2);
+
+      // 5. Broad latitude energy pulses (traveling along y-axis)
+      float pulsePhase = mod(uTime * 0.5 - aBasePosition.y * 1.5, 6.28318);
+      float latPulse   = pow(sin(pulsePhase) * 0.5 + 0.5, 4.0) * 0.55;
+
+      float totalEnergy = coherentBrightness + latPulse;
 
       // Smooth continuous latitude gradient (+y Cyan -> -y Orange/Red)
       float t = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3 col;
       if      (t < 0.20) col = mix(uC0, uC1, smoothstep(0.00, 0.20, t));
       else if (t < 0.40) col = mix(uC1, uC2, smoothstep(0.20, 0.40, t));
-      else if (t < 0.60) col = mix(uC2, uC3, smoothstep(0.40, 0.60, t));
+      else if (t < 0.60) col = mix(uC2, uC3, smoothstep(0.36, 0.60, t));
       else if (t < 0.80) col = mix(uC3, uC4, smoothstep(0.60, 0.80, t));
       else               col = mix(uC4, uC5, smoothstep(0.80, 1.00, t));
 
@@ -58,14 +66,14 @@ export const SurfaceParticleShader = {
       float rim   = pow(1.0 - abs(dot(vNorm, viewDir)), 2.5);
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
-      // Apply light pulse to color luminance and alpha
-      col = col * (0.82 + rim * 0.38) * lightPulse;
-      vColor = col;
+      // Apply coherent energy brightness and saturation highlight to color
+      vec3 energizedColor = col * totalEnergy;
+      energizedColor = mix(energizedColor, col * 1.35, latPulse * 0.45);
 
-      vAlpha = (mix(0.25, 0.90, depth) * 0.82 + rim * 0.18) * (0.85 + wave1 * 0.30);
+      vColor = energizedColor * (0.80 + rim * 0.40);
+      vAlpha = (mix(0.25, 0.90, depth) * 0.80 + rim * 0.20) * (0.75 + energyField1 * 0.35);
 
-      // CONSTANT POINT SIZE: uSize * attenuation only.
-      // NO densityWave, NO rimBoost, NO random sizeScale.
+      // Constant point size: gl_PointSize = uSize * attenuation
       gl_PointSize = uSize * (6.0 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
     }
@@ -164,9 +172,9 @@ export const RimParticleShader = {
     uSize:   { value: 1.8 },
     uRadius: { value: 1.16 },
     uTime:   { value: 0.0 },
-    uC0: { value: new THREE.Color('#60FFFF') }, // Bright cyan
-    uC1: { value: new THREE.Color('#FF40C0') }, // Bright pink
-    uC2: { value: new THREE.Color('#FFFFFF') }, // Near-white hot center
+    uC0: { value: new THREE.Color('#60FFFF') },
+    uC1: { value: new THREE.Color('#FF40C0') },
+    uC2: { value: new THREE.Color('#FFFFFF') },
   },
   vertexShader: /* glsl */`
     uniform float uSize;
@@ -181,7 +189,12 @@ export const RimParticleShader = {
 
     void main() {
       vec3 n = normalize(aBasePosition);
-      vec4 mvPos = modelViewMatrix * vec4(aBasePosition, 1.0);
+
+      // Subtle edge perturbation for natural rim breakup
+      float edgePerturb = sin(aBasePosition.x * 25.0 + aBasePosition.y * 31.0 + uTime * 1.8) * 0.012;
+      vec3 pos = aBasePosition + n * edgePerturb;
+
+      vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
       vec3 vNorm = normalize(normalMatrix * n);
       vec3 view  = normalize(-mvPos.xyz);
 
@@ -225,19 +238,22 @@ export const RimParticleShader = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LAYER 4 — Detached Atmospheric Particles (Sparse, 2–3% satellite Nodes)
+// LAYER 4 — Detached Atmospheric Particles (2,000 particles, r: 1.03 - 1.12)
+// Slow drift, very low alpha, crisp OLED discs near the rim.
 // ─────────────────────────────────────────────────────────────────────────────
 export const AtmosphericParticleShader = {
   uniforms: {
     uSize:   { value: 1.0 },
-    uRadius: { value: 1.25 },
-    uC0: { value: new THREE.Color('#00CCFF') },
-    uC1: { value: new THREE.Color('#4400FF') },
-    uC2: { value: new THREE.Color('#8800CC') },
+    uRadius: { value: 1.10 },
+    uTime:   { value: 0.0 },
+    uC0: { value: new THREE.Color('#00EEFF') },
+    uC1: { value: new THREE.Color('#7700FF') },
+    uC2: { value: new THREE.Color('#FF3300') },
   },
   vertexShader: /* glsl */`
     uniform float uSize;
     uniform float uRadius;
+    uniform float uTime;
     uniform vec3  uC0, uC1, uC2;
 
     attribute vec3 aBasePosition;
@@ -246,20 +262,26 @@ export const AtmosphericParticleShader = {
     varying float vAlpha;
 
     void main() {
-      float t   = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
-      vec3  col = mix(uC0, uC1, smoothstep(0.0, 0.5, t));
-      col       = mix(col, uC2, smoothstep(0.5, 1.0, t));
-      vColor    = col;
+      vec3 n = normalize(aBasePosition);
 
-      vec4  mvPos = modelViewMatrix * vec4(aBasePosition, 1.0);
-      vec3  n     = normalize(aBasePosition);
-      vec3  vNorm = normalize(normalMatrix * n);
-      vec3  view  = normalize(-mvPos.xyz);
+      // Slow drift near surface (r: 1.03 - 1.12)
+      float drift = sin(uTime * 0.3 + aBasePosition.y * 3.0 + aBasePosition.x * 2.0) * 0.015;
+      vec3 pos = aBasePosition + n * drift;
 
-      float rim   = pow(1.0 - abs(dot(vNorm, view)), 1.5);
+      float t = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
+      vec3 col = mix(uC0, uC1, smoothstep(0.0, 0.5, t));
+      col = mix(col, uC2, smoothstep(0.5, 1.0, t));
+      vColor = col;
+
+      vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
+      vec3 vNorm = normalize(normalMatrix * n);
+      vec3 view  = normalize(-mvPos.xyz);
+
+      float rim   = pow(1.0 - abs(dot(vNorm, view)), 1.8);
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
-      vAlpha = (0.05 + rim * 0.20) * mix(0.3, 1.0, depth);
+      // Very low alpha, visible primarily near the rim silhouette
+      vAlpha = smoothstep(0.35, 0.90, rim) * 0.35 * mix(0.3, 1.0, depth);
 
       gl_PointSize = uSize * (5.0 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;

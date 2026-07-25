@@ -81,16 +81,16 @@ function RimParticles() {
   return <PointCloud positions={data.positions} shader={RimParticleShader} />;
 }
 
-// ─── Layer 4: Detached Atmospheric Particles (Sparse, 2-3% Satellite Nodes) ────
+// ─── Layer 4: Detached Atmospheric Particles (Sparse, 2,000 Nodes, r: 1.03 - 1.12) ────
 function AtmosphericParticles() {
-  const N = 300;
-  const R = 1.25;
+  const N = 2000;
   const data = useMemo(() => {
     const pos = new Float32Array(N * 3);
     const phi = Math.PI * (3 - Math.sqrt(5));
 
     for (let i = 0; i < N; i++) {
-      const shellR = R * (0.98 + (i % 7) * 0.015);
+      // Radius range: 1.03 to 1.12 of base sphere (r: 1.15)
+      const shellR = 1.15 * (1.03 + (i % 10) * 0.009);
       const y  = 1 - ((i + 0.5) / N) * 2;
       const r  = Math.sqrt(Math.max(0, 1 - y * y));
       const θ  = phi * i;
@@ -129,6 +129,7 @@ function SurfaceDynamicsController() {
     const elapsedTime = clock.getElapsedTime();
     SurfaceParticleShader.uniforms.uTime.value = elapsedTime;
     RimParticleShader.uniforms.uTime.value = elapsedTime;
+    AtmosphericParticleShader.uniforms.uTime.value = elapsedTime;
   });
   return null;
 }
