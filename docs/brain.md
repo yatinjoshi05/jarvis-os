@@ -100,7 +100,7 @@ Mocked subsystems do not alter core TypeScript field structures. Instead, they a
 
 | Subsystem | Status | Persistance Method | Security / Architecture Rationale |
 | :--- | :--- | :--- | :--- |
-| **3D Quantum Globe** | **Real** | R3F / GLSL Shader State Engine (Commit: `62e994f`) | Ground-up clean-slate rebuild (`QuantumGlobeShader.ts`, `QuantumGlobeCanvas.tsx`, `QuantumGlobeBackground.tsx`). Fibonacci golden-spiral point cloud (40,000 points), 6-stop vertical color gradient (cyan/blue top -> violet/magenta -> pink/orange bottom), view-space rim silhouette energy boost, 4,000 inner depth particles, 8,000 rim particles, 6,000 atmospheric particles, native GLSL emissive bloom, sub-pixel fwidth antialiasing. |
+| **3D Quantum Globe** | **Real** | R3F / GLSL Shader State Engine (Commit: `85c38fb`) | Ground-up clean-slate rebuild (`QuantumGlobeShader.ts`, `QuantumGlobeCanvas.tsx`, `QuantumGlobeBackground.tsx`). Fibonacci golden-spiral point cloud (40,000 points), 6-stop vertical color gradient (cyan/blue top -> violet/magenta -> pink/orange bottom), corrected pole orientation, view-space rim silhouette energy boost, 4,000 inner depth particles, 8,000 rim particles, 6,000 atmospheric particles, native GLSL emissive bloom, sub-pixel fwidth antialiasing. |
 | **Voice & Speech** | **Real** | Local browser API | Native browser Web Speech API for recognition, ElevenLabs / OpenAI for TTS. |
 | **Computer Control** | **Real** | Rust / Tauri commands | Hard allowlist on folders (Desktop/Documents/Downloads/Pictures) to prevent arbitrary path access. Includes file organize/rename previews. |
 | **PDF & Document Parsing**| **Real** | Rust / Tauri commands | Uses local `pdf-extract` crate for PDF text extraction and headless LibreOffice for DOCX conversion. |
