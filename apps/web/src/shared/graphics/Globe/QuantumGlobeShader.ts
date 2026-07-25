@@ -2,11 +2,14 @@ import * as THREE from 'three';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // LAYER 1 — Surface Energy Particles
-// Dense Fibonacci shell. 6-stop vertical color gradient (Cyan/Blue TOP -> Violet/Magenta -> Pink/Orange BOTTOM).
+// Woven Lat/Long Digital Lattice. 6-stop vertical color gradient (Cyan TOP -> Orange/Red BOTTOM).
+// Position animation strictly static (< 0.5% radius). Light/alpha wave animation.
+// Point size strictly constant: gl_PointSize = uSize * (6.0 / -mvPos.z).
+// Fragment shader: Sub-pixel OLED pixel disc, zero blob halo.
 // ─────────────────────────────────────────────────────────────────────────────
 export const SurfaceParticleShader = {
   uniforms: {
-    uSize:   { value: 3.0 },
+    uSize:   { value: 2.2 },
     uRadius: { value: 1.15 },
     uTime:   { value: 0.0 },
     uC0: { value: new THREE.Color('#00EEFF') }, // Cyan top pole (+y)
@@ -22,8 +25,7 @@ export const SurfaceParticleShader = {
     uniform float uTime;
     uniform vec3 uC0, uC1, uC2, uC3, uC4, uC5;
 
-    attribute float aSizeScale;
-    attribute vec3  aBasePosition;
+    attribute vec3 aBasePosition;
 
     varying vec3  vColor;
     varying float vAlpha;
@@ -31,56 +33,40 @@ export const SurfaceParticleShader = {
     void main() {
       vec3 n = normalize(aBasePosition);
 
-      // 1. Low-frequency procedural wave breathing deformation
-      float breathe = sin(uTime * 0.4 + aBasePosition.y * 1.8) * 0.015;
+      // Micro surface position breathing strictly < 0.5% radius for stable geometry
+      float microPulse = sin(uTime * 0.5 + aBasePosition.y * 2.0) * 0.003;
+      vec3 pos = aBasePosition + n * microPulse;
 
-      // 2. Local particle turbulence
-      float turb1 = sin(aBasePosition.x * 8.0 + uTime * 1.2) * cos(aBasePosition.z * 7.5 - uTime * 0.9);
-      float turb2 = cos(aBasePosition.y * 9.5 + uTime * 1.4) * sin(aBasePosition.x * 6.2 + uTime * 1.1);
-      float turbulence = (turb1 + turb2) * 0.012;
+      // Traveling light waves across grid vertices (animating light, not geometry)
+      float wave1 = sin(aBasePosition.y * 8.0 - uTime * 1.8 + aBasePosition.x * 4.0) * 0.5 + 0.5;
+      float wave2 = cos(aBasePosition.z * 10.0 + uTime * 1.4 - aBasePosition.y * 3.0) * 0.5 + 0.5;
+      float lightPulse = mix(0.75, 1.25, wave1 * wave2);
 
-      // 3. Micro particle escape
-      float escapeSeed = sin(aBasePosition.x * 17.3 + aBasePosition.y * 31.7 + aBasePosition.z * 13.1);
-      float microEscape = pow(clamp(sin(escapeSeed * 6.0 + uTime * 1.8), 0.0, 1.0), 6.0) * 0.038;
-
-      // 5. Energy ripples
-      float ripple = sin(aBasePosition.y * 12.0 - uTime * 2.2 + aBasePosition.x * 4.0) * 0.009;
-
-      // Dynamic surface position displacement
-      vec3 pos = aBasePosition + n * (breathe + turbulence + microEscape + ripple);
-
-      // 4. Density variation modulating point size dynamically
-      float densityWave = sin(aBasePosition.y * 4.0 - aBasePosition.x * 3.0 + uTime * 0.8) * 0.15 + 1.0;
-
-      // Corrected vertical latitude gradient mapping:
-      // +y (top pole)  => t = 0.0 (uC0: Cyan)
-      // -y (bottom pole) => t = 1.0 (uC5: Orange/Red)
+      // Smooth continuous latitude gradient (+y Cyan -> -y Orange/Red)
       float t = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3 col;
-      if      (t < 0.18) col = mix(uC0, uC1, smoothstep(0.00, 0.18, t));
-      else if (t < 0.36) col = mix(uC1, uC2, smoothstep(0.18, 0.36, t));
-      else if (t < 0.54) col = mix(uC2, uC3, smoothstep(0.36, 0.54, t));
-      else if (t < 0.72) col = mix(uC3, uC4, smoothstep(0.54, 0.72, t));
-      else               col = mix(uC4, uC5, smoothstep(0.72, 1.00, t));
+      if      (t < 0.20) col = mix(uC0, uC1, smoothstep(0.00, 0.20, t));
+      else if (t < 0.40) col = mix(uC1, uC2, smoothstep(0.20, 0.40, t));
+      else if (t < 0.60) col = mix(uC2, uC3, smoothstep(0.40, 0.60, t));
+      else if (t < 0.80) col = mix(uC3, uC4, smoothstep(0.60, 0.80, t));
+      else               col = mix(uC4, uC5, smoothstep(0.80, 1.00, t));
 
       vec4  mvPos   = modelViewMatrix * vec4(pos, 1.0);
       vec3  vNorm   = normalize(normalMatrix * n);
       vec3  viewDir = normalize(-mvPos.xyz);
 
-      float rim = pow(1.0 - abs(dot(vNorm, viewDir)), 2.2);
+      float rim   = pow(1.0 - abs(dot(vNorm, viewDir)), 2.5);
+      float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
-      // Depth: back particles fade but remain individually visible
-      float depth  = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
-      float dAlpha = mix(0.18, 0.88, depth);
-      float dScale = mix(0.50, 1.00, depth);
-
-      col    = col * (0.85 + rim * 0.45);
+      // Apply light pulse to color luminance and alpha
+      col = col * (0.82 + rim * 0.38) * lightPulse;
       vColor = col;
 
-      vAlpha = dAlpha * 0.85 + rim * 0.15;
+      vAlpha = (mix(0.25, 0.90, depth) * 0.82 + rim * 0.18) * (0.85 + wave1 * 0.30);
 
-      float rimBoost = 1.0 + rim * 0.35;
-      gl_PointSize = uSize * aSizeScale * dScale * rimBoost * densityWave * (6.0 / -mvPos.z);
+      // CONSTANT POINT SIZE: uSize * attenuation only.
+      // NO densityWave, NO rimBoost, NO random sizeScale.
+      gl_PointSize = uSize * (6.0 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
     }
   `,
@@ -99,19 +85,12 @@ export const SurfaceParticleShader = {
       float dist = length(uv);
       if (dist > 0.5) discard;
 
-      // Hardware Sub-Pixel Anti-Aliased Sharp Core + Tight Micro Glow Profile
+      // Sub-pixel derivative anti-aliasing for tiny OLED pixel discs
       float delta = fwidth(dist);
+      float alphaEdge = smoothstep(0.44 + delta, 0.44 - delta, dist);
 
-      // Razor-sharp solid core edge using screen-space derivative anti-aliasing
-      float coreEdge = smoothstep(0.38 + delta, 0.38 - delta, dist);
-
-      // Tight sub-pixel light dispersion halo
-      float halo = smoothstep(0.48 + delta, 0.38, dist) * 0.35;
-
-      float alpha = (coreEdge + halo) * vAlpha;
-
-      // High local contrast HDR core center boost
-      vec3 finalColor = mix(vColor, vec3(1.0), coreEdge * 0.30);
+      float alpha = alphaEdge * vAlpha;
+      vec3 finalColor = mix(vColor, vec3(1.0), alphaEdge * 0.20);
 
       gl_FragColor = vec4(finalColor, alpha);
     }
@@ -119,11 +98,11 @@ export const SurfaceParticleShader = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LAYER 2 — Inner Sparse Particles
+// LAYER 2 — Inner Depth Lattice Particles
 // ─────────────────────────────────────────────────────────────────────────────
 export const InnerParticleShader = {
   uniforms: {
-    uSize:   { value: 1.3 },
+    uSize:   { value: 1.2 },
     uRadius: { value: 0.82 },
     uC0: { value: new THREE.Color('#0033CC') },
     uC1: { value: new THREE.Color('#6600CC') },
@@ -134,14 +113,13 @@ export const InnerParticleShader = {
     uniform float uRadius;
     uniform vec3  uC0, uC1, uC2;
 
-    attribute float aSizeScale;
-    attribute vec3  aBasePosition;
+    attribute vec3 aBasePosition;
 
     varying vec3  vColor;
     varying float vAlpha;
 
     void main() {
-      float t = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
+      float t   = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3  col = mix(uC0, uC1, smoothstep(0.0, 0.5, t));
       col       = mix(col, uC2, smoothstep(0.5, 1.0, t));
       vColor    = col;
@@ -149,9 +127,9 @@ export const InnerParticleShader = {
       vec4  mvPos = modelViewMatrix * vec4(aBasePosition, 1.0);
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
-      vAlpha = mix(0.05, 0.32, depth) * aSizeScale;
+      vAlpha = mix(0.08, 0.35, depth);
 
-      gl_PointSize = uSize * aSizeScale * (5.5 / -mvPos.z);
+      gl_PointSize = uSize * (5.5 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
     }
   `,
@@ -171,21 +149,19 @@ export const InnerParticleShader = {
       if (dist > 0.5) discard;
 
       float delta = fwidth(dist);
-      float coreEdge = smoothstep(0.38 + delta, 0.38 - delta, dist);
-      float halo = smoothstep(0.48 + delta, 0.38, dist) * 0.30;
+      float alphaEdge = smoothstep(0.44 + delta, 0.44 - delta, dist);
 
-      float alpha = (coreEdge + halo) * vAlpha;
-      gl_FragColor = vec4(vColor, alpha);
+      gl_FragColor = vec4(vColor, alphaEdge * vAlpha);
     }
   `,
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LAYER 3 — Rim Particle Clusters
+// LAYER 3 — Rim Lattice Particles
 // ─────────────────────────────────────────────────────────────────────────────
 export const RimParticleShader = {
   uniforms: {
-    uSize:   { value: 2.2 },
+    uSize:   { value: 1.8 },
     uRadius: { value: 1.16 },
     uTime:   { value: 0.0 },
     uC0: { value: new THREE.Color('#60FFFF') }, // Bright cyan
@@ -198,39 +174,30 @@ export const RimParticleShader = {
     uniform float uTime;
     uniform vec3  uC0, uC1, uC2;
 
-    attribute float aSizeScale;
-    attribute vec3  aBasePosition;
+    attribute vec3 aBasePosition;
 
     varying vec3  vColor;
     varying float vAlpha;
 
     void main() {
       vec3 n = normalize(aBasePosition);
+      vec4 mvPos = modelViewMatrix * vec4(aBasePosition, 1.0);
+      vec3 vNorm = normalize(normalMatrix * n);
+      vec3 view  = normalize(-mvPos.xyz);
 
-      float breathe = sin(uTime * 0.4 + aBasePosition.y * 1.8) * 0.015;
-      float turbulence = sin(aBasePosition.x * 7.5 + uTime * 1.3) * cos(aBasePosition.y * 6.2 - uTime * 1.1) * 0.012;
-      float microEscape = pow(clamp(sin(aBasePosition.x * 19.1 + aBasePosition.z * 11.3 + uTime * 1.7), 0.0, 1.0), 7.0) * 0.035;
-
-      vec3 pos = aBasePosition + n * (breathe + turbulence + microEscape);
-
-      vec4  mvPos   = modelViewMatrix * vec4(pos, 1.0);
-      vec3  vNorm   = normalize(normalMatrix * n);
-      vec3  viewDir = normalize(-mvPos.xyz);
-
-      float rim = pow(1.0 - abs(dot(vNorm, viewDir)), 3.5);
+      float rim = pow(1.0 - abs(dot(vNorm, view)), 2.8);
 
       float t   = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3  col = mix(uC0, uC1, t);
-      col = mix(col, uC2, pow(rim, 5.0) * 0.5);
+      col = mix(col, uC2, pow(rim, 4.0) * 0.50);
       vColor = col;
 
-      vAlpha = smoothstep(0.45, 0.92, rim) * 0.80;
+      vAlpha = smoothstep(0.40, 0.88, rim) * 0.80;
 
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
-      vAlpha *= mix(0.3, 1.0, depth);
+      vAlpha *= mix(0.35, 1.0, depth);
 
-      float rimBoost = 1.0 + rim * 0.6;
-      gl_PointSize = uSize * aSizeScale * rimBoost * (6.5 / -mvPos.z);
+      gl_PointSize = uSize * (6.0 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
     }
   `,
@@ -250,24 +217,20 @@ export const RimParticleShader = {
       if (dist > 0.5) discard;
 
       float delta = fwidth(dist);
-      float coreEdge = smoothstep(0.40 + delta, 0.40 - delta, dist);
-      float halo = smoothstep(0.49 + delta, 0.40, dist) * 0.40;
+      float alphaEdge = smoothstep(0.44 + delta, 0.44 - delta, dist);
 
-      float alpha = (coreEdge + halo) * vAlpha;
-      vec3 finalColor = mix(vColor, vec3(1.0), coreEdge * 0.45);
-
-      gl_FragColor = vec4(finalColor, alpha);
+      gl_FragColor = vec4(vColor, alphaEdge * vAlpha);
     }
   `,
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LAYER 4 — Detached Atmospheric Particles
+// LAYER 4 — Detached Atmospheric Particles (Sparse, 2–3% satellite Nodes)
 // ─────────────────────────────────────────────────────────────────────────────
 export const AtmosphericParticleShader = {
   uniforms: {
-    uSize:   { value: 1.3 },
-    uRadius: { value: 1.38 },
+    uSize:   { value: 1.0 },
+    uRadius: { value: 1.25 },
     uC0: { value: new THREE.Color('#00CCFF') },
     uC1: { value: new THREE.Color('#4400FF') },
     uC2: { value: new THREE.Color('#8800CC') },
@@ -277,8 +240,7 @@ export const AtmosphericParticleShader = {
     uniform float uRadius;
     uniform vec3  uC0, uC1, uC2;
 
-    attribute float aSizeScale;
-    attribute vec3  aBasePosition;
+    attribute vec3 aBasePosition;
 
     varying vec3  vColor;
     varying float vAlpha;
@@ -297,9 +259,9 @@ export const AtmosphericParticleShader = {
       float rim   = pow(1.0 - abs(dot(vNorm, view)), 1.5);
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
-      vAlpha = (0.04 + rim * 0.18) * mix(0.2, 1.0, depth) * aSizeScale;
+      vAlpha = (0.05 + rim * 0.20) * mix(0.3, 1.0, depth);
 
-      gl_PointSize = uSize * aSizeScale * (5.5 / -mvPos.z);
+      gl_PointSize = uSize * (5.0 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
     }
   `,
@@ -319,11 +281,9 @@ export const AtmosphericParticleShader = {
       if (dist > 0.5) discard;
 
       float delta = fwidth(dist);
-      float coreEdge = smoothstep(0.38 + delta, 0.38 - delta, dist);
-      float halo = smoothstep(0.48 + delta, 0.38, dist) * 0.30;
+      float alphaEdge = smoothstep(0.44 + delta, 0.44 - delta, dist);
 
-      float alpha = (coreEdge + halo) * vAlpha;
-      gl_FragColor = vec4(vColor, alpha);
+      gl_FragColor = vec4(vColor, alphaEdge * vAlpha);
     }
   `,
 };
