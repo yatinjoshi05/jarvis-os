@@ -2,19 +2,19 @@ import * as THREE from 'three';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // LAYER 1 — Surface Energy Particles
-// Dense Fibonacci shell. 6-stop vertical color gradient (Cyan/Blue -> Violet/Magenta -> Pink/Orange).
+// Dense Fibonacci shell. 6-stop vertical color gradient (Cyan/Blue TOP -> Violet/Magenta -> Pink/Orange BOTTOM).
 // ─────────────────────────────────────────────────────────────────────────────
 export const SurfaceParticleShader = {
   uniforms: {
     uSize:   { value: 3.0 },
     uRadius: { value: 1.15 },
     uTime:   { value: 0.0 },
-    uC0: { value: new THREE.Color('#00EEFF') }, // Cyan bottom
+    uC0: { value: new THREE.Color('#00EEFF') }, // Cyan top pole (+y)
     uC1: { value: new THREE.Color('#0044FF') }, // Blue
     uC2: { value: new THREE.Color('#7700FF') }, // Violet
     uC3: { value: new THREE.Color('#CC00BB') }, // Magenta/Purple
     uC4: { value: new THREE.Color('#FF0080') }, // Pink
-    uC5: { value: new THREE.Color('#FF3300') }, // Orange top
+    uC5: { value: new THREE.Color('#FF3300') }, // Orange/Red bottom pole (-y)
   },
   vertexShader: /* glsl */`
     uniform float uSize;
@@ -52,8 +52,10 @@ export const SurfaceParticleShader = {
       // 4. Density variation modulating point size dynamically
       float densityWave = sin(aBasePosition.y * 4.0 - aBasePosition.x * 3.0 + uTime * 0.8) * 0.15 + 1.0;
 
-      // Vertical color — 6 stops mapped to sphere latitude
-      float t = clamp(aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
+      // Corrected vertical latitude gradient mapping:
+      // +y (top pole)  => t = 0.0 (uC0: Cyan)
+      // -y (bottom pole) => t = 1.0 (uC5: Orange/Red)
+      float t = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3 col;
       if      (t < 0.18) col = mix(uC0, uC1, smoothstep(0.00, 0.18, t));
       else if (t < 0.36) col = mix(uC1, uC2, smoothstep(0.18, 0.36, t));
@@ -118,7 +120,6 @@ export const SurfaceParticleShader = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // LAYER 2 — Inner Sparse Particles
-// Smaller radius, slightly more visible — creates perceivable 3D interior depth.
 // ─────────────────────────────────────────────────────────────────────────────
 export const InnerParticleShader = {
   uniforms: {
@@ -140,7 +141,7 @@ export const InnerParticleShader = {
     varying float vAlpha;
 
     void main() {
-      float t = clamp(aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
+      float t = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3  col = mix(uC0, uC1, smoothstep(0.0, 0.5, t));
       col       = mix(col, uC2, smoothstep(0.5, 1.0, t));
       vColor    = col;
@@ -181,7 +182,6 @@ export const InnerParticleShader = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // LAYER 3 — Rim Particle Clusters
-// Particles whose alpha is ONLY non-zero when they are near the view-space edge.
 // ─────────────────────────────────────────────────────────────────────────────
 export const RimParticleShader = {
   uniforms: {
@@ -219,7 +219,7 @@ export const RimParticleShader = {
 
       float rim = pow(1.0 - abs(dot(vNorm, viewDir)), 3.5);
 
-      float t   = clamp(aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
+      float t   = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3  col = mix(uC0, uC1, t);
       col = mix(col, uC2, pow(rim, 5.0) * 0.5);
       vColor = col;
@@ -263,7 +263,6 @@ export const RimParticleShader = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // LAYER 4 — Detached Atmospheric Particles
-// Outside the sphere (R 1.25–1.55). Very sparse. Pure ionized energy feeling.
 // ─────────────────────────────────────────────────────────────────────────────
 export const AtmosphericParticleShader = {
   uniforms: {
@@ -285,7 +284,7 @@ export const AtmosphericParticleShader = {
     varying float vAlpha;
 
     void main() {
-      float t   = clamp(aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
+      float t   = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3  col = mix(uC0, uC1, smoothstep(0.0, 0.5, t));
       col       = mix(col, uC2, smoothstep(0.5, 1.0, t));
       vColor    = col;
