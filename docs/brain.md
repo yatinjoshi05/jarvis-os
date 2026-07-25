@@ -100,7 +100,7 @@ Mocked subsystems do not alter core TypeScript field structures. Instead, they a
 
 | Subsystem | Status | Persistance Method | Security / Architecture Rationale |
 | :--- | :--- | :--- | :--- |
-| **3D Quantum Globe** | **Real** | R3F / GLSL Shader State Engine (Commit: `b5bfd87`) | Structured lat/long digital lattice grid (`gridSphere`), 3D traveling energy fields, 1-2% local density compression bands, 0.015r rim edge breakup perturbation, traveling latitude energy pulses, region-coherent brightness modulation, crisp sub-pixel OLED discs, 2,000 near-surface atmospheric rim particles (r: 1.03-1.12). |
+| **3D Quantum Globe** | **Real** | R3F / GLSL Shader State Engine (Commit: `ac2d15c`) | Structured lat/long digital lattice grid (`gridSphere`), 3D traveling energy fields, 1-2% local density compression bands, 0.015r rim edge breakup perturbation, traveling latitude energy pulses, region-coherent brightness modulation, crisp sub-pixel OLED discs, 2,000 near-surface atmospheric rim particles, isolated shader debug modes (1: Lattice, 2: Atmosphere, 3: Energy Heatmap, 4: Compression Heatmap, 5: Rim Breakup, 6: Composite). |
 | **Voice & Speech** | **Real** | Local browser API | Native browser Web Speech API for recognition, ElevenLabs / OpenAI for TTS. |
 | **Computer Control** | **Real** | Rust / Tauri commands | Hard allowlist on folders (Desktop/Documents/Downloads/Pictures) to prevent arbitrary path access. Includes file organize/rename previews. |
 | **PDF & Document Parsing**| **Real** | Rust / Tauri commands | Uses local `pdf-extract` crate for PDF text extraction and headless LibreOffice for DOCX conversion. |
