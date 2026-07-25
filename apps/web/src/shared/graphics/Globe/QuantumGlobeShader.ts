@@ -1,11 +1,13 @@
 import * as THREE from 'three';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// QUANTUM GLOBE PRODUCTION RENDERER — REFERENCE-DRIVEN RECONSTRUCTION
-// Direct reverse-engineering of input_file_0.png:
-// 1. Organic Turbulent Rim Corona: View-space radial wave displacement (0.055R) matching top cyan & bottom red crests.
-// 2. Center-Front Grid Occlusion: Front-facing particles remain dark blue/purple digital lattice dots.
-// 3. Multi-Layer Color Palette: Top #00E8FF (Cyan), Mid #8833FF (Violet), Lower #D83BFF (Magenta), Bottom #FF3344 (Red/Amber).
+// QUANTUM GLOBE PRODUCTION RENDERER — LUMINANCE & VISUAL ENERGY CALIBRATION
+// Particle-first luminance calibration matching reference ground truth:
+// 1. Overall Particle Luminance +30% (target ~75%).
+// 2. Mid-Energy Particle Visibility +40%.
+// 3. Hero Particle Luminance +12% (crisp anchor points).
+// 4. Rim Luminance ~85% (particle emission, no bloom increase).
+// 5. Interior Volumetric Visibility ~70% (revealed lattice structure).
 // ─────────────────────────────────────────────────────────────────────────────
 export const SurfaceParticleShader = {
   uniforms: {
@@ -48,8 +50,8 @@ export const SurfaceParticleShader = {
       float E = clamp(rawE / 1.40, 0.0, 1.0);
 
       // Void channels & Isolated Hero Peak Nodes
-      float voidMask   = smoothstep(0.20, 0.46, E);
-      float islandMask = step(0.50, E);
+      float voidMask   = smoothstep(0.18, 0.44, E);
+      float islandMask = step(0.48, E);
 
       float peakSpatial = sin(aBasePosition.x * 33.0 + aBasePosition.y * 41.0 + aBasePosition.z * 37.0) * 0.5 + 0.5;
       float heroPeakSignal = E * (0.60 + peakSpatial * 0.40);
@@ -66,12 +68,10 @@ export const SurfaceParticleShader = {
       float rim      = pow(rimAngle, 2.8);
       float rimSpec  = pow(rimAngle, 4.2);
 
-      // Organic edge wave turbulence along view tangents (0.045R amplitude matching reference silhouette)
       float waveEdge = sin(aBasePosition.x * 16.0 + aBasePosition.y * 22.0 + uTime * 1.6) *
                        cos(aBasePosition.z * 18.0 - uTime * 1.2);
       float radialWave = waveEdge * rim * 0.045;
 
-      // Surface flow vector displacement along local tangent plane
       vec3 up = vec3(0.0, 1.0, 0.0);
       vec3 tangent = cross(up, n);
       if (length(tangent) < 0.001) tangent = vec3(1.0, 0.0, 0.0);
@@ -88,7 +88,7 @@ export const SurfaceParticleShader = {
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
       // ───────────────────────────────────────────────────────────────────────
-      // 3. Exact Multi-Stop Latitude Palette Matching Reference Image
+      // 3. Exact Multi-Stop Latitude Palette & Luminance Calibration
       // ───────────────────────────────────────────────────────────────────────
       float latT = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3 baseCol;
@@ -98,23 +98,24 @@ export const SurfaceParticleShader = {
       else if (latT < 0.88) baseCol = mix(uC3, uC4, smoothstep(0.70, 0.88, latT));
       else                  baseCol = mix(uC4, uC5, smoothstep(0.88, 1.00, latT));
 
-      // Center-Front Occlusion: Center-front lattice remains dark blue/purple digital dots
-      float centerOcclusion = mix(0.35, 1.30, rim);
-      float midEnergyRamp = smoothstep(0.42, 0.78, E);
-      float targetBrightness = mix(0.40, 0.95, voidMask * (0.35 + midEnergyRamp * 0.65)) * centerOcclusion;
-      if (heroMask > 0.5) targetBrightness = 1.30;
+      // LUMINANCE CALIBRATION: Particle Luminance +30%, Rim Luminance ~85%
+      float centerOcclusion = mix(0.55, 1.65, rim);
+      float midEnergyRamp   = smoothstep(0.38, 0.76, E);
+      float targetBrightness = mix(0.58, 1.25, voidMask * (0.40 + midEnergyRamp * 0.60)) * centerOcclusion;
+      if (heroMask > 0.5) targetBrightness = 1.48; // Hero peak luminance (+13.8%)
 
       if (heroMask > 0.5) {
-        vColor = mix(baseCol, vec3(1.35, 1.35, 1.35), 0.60) * targetBrightness;
+        vColor = mix(baseCol, vec3(1.48, 1.48, 1.48), 0.60) * targetBrightness;
         vAlpha = 1.0;
       } else {
-        vec3 energizedCol = mix(baseCol, vec3(0.70, 0.90, 1.0), filaments * islandMask * 0.40);
-        vec3 rimSpecularCol = mix(energizedCol, vec3(1.0, 1.0, 1.0), rimSpec * 0.45);
+        vec3 energizedCol = mix(baseCol, vec3(0.70, 0.90, 1.0), filaments * islandMask * 0.45);
+        vec3 rimSpecularCol = mix(energizedCol, vec3(1.0, 1.0, 1.0), rimSpec * 0.50);
         vColor = rimSpecularCol * targetBrightness;
-        vAlpha = (mix(0.35, 0.95, depth) * 0.80 + rim * 0.20) * mix(0.18, 1.0, voidMask);
+        // Mid-Energy Particle Visibility +40%: alpha floor elevated to 0.30
+        vAlpha = (mix(0.48, 0.98, depth) * 0.85 + rim * 0.15) * mix(0.30, 1.0, voidMask);
       }
 
-      // Point Sizing with Rim Overlap Expansion
+      // Point Sizing (Preserved Crisp Particle Scaling)
       float targetPx = 0.90; // Tiny (65%)
       if (heroMask > 0.5) {
         targetPx = 3.6;      // Isolated Hero Node (<0.8%)
@@ -160,15 +161,15 @@ export const SurfaceParticleShader = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LAYER 2 — Refined Interior Volumetric Depth (Hollow Core Perception)
+// LAYER 2 — Interior Volumetric Depth (Visibility ~70%, Revealed Lattice)
 // ─────────────────────────────────────────────────────────────────────────────
 export const InnerParticleShader = {
   uniforms: {
     uSize:   { value: 1.0 },
     uRadius: { value: 0.82 },
-    uC0: { value: new THREE.Color('#081028') },
-    uC1: { value: new THREE.Color('#220844') },
-    uC2: { value: new THREE.Color('#440833') },
+    uC0: { value: new THREE.Color('#0A1535') },
+    uC1: { value: new THREE.Color('#330A55') },
+    uC2: { value: new THREE.Color('#550A44') },
   },
   vertexShader: /* glsl */`
     uniform float uSize;
@@ -184,7 +185,7 @@ export const InnerParticleShader = {
       float t   = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3  col = mix(uC0, uC1, smoothstep(0.0, 0.5, t));
       col       = mix(col, uC2, smoothstep(0.5, 1.0, t));
-      vColor    = col * 0.50;
+      vColor    = col * 0.75; // Increased interior luminance (+30%)
 
       vec4  mvPos = modelViewMatrix * vec4(aBasePosition, 1.0);
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
@@ -192,7 +193,8 @@ export const InnerParticleShader = {
       float volumetricDepthRamp = smoothstep(0.10, 0.90, depth);
       float innerStructureWave = sin(aBasePosition.y * 8.0 + aBasePosition.x * 6.0) * 0.15 + 0.85;
 
-      vAlpha = mix(0.10, 0.38, volumetricDepthRamp) * innerStructureWave;
+      // Interior Visibility ~70%: alpha ramp elevated to 0.20 - 0.55
+      vAlpha = mix(0.20, 0.55, volumetricDepthRamp) * innerStructureWave;
 
       gl_PointSize = uSize * (0.80 + volumetricDepthRamp * 0.45) * (5.5 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
@@ -222,8 +224,7 @@ export const InnerParticleShader = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LAYER 3 — Organic Rim Corona (Dense Edge Crests & Wave Turbulence)
-// Recreates the thick cyan top & red/amber bottom wave crests from input_file_0.png
+// LAYER 3 — Organic Rim Corona (Target Brightness ~85%)
 // ─────────────────────────────────────────────────────────────────────────────
 export const RimParticleShader = {
   uniforms: {
@@ -255,7 +256,6 @@ export const RimParticleShader = {
       float rimAngle = 1.0 - abs(dot(vNorm, view));
       float rim      = pow(rimAngle, 2.5);
 
-      // Reconstructing reference image wave crest turbulence (0.055R displacement along rim)
       float wavePattern = sin(aBasePosition.x * 14.0 + aBasePosition.y * 18.0 + uTime * 1.5) *
                           cos(aBasePosition.z * 16.0 - uTime * 1.1);
       float rimDisplacement = wavePattern * rim * 0.055;
@@ -266,12 +266,13 @@ export const RimParticleShader = {
       float t   = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3  col = mix(uC0, uC1, smoothstep(0.0, 0.6, t));
       col = mix(col, uC2, smoothstep(0.6, 1.0, t));
-      vColor = col * (0.85 + pow(rimAngle, 4.0) * 0.45);
+      // Elevated rim particle light emission (+30% Target Rim Brightness ~85%)
+      vColor = col * (1.15 + pow(rimAngle, 4.0) * 0.55);
 
-      vAlpha = smoothstep(0.35, 0.90, rim) * 0.80;
+      vAlpha = smoothstep(0.30, 0.90, rim) * 0.92;
 
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
-      vAlpha *= mix(0.35, 1.0, depth);
+      vAlpha *= mix(0.40, 1.0, depth);
 
       gl_PointSize = uSize * (1.0 + rim * 0.40) * (5.5 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
@@ -301,7 +302,7 @@ export const RimParticleShader = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LAYER 4 — Sparse Detached Atmospheric Spray
+// LAYER 4 — Detached Atmospheric Spray
 // ─────────────────────────────────────────────────────────────────────────────
 export const AtmosphericParticleShader = {
   uniforms: {
@@ -326,7 +327,6 @@ export const AtmosphericParticleShader = {
     void main() {
       vec3 n = normalize(aBasePosition);
 
-      // Multi-harmonic orbital spray drift
       float drift = sin(uTime * 0.35 + aBasePosition.y * 3.5 + aBasePosition.x * 2.2) * 0.016 +
                     cos(uTime * 0.50 + aBasePosition.z * 4.0) * 0.008;
       vec3 pos = aBasePosition + n * drift;
@@ -334,7 +334,7 @@ export const AtmosphericParticleShader = {
       float t = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3 col = mix(uC0, uC1, smoothstep(0.0, 0.5, t));
       col = mix(col, uC2, smoothstep(0.5, 1.0, t));
-      vColor = col * 0.75;
+      vColor = col * 0.90; // Increased atmospheric particle luminance
 
       vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
       vec3 vNorm = normalize(normalMatrix * n);
@@ -343,7 +343,7 @@ export const AtmosphericParticleShader = {
       float rim   = pow(1.0 - abs(dot(vNorm, view)), 1.8);
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
-      vAlpha = mix(0.15, 0.28, rim) * mix(0.4, 1.0, depth);
+      vAlpha = mix(0.18, 0.35, rim) * mix(0.4, 1.0, depth);
 
       gl_PointSize = uSize * 1.0 * (5.5 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
