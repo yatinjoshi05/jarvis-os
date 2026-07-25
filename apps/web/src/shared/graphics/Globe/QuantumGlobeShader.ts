@@ -54,9 +54,7 @@ export const SurfaceParticleShader = {
 
       // ───────────────────────────────────────────────────────────────────────
       // PHASE 3 & 4: PARTICLE STATE CLASSIFICATION & ADAPTIVE POINT SIZING
-      // Point size smoothly transitions derived from distance, rim, energy & hero state.
       // ───────────────────────────────────────────────────────────────────────
-      // Smooth continuous size interpolation to prevent visual popping
       float baseStateScale = mix(0.70, 2.40, smoothstep(0.35, 0.80, E));
       if (heroMask > 0.5) baseStateScale = 3.60;
 
@@ -64,7 +62,7 @@ export const SurfaceParticleShader = {
       if (heroMask > 0.5) stateBrightness = 2.50;
 
       // ───────────────────────────────────────────────────────────────────────
-      // Tangential Vector Displacement along surface tangent plane (1-2% radius)
+      // PHASE 5: TANGENTIAL VECTOR DISPLACEMENT & RIM PERTURBATION
       // ───────────────────────────────────────────────────────────────────────
       vec3 up = vec3(0.0, 1.0, 0.0);
       vec3 tangent = cross(up, n);
@@ -86,6 +84,7 @@ export const SurfaceParticleShader = {
       vec3  vNorm   = normalize(normalMatrix * n);
       vec3  viewDir = normalize(-mvPos.xyz);
 
+      // PHASE 5: View-Space Rim Angle & Specular Density Corona
       float rim   = pow(1.0 - abs(dot(vNorm, viewDir)), 2.5);
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
@@ -98,18 +97,19 @@ export const SurfaceParticleShader = {
       else if (t < 0.80) baseCol = mix(uC3, uC4, smoothstep(0.60, 0.80, t));
       else               baseCol = mix(uC4, uC5, smoothstep(0.80, 1.00, t));
 
-      // Hero Ignition
+      // Hero Ignition vs Rim Accumulation
       if (heroMask > 0.5) {
         vColor = vec3(2.2, 2.2, 2.2);
         vAlpha = 1.0;
       } else {
         vec3 energizedCol = mix(baseCol, vec3(0.85, 1.0, 1.0), e3 * islandMask * 0.60);
-        vColor = energizedCol * stateBrightness * (0.80 + rim * 0.40);
-        vAlpha = (mix(0.12, 0.95, depth) * 0.80 + rim * 0.20) * mix(0.15, 1.0, voidMask);
+        vec3 rimSpecularCol = mix(energizedCol, vec3(1.0, 1.0, 1.0), pow(rim, 3.2) * 0.50);
+        vColor = rimSpecularCol * stateBrightness * (0.80 + rim * 0.50);
+        vAlpha = (mix(0.12, 0.95, depth) * 0.80 + rim * 0.30) * mix(0.15, 1.0, voidMask);
       }
 
-      // PHASE 4: Adaptive Point Size Formula depending on distance, rim, & energy state
-      float rimSizeBoost = 1.0 + rim * 0.65;
+      // PHASE 5: Thick Rim Corona via Overlapping Point Geometry Scaling
+      float rimSizeBoost = 1.0 + rim * 0.70;
       gl_PointSize = uSize * baseStateScale * rimSizeBoost * (6.0 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
     }
