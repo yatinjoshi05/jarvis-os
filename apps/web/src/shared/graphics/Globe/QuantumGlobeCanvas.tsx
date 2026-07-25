@@ -10,11 +10,6 @@ import {
 } from './QuantumGlobeShader';
 import { QuantumGlobeBackground } from './QuantumGlobeBackground';
 
-// ─── Utility: Deterministic Hash ─────────────────────────────────────────────
-function dHash(i: number): number {
-  return Math.abs(Math.sin(i * 127.1 + 311.7) * 43758.5453) % 1.0;
-}
-
 // ─── Structured Latitude/Longitude Digital Lattice Generator ─────────────────
 function gridSphere(ringsCount: number, radius: number) {
   const positions: number[] = [];
@@ -37,43 +32,23 @@ function gridSphere(ringsCount: number, radius: number) {
   }
 
   const posArray = new Float32Array(positions);
-  const count = posArray.length / 3;
-
-  // Particle Hierarchy Classification Tiers:
-  // Layer A (75%): 0.0 (Tiny background lattice)
-  // Layer B (20%): 1.0 (Normal lattice)
-  // Layer C (3%):  2.0 (Cluster candidate)
-  // Layer D (1%):  3.0 (Hero candidate)
-  const classArray = new Float32Array(count);
-  for (let i = 0; i < count; i++) {
-    const h = dHash(i * 19.3 + 47.1);
-    if (h > 0.99)      classArray[i] = 3.0; // Layer D: Hero candidate (1%)
-    else if (h > 0.96) classArray[i] = 2.0; // Layer C: Cluster candidate (3%)
-    else if (h > 0.76) classArray[i] = 1.0; // Layer B: Normal lattice (20%)
-    else               classArray[i] = 0.0; // Layer A: Tiny background (75%)
-  }
-
-  return { positions: posArray, classes: classArray };
+  return { positions: posArray, basePositions: posArray };
 }
 
 // ─── Generic Point Cloud Component ───────────────────────────────────────────
 interface PointCloudProps {
   positions: Float32Array;
-  classes?:  Float32Array;
   shader:    object;
 }
 
-function PointCloud({ positions, classes, shader }: PointCloudProps) {
+function PointCloud({ positions, shader }: PointCloudProps) {
   const count = positions.length / 3;
-  const defaultClasses = useMemo(() => new Float32Array(count), [count]);
-  const classData = classes || defaultClasses;
 
   return (
     <points>
       <bufferGeometry>
         <bufferAttribute attach="attributes-position"      array={positions} count={count} itemSize={3} />
         <bufferAttribute attach="attributes-aBasePosition" array={positions} count={count} itemSize={3} />
-        <bufferAttribute attach="attributes-aClass"        array={classData} count={count} itemSize={1} />
       </bufferGeometry>
       <shaderMaterial
         args={[shader]}
@@ -85,11 +60,11 @@ function PointCloud({ positions, classes, shader }: PointCloudProps) {
   );
 }
 
-// ─── Layer 1: Surface Lattice Particles (Layer A 75%, Layer B 20%, Layer C 3%, Layer D 1%) ────
+// ─── Layer 1: Surface Lattice Particles ───────────────────────────────────────
 function SurfaceParticles() {
   const R = 1.15;
   const data = useMemo(() => gridSphere(140, R), []);
-  return <PointCloud positions={data.positions} classes={data.classes} shader={SurfaceParticleShader} />;
+  return <PointCloud positions={data.positions} shader={SurfaceParticleShader} />;
 }
 
 // ─── Layer 2: Inner Sparse Lattice Particles ─────────────────────────────────
@@ -106,9 +81,9 @@ function RimParticles() {
   return <PointCloud positions={data.positions} shader={RimParticleShader} />;
 }
 
-// ─── Layer E: Detached Satellite Particles (Layer E: 1%, 500 Nodes, r: 1.18 - 1.32) ────
+// ─── Phase 6: Refined Detached Atmospheric Satellites (Sparse, 400 Nodes, r: 1.18 - 1.32) ────
 function AtmosphericParticles() {
-  const N = 500; // 1% sparse satellite count
+  const N = 400; // Very sparse, subtle satellite nodes
   const data = useMemo(() => {
     const pos = new Float32Array(N * 3);
     const phi = Math.PI * (3 - Math.sqrt(5));
@@ -185,7 +160,7 @@ export function QuantumGlobeCanvas() {
     3: '3: ENERGY FIELD HEATMAP',
     4: '4: COMPRESSION BANDS HEATMAP',
     5: '5: RIM PERTURBATION VISUALIZATION',
-    6: '6: FINAL COMPOSITE (5-TIER HIERARCHY)',
+    6: '6: FINAL COMPOSITE (PRODUCTION RENDERER)',
   };
 
   return (
@@ -238,7 +213,7 @@ export function QuantumGlobeCanvas() {
       {(debugKey !== 6 || showOverlay) && (
         <div className="absolute top-4 left-4 z-50 bg-black/85 backdrop-blur-md border border-cyan-500/40 text-cyan-400 p-3 rounded-lg font-mono text-xs shadow-2xl space-y-1.5 w-72">
           <div className="text-white font-bold border-b border-cyan-500/30 pb-1 flex justify-between items-center">
-            <span>GLOBE HIERARCHY DEBUG</span>
+            <span>GLOBE SHADER DEBUG</span>
             <span className="text-amber-400 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-500/30">MODE {debugKey}</span>
           </div>
           <div className="text-emerald-400 font-semibold">{debugLabels[debugKey]}</div>
