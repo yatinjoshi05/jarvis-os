@@ -53,29 +53,15 @@ export const SurfaceParticleShader = {
       float heroMask   = step(0.80, E);
 
       // ───────────────────────────────────────────────────────────────────────
-      // PHASE 3: DYNAMIC PARTICLE STATE CLASSIFICATION (Tiny/Small/Medium/Large/Hero)
-      // Every lattice vertex transitions smoothly between states based solely on E.
+      // PHASE 3 & 4: PARTICLE STATE CLASSIFICATION & ADAPTIVE POINT SIZING
+      // Point size smoothly transitions derived from distance, rim, energy & hero state.
       // ───────────────────────────────────────────────────────────────────────
-      float stateScale = 0.70;      // Default Tiny State (65%)
-      float stateBrightness = 0.40;
+      // Smooth continuous size interpolation to prevent visual popping
+      float baseStateScale = mix(0.70, 2.40, smoothstep(0.35, 0.80, E));
+      if (heroMask > 0.5) baseStateScale = 3.60;
 
-      if (E >= 0.80) {
-        // HERO PEAK STATE (1%): Super-Luminous Pure White Anchor
-        stateScale = 3.60;
-        stateBrightness = 2.40;
-      } else if (E >= 0.68) {
-        // LARGE ENERGY NODE STATE (4%)
-        stateScale = 2.20;
-        stateBrightness = 1.60;
-      } else if (E >= 0.56) {
-        // MEDIUM CLUSTER STATE (10%)
-        stateScale = 1.50;
-        stateBrightness = 1.10;
-      } else if (E >= 0.38) {
-        // SMALL LATTICE STATE (20%)
-        stateScale = 1.00;
-        stateBrightness = 0.75;
-      }
+      float stateBrightness = mix(0.40, 1.60, smoothstep(0.30, 0.80, E));
+      if (heroMask > 0.5) stateBrightness = 2.50;
 
       // ───────────────────────────────────────────────────────────────────────
       // Tangential Vector Displacement along surface tangent plane (1-2% radius)
@@ -112,9 +98,9 @@ export const SurfaceParticleShader = {
       else if (t < 0.80) baseCol = mix(uC3, uC4, smoothstep(0.60, 0.80, t));
       else               baseCol = mix(uC4, uC5, smoothstep(0.80, 1.00, t));
 
-      // Hero Ignition: High-energy peaks burn into pure white core
+      // Hero Ignition
       if (heroMask > 0.5) {
-        vColor = vec3(2.2, 2.2, 2.2); // Super-luminous white emission core
+        vColor = vec3(2.2, 2.2, 2.2);
         vAlpha = 1.0;
       } else {
         vec3 energizedCol = mix(baseCol, vec3(0.85, 1.0, 1.0), e3 * islandMask * 0.60);
@@ -122,7 +108,9 @@ export const SurfaceParticleShader = {
         vAlpha = (mix(0.12, 0.95, depth) * 0.80 + rim * 0.20) * mix(0.15, 1.0, voidMask);
       }
 
-      gl_PointSize = uSize * stateScale * (1.0 + rim * 0.5) * (6.0 / -mvPos.z);
+      // PHASE 4: Adaptive Point Size Formula depending on distance, rim, & energy state
+      float rimSizeBoost = 1.0 + rim * 0.65;
+      gl_PointSize = uSize * baseStateScale * rimSizeBoost * (6.0 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
     }
   `,
