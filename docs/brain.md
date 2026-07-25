@@ -100,7 +100,7 @@ Mocked subsystems do not alter core TypeScript field structures. Instead, they a
 
 | Subsystem | Status | Persistance Method | Security / Architecture Rationale |
 | :--- | :--- | :--- | :--- |
-| **3D Quantum Globe** | **Real** | R3F / GLSL Shader State Engine (Commit: `e5882d4`) | Luminance & visual energy calibration (matching reference ground truth): overall particle luminance +30% (~75%), mid-energy particle visibility +40%, rim particle emission ~85%, interior volume lattice visibility ~70%, and hero peak luminance +12% without bloom blurs. |
+| **3D Quantum Globe** | **Real** | R3F / GLSL Shader State Engine (Commit: `d0b23f7`) | Interior luminance calibration (matching Image A ground truth): outer shell brightness ~90% (+0%), mid shell brightness ~75% (+35%), core region brightness ~60% (+50%), center visibility 65%, middle visibility 80%, outer visibility 95%, crisp OLED dot profiles without fog or bloom blurs. |
 | **Voice & Speech** | **Real** | Local browser API | Native browser Web Speech API for recognition, ElevenLabs / OpenAI for TTS. |
 | **Computer Control** | **Real** | Rust / Tauri commands | Hard allowlist on folders (Desktop/Documents/Downloads/Pictures) to prevent arbitrary path access. Includes file organize/rename previews. |
 | **PDF & Document Parsing**| **Real** | Rust / Tauri commands | Uses local `pdf-extract` crate for PDF text extraction and headless LibreOffice for DOCX conversion. |
