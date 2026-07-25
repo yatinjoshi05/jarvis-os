@@ -1,13 +1,13 @@
 import * as THREE from 'three';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LAYER 1 — Surface Energy Particles
-// Multi-Octave Spectral Energy Field (Global Macro Flow + Medium Rotational Flow
-// + High-Frequency Filaments) + Tangential Vector Flow + Energy-Driven Color
+// LAYER 1 — Surface Energy Particles with 5-Tier Particle Hierarchy (A, B, C, D, E)
+// Quantized Hotspot Islands + Hero Particles attached to Energy Peaks
+// Point Size depends on: distance, rim, local energy, class, & cluster membership
 // ─────────────────────────────────────────────────────────────────────────────
 export const SurfaceParticleShader = {
   uniforms: {
-    uSize:      { value: 2.2 },
+    uSize:      { value: 2.0 },
     uRadius:    { value: 1.15 },
     uTime:      { value: 0.0 },
     uDebugMode: { value: 6 }, // 1: Lattice, 2: Atmosphere, 3: Energy, 4: Compression, 5: Rim, 6: Composite
@@ -25,7 +25,8 @@ export const SurfaceParticleShader = {
     uniform int   uDebugMode;
     uniform vec3  uC0, uC1, uC2, uC3, uC4, uC5;
 
-    attribute vec3 aBasePosition;
+    attribute vec3  aBasePosition;
+    attribute float aClass; // 0: Tiny (75%), 1: Normal (20%), 2: Cluster (3%), 3: Hero (1%)
 
     varying vec3  vColor;
     varying float vAlpha;
@@ -36,22 +37,23 @@ export const SurfaceParticleShader = {
       // ───────────────────────────────────────────────────────────────────────
       // 1. Multi-Octave Spectral Energy Field Computation
       // ───────────────────────────────────────────────────────────────────────
-      // Octave 1: Low-Frequency Global Macro Flow (f ~ 1.8)
       float f1 = sin(aBasePosition.x * 1.8 + aBasePosition.y * 1.4 + uTime * 0.6) * 0.5 + 0.5;
-
-      // Octave 2: Medium-Frequency Rotational Directional Current (f ~ 4.5)
       float f2 = cos(aBasePosition.z * 4.5 - aBasePosition.y * 3.8 + aBasePosition.x * 2.2 + uTime * 1.1) * 0.5 + 0.5;
-
-      // Octave 3: High-Frequency Sharp Energy Filaments (f ~ 14.0 with power exponent 5.0)
       float filamentBase = sin(aBasePosition.x * 14.0 + aBasePosition.y * 11.0 - uTime * 2.0) *
                            cos(aBasePosition.z * 12.0 + aBasePosition.y * 9.0 + uTime * 1.5);
       float filaments = pow(clamp(filamentBase * 0.5 + 0.5, 0.0, 1.0), 5.0);
 
-      // Total multi-scale energy magnitude
       float energyMag = f1 * 0.45 + f2 * 0.35 + filaments * 0.75;
 
       // ───────────────────────────────────────────────────────────────────────
-      // 2. Tangential Flow Vector Field (1-2% Surface Displacement)
+      // 2. Quantized Energy Hotspot Islands & Hero Thresholds
+      // ───────────────────────────────────────────────────────────────────────
+      // Quantize energy field into discrete travelling hotspot islands
+      float islandMask = step(0.62, energyMag); // 1.0 inside hotspot island, 0.0 outside
+      float heroMask   = step(0.82, energyMag); // 1.0 on extreme energy peak, 0.0 outside
+
+      // ───────────────────────────────────────────────────────────────────────
+      // 3. Tangential Vector Field & Displacement
       // ───────────────────────────────────────────────────────────────────────
       vec3 up = vec3(0.0, 1.0, 0.0);
       vec3 tangent = cross(up, n);
@@ -59,17 +61,14 @@ export const SurfaceParticleShader = {
       else tangent = normalize(tangent);
       vec3 bitangent = cross(n, tangent);
 
-      // Surface flow vector displacement along local tangent plane (1-2% radius)
       float flowT1 = sin(aBasePosition.y * 6.0 + uTime * 1.3) * 0.015;
       float flowT2 = cos(aBasePosition.x * 8.0 - uTime * 1.1) * 0.012;
       vec3 tangentialDisplacement = tangent * flowT1 + bitangent * flowT2;
 
-      // Radial compression (1-2%) & rim edge breakup (0.015 max)
       float compression = sin(aBasePosition.y * 14.0 - uTime * 1.2 + aBasePosition.x * 6.0) * 0.012;
       float edgeBreakup = sin(aBasePosition.x * 21.0 + aBasePosition.y * 29.0 + uTime * 1.6) * 0.008;
       vec3 radialDisplacement = n * (compression + edgeBreakup);
 
-      // Position selection based on Debug Mode
       vec3 pos = aBasePosition;
       if (uDebugMode == 1) {
         pos = aBasePosition;
@@ -88,9 +87,7 @@ export const SurfaceParticleShader = {
       float rim   = pow(1.0 - abs(dot(vNorm, viewDir)), 2.5);
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
-      // ───────────────────────────────────────────────────────────────────────
-      // 3. Dynamic Energy-Driven Color & Luminance Modulation
-      // ───────────────────────────────────────────────────────────────────────
+      // Base latitude color ramp
       float t = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3 baseCol;
       if      (t < 0.20) baseCol = mix(uC0, uC1, smoothstep(0.00, 0.20, t));
@@ -99,37 +96,73 @@ export const SurfaceParticleShader = {
       else if (t < 0.80) baseCol = mix(uC3, uC4, smoothstep(0.60, 0.80, t));
       else               baseCol = mix(uC4, uC5, smoothstep(0.80, 1.00, t));
 
-      // Dynamically shift color toward hot cyan/white filament energy peak
-      vec3 energizedCol = mix(baseCol, vec3(0.85, 1.0, 1.0), filaments * 0.70);
-      energizedCol *= (0.65 + energyMag * 0.85);
+      // ───────────────────────────────────────────────────────────────────────
+      // 4. Particle Hierarchy Classification (Layers A, B, C, D)
+      // ───────────────────────────────────────────────────────────────────────
+      float baseScale = 0.75;
+      float classBrightness = 0.65;
 
-      if (uDebugMode == 1) {
-        vColor = uC0 * mix(0.5, 1.0, depth);
-        vAlpha = mix(0.4, 0.9, depth);
-      } else if (uDebugMode == 3) {
-        // Multi-octave energy false-color heatmap
-        vec3 heatMap = mix(vec3(0.02, 0.08, 0.35), vec3(0.0, 0.95, 1.0), energyMag / 1.5);
-        heatMap = mix(heatMap, vec3(1.0, 1.0, 1.0), filaments);
-        vColor = heatMap;
-        vAlpha = mix(0.3, 1.0, depth);
-      } else if (uDebugMode == 4) {
-        float compNorm = compression / 0.012 * 0.5 + 0.5;
-        vColor = mix(vec3(1.0, 0.0, 0.8), vec3(0.0, 1.0, 0.4), compNorm);
-        vAlpha = mix(0.4, 1.0, depth);
-      } else if (uDebugMode == 5) {
-        float edgeNorm = abs(edgeBreakup) / 0.008;
-        vec3 edgeHeat  = mix(baseCol, vec3(1.0, 0.9, 0.0), edgeNorm * rim);
-        vColor = mix(edgeHeat, vec3(1.0, 0.2, 0.0), pow(rim, 3.0));
-        vAlpha = (smoothstep(0.3, 0.9, rim) * 0.85 + 0.15) * mix(0.4, 1.0, depth);
+      if (aClass > 2.5) {
+        // LAYER D (1%): HERO PARTICLES (Ignite ONLY when sitting on an energy peak)
+        if (heroMask > 0.5) {
+          baseScale = 3.8;
+          classBrightness = 3.2;
+        } else {
+          baseScale = 0.85;
+          classBrightness = 0.75;
+        }
+      } else if (aClass > 1.5) {
+        // LAYER C (3%): CLUSTER PARTICLES (Coherent travelling islands)
+        if (islandMask > 0.5) {
+          baseScale = 2.2;
+          classBrightness = 1.9;
+        } else {
+          baseScale = 0.80;
+          classBrightness = 0.70;
+        }
+      } else if (aClass > 0.5) {
+        // LAYER B (20%): NORMAL LATTICE PARTICLES
+        baseScale = 1.25;
+        classBrightness = 1.0;
       } else {
-        // Composite Mode
-        vColor = energizedCol * (0.80 + rim * 0.40);
-        vAlpha = (mix(0.25, 0.90, depth) * 0.80 + rim * 0.20) * (0.65 + energyMag * 0.45);
+        // LAYER A (75%): TINY BACKGROUND LATTICE PARTICLES
+        baseScale = 0.75;
+        classBrightness = 0.60;
       }
 
-      // Constant point size: gl_PointSize = uSize * attenuation
-      gl_PointSize = uSize * (6.0 / -mvPos.z);
-      gl_Position  = projectionMatrix * mvPos;
+      // Point size depends on: distance, rim, local energy, class, and cluster membership
+      float rimBoost = 1.0 + rim * 0.65;
+      float energySizeScale = 1.0 + islandMask * 0.35;
+      gl_PointSize = uSize * baseScale * rimBoost * energySizeScale * (6.0 / -mvPos.z);
+
+      // Color and Alpha assignment per hierarchy tier
+      if (aClass > 2.5 && heroMask > 0.5) {
+        // Layer D Hero: Pure White Super-Luminous Core
+        vColor = vec3(1.6, 1.6, 1.6);
+        vAlpha = 1.0;
+      } else if (islandMask > 0.5) {
+        // Layer C Hotspot Island: Particles brighten together inside island
+        vec3 islandColor = mix(baseCol, vec3(0.85, 1.0, 1.0), filaments * 0.65);
+        vColor = islandColor * classBrightness * (1.1 + rim * 0.4);
+        vAlpha = mix(0.45, 0.95, depth) * 0.95;
+      } else {
+        // Particles outside hotspot islands remain dark
+        vColor = baseCol * classBrightness * 0.40;
+        vAlpha = mix(0.12, 0.40, depth) * 0.45;
+      }
+
+      // Debug Modes Override
+      if (uDebugMode == 1) {
+        vColor = uC0 * mix(0.5, 1.0, depth) * baseScale;
+        vAlpha = mix(0.4, 0.9, depth);
+      } else if (uDebugMode == 3) {
+        vec3 heatMap = mix(vec3(0.02, 0.08, 0.35), vec3(0.0, 0.95, 1.0), islandMask);
+        heatMap = mix(heatMap, vec3(1.0, 1.0, 1.0), heroMask * step(2.5, aClass));
+        vColor = heatMap;
+        vAlpha = mix(0.3, 1.0, depth);
+      }
+
+      gl_Position = projectionMatrix * mvPos;
     }
   `,
   fragmentShader: /* glsl */`
@@ -152,7 +185,7 @@ export const SurfaceParticleShader = {
       float alphaEdge = smoothstep(0.44 + delta, 0.44 - delta, dist);
 
       float alpha = alphaEdge * vAlpha;
-      vec3 finalColor = mix(vColor, vec3(1.0), alphaEdge * 0.20);
+      vec3 finalColor = mix(vColor, vec3(1.0), alphaEdge * 0.25);
 
       gl_FragColor = vec4(finalColor, alpha);
     }
@@ -292,13 +325,12 @@ export const RimParticleShader = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LAYER 4 — Detached Atmospheric Particles (2,000 particles, r: 1.03 - 1.12)
-// Slow drift, very low alpha, crisp OLED discs near the rim.
+// LAYER E — Detached Atmospheric Satellite Particles (Layer E: 1%, r: 1.18 - 1.32)
 // ─────────────────────────────────────────────────────────────────────────────
 export const AtmosphericParticleShader = {
   uniforms: {
     uSize:   { value: 1.0 },
-    uRadius: { value: 1.10 },
+    uRadius: { value: 1.25 },
     uTime:   { value: 0.0 },
     uC0: { value: new THREE.Color('#00EEFF') },
     uC1: { value: new THREE.Color('#7700FF') },
@@ -318,8 +350,8 @@ export const AtmosphericParticleShader = {
     void main() {
       vec3 n = normalize(aBasePosition);
 
-      // Slow drift near surface (r: 1.03 - 1.12)
-      float drift = sin(uTime * 0.3 + aBasePosition.y * 3.0 + aBasePosition.x * 2.0) * 0.015;
+      // Slow drift far outside globe (r: 1.18 - 1.32)
+      float drift = sin(uTime * 0.3 + aBasePosition.y * 3.0 + aBasePosition.x * 2.0) * 0.018;
       vec3 pos = aBasePosition + n * drift;
 
       float t = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
@@ -334,10 +366,10 @@ export const AtmosphericParticleShader = {
       float rim   = pow(1.0 - abs(dot(vNorm, view)), 1.8);
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
-      // Very low alpha, visible primarily near the rim silhouette
-      vAlpha = smoothstep(0.35, 0.90, rim) * 0.35 * mix(0.3, 1.0, depth);
+      // Sparse, outer satellite nodes
+      vAlpha = smoothstep(0.35, 0.90, rim) * 0.40 * mix(0.3, 1.0, depth);
 
-      gl_PointSize = uSize * (5.0 / -mvPos.z);
+      gl_PointSize = uSize * (5.5 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
     }
   `,

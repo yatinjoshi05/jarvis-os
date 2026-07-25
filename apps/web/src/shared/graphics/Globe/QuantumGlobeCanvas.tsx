@@ -10,8 +10,12 @@ import {
 } from './QuantumGlobeShader';
 import { QuantumGlobeBackground } from './QuantumGlobeBackground';
 
+// ─── Utility: Deterministic Hash ─────────────────────────────────────────────
+function dHash(i: number): number {
+  return Math.abs(Math.sin(i * 127.1 + 311.7) * 43758.5453) % 1.0;
+}
+
 // ─── Structured Latitude/Longitude Digital Lattice Generator ─────────────────
-// Creates an organized, woven grid of flowing parallel latitude rings without pole pinching.
 function gridSphere(ringsCount: number, radius: number) {
   const positions: number[] = [];
 
@@ -21,7 +25,6 @@ function gridSphere(ringsCount: number, radius: number) {
     const cosPhi = Math.cos(phi);
     const y = Math.sin(phi) * radius;
 
-    // Number of points in this latitude ring proportional to circumference (cosPhi)
     const pointsInRing = Math.max(8, Math.round(240 * cosPhi));
     for (let j = 0; j < pointsInRing; j++) {
       const u = j / pointsInRing;
@@ -34,21 +37,43 @@ function gridSphere(ringsCount: number, radius: number) {
   }
 
   const posArray = new Float32Array(positions);
-  return { positions: posArray, basePositions: posArray };
+  const count = posArray.length / 3;
+
+  // Particle Hierarchy Classification Tiers:
+  // Layer A (75%): 0.0 (Tiny background lattice)
+  // Layer B (20%): 1.0 (Normal lattice)
+  // Layer C (3%):  2.0 (Cluster candidate)
+  // Layer D (1%):  3.0 (Hero candidate)
+  const classArray = new Float32Array(count);
+  for (let i = 0; i < count; i++) {
+    const h = dHash(i * 19.3 + 47.1);
+    if (h > 0.99)      classArray[i] = 3.0; // Layer D: Hero candidate (1%)
+    else if (h > 0.96) classArray[i] = 2.0; // Layer C: Cluster candidate (3%)
+    else if (h > 0.76) classArray[i] = 1.0; // Layer B: Normal lattice (20%)
+    else               classArray[i] = 0.0; // Layer A: Tiny background (75%)
+  }
+
+  return { positions: posArray, classes: classArray };
 }
 
 // ─── Generic Point Cloud Component ───────────────────────────────────────────
 interface PointCloudProps {
   positions: Float32Array;
+  classes?:  Float32Array;
   shader:    object;
 }
 
-function PointCloud({ positions, shader }: PointCloudProps) {
+function PointCloud({ positions, classes, shader }: PointCloudProps) {
+  const count = positions.length / 3;
+  const defaultClasses = useMemo(() => new Float32Array(count), [count]);
+  const classData = classes || defaultClasses;
+
   return (
     <points>
       <bufferGeometry>
-        <bufferAttribute attach="attributes-position"      array={positions} count={positions.length / 3} itemSize={3} />
-        <bufferAttribute attach="attributes-aBasePosition" array={positions} count={positions.length / 3} itemSize={3} />
+        <bufferAttribute attach="attributes-position"      array={positions} count={count} itemSize={3} />
+        <bufferAttribute attach="attributes-aBasePosition" array={positions} count={count} itemSize={3} />
+        <bufferAttribute attach="attributes-aClass"        array={classData} count={count} itemSize={1} />
       </bufferGeometry>
       <shaderMaterial
         args={[shader]}
@@ -60,11 +85,11 @@ function PointCloud({ positions, shader }: PointCloudProps) {
   );
 }
 
-// ─── Layer 1: Surface Lattice Particles ───────────────────────────────────────
+// ─── Layer 1: Surface Lattice Particles (Layer A 75%, Layer B 20%, Layer C 3%, Layer D 1%) ────
 function SurfaceParticles() {
   const R = 1.15;
   const data = useMemo(() => gridSphere(140, R), []);
-  return <PointCloud positions={data.positions} shader={SurfaceParticleShader} />;
+  return <PointCloud positions={data.positions} classes={data.classes} shader={SurfaceParticleShader} />;
 }
 
 // ─── Layer 2: Inner Sparse Lattice Particles ─────────────────────────────────
@@ -81,16 +106,16 @@ function RimParticles() {
   return <PointCloud positions={data.positions} shader={RimParticleShader} />;
 }
 
-// ─── Layer 4: Detached Atmospheric Particles (Sparse, 2,000 Nodes, r: 1.03 - 1.12) ────
+// ─── Layer E: Detached Satellite Particles (Layer E: 1%, 500 Nodes, r: 1.18 - 1.32) ────
 function AtmosphericParticles() {
-  const N = 2000;
+  const N = 500; // 1% sparse satellite count
   const data = useMemo(() => {
     const pos = new Float32Array(N * 3);
     const phi = Math.PI * (3 - Math.sqrt(5));
 
     for (let i = 0; i < N; i++) {
-      // Radius range: 1.03 to 1.12 of base sphere (r: 1.15)
-      const shellR = 1.15 * (1.03 + (i % 10) * 0.009);
+      // Radius range: 1.18 to 1.32 of base sphere (r: 1.15)
+      const shellR = 1.15 * (1.18 + (i % 8) * 0.017);
       const y  = 1 - ((i + 0.5) / N) * 2;
       const r  = Math.sqrt(Math.max(0, 1 - y * y));
       const θ  = phi * i;
@@ -156,11 +181,11 @@ export function QuantumGlobeCanvas() {
 
   const debugLabels: Record<number, string> = {
     1: '1: SURFACE LATTICE ONLY',
-    2: '2: ATMOSPHERE ONLY',
+    2: '2: ATMOSPHERE SATELLITES ONLY',
     3: '3: ENERGY FIELD HEATMAP',
     4: '4: COMPRESSION BANDS HEATMAP',
     5: '5: RIM PERTURBATION VISUALIZATION',
-    6: '6: FINAL COMPOSITE',
+    6: '6: FINAL COMPOSITE (5-TIER HIERARCHY)',
   };
 
   return (
@@ -213,12 +238,12 @@ export function QuantumGlobeCanvas() {
       {(debugKey !== 6 || showOverlay) && (
         <div className="absolute top-4 left-4 z-50 bg-black/85 backdrop-blur-md border border-cyan-500/40 text-cyan-400 p-3 rounded-lg font-mono text-xs shadow-2xl space-y-1.5 w-72">
           <div className="text-white font-bold border-b border-cyan-500/30 pb-1 flex justify-between items-center">
-            <span>GLOBE SHADER DEBUG</span>
+            <span>GLOBE HIERARCHY DEBUG</span>
             <span className="text-amber-400 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-500/30">MODE {debugKey}</span>
           </div>
           <div className="text-emerald-400 font-semibold">{debugLabels[debugKey]}</div>
           <div className="text-[10px] text-gray-300 space-y-0.5 pt-1 border-t border-gray-800">
-            <div><span className="text-cyan-300 font-bold">1</span> Surface Lattice | <span className="text-cyan-300 font-bold">2</span> Atmosphere</div>
+            <div><span className="text-cyan-300 font-bold">1</span> Surface Lattice | <span className="text-cyan-300 font-bold">2</span> Satellites</div>
             <div><span className="text-cyan-300 font-bold">3</span> Energy Flow  | <span className="text-cyan-300 font-bold">4</span> Compression</div>
             <div><span className="text-cyan-300 font-bold">5</span> Rim Breakup  | <span className="text-cyan-300 font-bold">6</span> Composite</div>
           </div>
