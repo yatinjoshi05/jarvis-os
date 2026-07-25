@@ -36,20 +36,26 @@ export const SurfaceParticleShader = {
       // ───────────────────────────────────────────────────────────────────────
       // PHASE 1: UNIFIED CONTINUOUS 3D SCALAR ENERGY FIELD (E ∈ [0.0, 1.0])
       // ───────────────────────────────────────────────────────────────────────
-      // Octave 1: Macro Hemispheric Flow (f ~ 1.8)
       float e1 = sin(aBasePosition.x * 1.8 + aBasePosition.y * 1.4 + uTime * 0.5) * 0.5 + 0.5;
-
-      // Octave 2: Rotational Directional Channeling (f ~ 4.2)
       float e2 = cos(aBasePosition.z * 4.2 - aBasePosition.y * 3.6 + aBasePosition.x * 2.1 + uTime * 0.9) * 0.5 + 0.5;
-
-      // Octave 3: High-Frequency Filaments (f ~ 13.0 with power exponent 4.0)
       float filBase = sin(aBasePosition.x * 13.0 + aBasePosition.y * 10.0 - uTime * 1.8) *
                       cos(aBasePosition.z * 11.0 + aBasePosition.y * 8.0 + uTime * 1.4);
       float e3 = pow(clamp(filBase * 0.5 + 0.5, 0.0, 1.0), 4.0);
 
-      // Total unified scalar energy field normalized strictly to [0.0, 1.0]
       float rawE = e1 * 0.40 + e2 * 0.35 + e3 * 0.65;
       float E = clamp(rawE / 1.40, 0.0, 1.0);
+
+      // ───────────────────────────────────────────────────────────────────────
+      // PHASE 2: CONTRAST QUANTIZATION (Discrete Hotspots & Dark Void Channels)
+      // ───────────────────────────────────────────────────────────────────────
+      // Step-function thresholding for discrete energy hotspot islands
+      float islandMask = step(0.56, E);
+
+      // Smoothstep ramp for dark void suppression (Dark means dark!)
+      float voidMask   = smoothstep(0.25, 0.52, E);
+
+      // Hero energy peak mask threshold
+      float heroMask   = step(0.80, E);
 
       // ───────────────────────────────────────────────────────────────────────
       // Tangential Vector Displacement along surface tangent plane (1-2% radius)
@@ -86,12 +92,14 @@ export const SurfaceParticleShader = {
       else if (t < 0.80) baseCol = mix(uC3, uC4, smoothstep(0.60, 0.80, t));
       else               baseCol = mix(uC4, uC5, smoothstep(0.80, 1.00, t));
 
-      // Continuous luminance and color modulation driven by scalar E
-      vec3 energizedCol = mix(baseCol, vec3(0.85, 1.0, 1.0), e3 * 0.50);
-      vColor = energizedCol * (0.65 + E * 0.85) * (0.80 + rim * 0.40);
-      vAlpha = (mix(0.25, 0.90, depth) * 0.80 + rim * 0.20) * (0.50 + E * 0.50);
+      // Quantized Luminance: Hotspot islands ignite together, dark voids approach black
+      vec3 energizedCol = mix(baseCol, vec3(0.85, 1.0, 1.0), e3 * islandMask * 0.60);
+      float quantizedLuminance = mix(0.18, 1.45, voidMask * (0.40 + islandMask * 0.60));
 
-      gl_PointSize = uSize * (1.0 + rim * 0.5) * (6.0 / -mvPos.z);
+      vColor = energizedCol * quantizedLuminance * (0.80 + rim * 0.40);
+      vAlpha = (mix(0.12, 0.95, depth) * 0.80 + rim * 0.20) * mix(0.15, 1.0, voidMask);
+
+      gl_PointSize = uSize * (1.0 + islandMask * 0.4 + rim * 0.5) * (6.0 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
     }
   `,
