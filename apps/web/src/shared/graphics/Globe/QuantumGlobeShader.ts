@@ -84,7 +84,6 @@ export const SurfaceParticleShader = {
       vec3  vNorm   = normalize(normalMatrix * n);
       vec3  viewDir = normalize(-mvPos.xyz);
 
-      // PHASE 5: View-Space Rim Angle & Specular Density Corona
       float rim   = pow(1.0 - abs(dot(vNorm, viewDir)), 2.5);
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
@@ -97,9 +96,9 @@ export const SurfaceParticleShader = {
       else if (t < 0.80) baseCol = mix(uC3, uC4, smoothstep(0.60, 0.80, t));
       else               baseCol = mix(uC4, uC5, smoothstep(0.80, 1.00, t));
 
-      // Hero Ignition vs Rim Accumulation
+      // PHASE 7: Hero Emission Core (Pure White > 2.0 Linear Emission triggers bloom)
       if (heroMask > 0.5) {
-        vColor = vec3(2.2, 2.2, 2.2);
+        vColor = vec3(2.4, 2.4, 2.4); // Super-luminous white hero bloom trigger
         vAlpha = 1.0;
       } else {
         vec3 energizedCol = mix(baseCol, vec3(0.85, 1.0, 1.0), e3 * islandMask * 0.60);
@@ -108,7 +107,6 @@ export const SurfaceParticleShader = {
         vAlpha = (mix(0.12, 0.95, depth) * 0.80 + rim * 0.30) * mix(0.15, 1.0, voidMask);
       }
 
-      // PHASE 5: Thick Rim Corona via Overlapping Point Geometry Scaling
       float rimSizeBoost = 1.0 + rim * 0.70;
       gl_PointSize = uSize * baseStateScale * rimSizeBoost * (6.0 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
