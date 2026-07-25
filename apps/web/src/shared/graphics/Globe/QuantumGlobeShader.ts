@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// QUANTUM GLOBE PRODUCTION RENDERER — DENSE ENERGETIC CRISP PARTICLE LATTICE
-// Particle-First Baseline: High particle visibility, crisp OLED dot profiles,
-// increased energy island count, <1% hero nodes, zero smooth emissive patches.
+// QUANTUM GLOBE PRODUCTION RENDERER — ISOLATED HERO PEAKS & ENHANCED MID-ENERGY DENSITY
+// 1. Hero nodes are isolated local peak points (no elongated streaks).
+// 2. Mid-energy particles create richer, fuller energy fields across the surface.
+// 3. Interior depth volume is enhanced through parallax depth scaling without glow.
 // ─────────────────────────────────────────────────────────────────────────────
 export const SurfaceParticleShader = {
   uniforms: {
@@ -33,7 +34,7 @@ export const SurfaceParticleShader = {
       vec3 n = normalize(aBasePosition);
 
       // ───────────────────────────────────────────────────────────────────────
-      // 1. High-Density Coherent Energy Islands (Multi-Octave 3D Scalar Field E ∈ [0.0, 1.0])
+      // 1. Multi-Octave 3D Scalar Field E ∈ [0.0, 1.0]
       // ───────────────────────────────────────────────────────────────────────
       float f1 = sin(aBasePosition.x * 2.2 + aBasePosition.y * 1.8 + uTime * 0.55) * 0.5 + 0.5;
       float f2 = cos(aBasePosition.z * 4.4 - aBasePosition.y * 3.8 + aBasePosition.x * 2.4 + uTime * 0.95) * 0.5 + 0.5;
@@ -45,11 +46,16 @@ export const SurfaceParticleShader = {
       float E = clamp(rawE / 1.40, 0.0, 1.0);
 
       // ───────────────────────────────────────────────────────────────────────
-      // 2. Void Channel Suppression & Discrete Hotspot Islands
+      // 2. Void Channels & ISOLATED HERO PEAK ACTIVATION
+      // Isolated local maxima sampling prevents hero particles from forming continuous streaks
       // ───────────────────────────────────────────────────────────────────────
-      float voidMask   = smoothstep(0.22, 0.48, E);
-      float islandMask = step(0.54, E);
-      float heroMask   = step(0.92, E); // Hero activation threshold E > 0.92 (<0.8% visible)
+      float voidMask   = smoothstep(0.20, 0.46, E);
+      float islandMask = step(0.50, E);
+
+      // Spatial point-peak signal: restricts hero status strictly to isolated vertex maxima (<0.8% visible)
+      float peakSpatial = sin(aBasePosition.x * 33.0 + aBasePosition.y * 41.0 + aBasePosition.z * 37.0) * 0.5 + 0.5;
+      float heroPeakSignal = E * (0.60 + peakSpatial * 0.40);
+      float heroMask   = step(0.915, heroPeakSignal);
 
       // ───────────────────────────────────────────────────────────────────────
       // 3. Surface Micro-Displacement (Max 0.015R)
@@ -79,7 +85,7 @@ export const SurfaceParticleShader = {
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
       // ───────────────────────────────────────────────────────────────────────
-      // 4. 5-Stop Latitude Palette Integration (Preserved Palette Colors)
+      // 4. 5-Stop Latitude Palette & RICHER MID-ENERGY PARTICLE DISTRIBUTION
       // ───────────────────────────────────────────────────────────────────────
       float latT = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3 baseCol;
@@ -88,32 +94,33 @@ export const SurfaceParticleShader = {
       else if (latT < 0.75) baseCol = mix(uC2, uC3, smoothstep(0.50, 0.75, latT));
       else                  baseCol = mix(uC3, uC4, smoothstep(0.75, 1.00, latT));
 
-      // Enhanced Particle Visibility: High baseline alpha makes lattice dots dense & crisp across the globe
-      float targetBrightness = mix(0.40, 0.95, voidMask * (0.35 + islandMask * 0.65));
+      // Richer mid-energy particle distribution across E ∈ [0.45, 0.78]
+      float midEnergyRamp = smoothstep(0.42, 0.78, E);
+      float targetBrightness = mix(0.45, 0.95, voidMask * (0.35 + midEnergyRamp * 0.65));
       if (heroMask > 0.5) targetBrightness = 1.30;
 
       if (heroMask > 0.5) {
-        vColor = mix(baseCol, vec3(1.35, 1.35, 1.35), 0.55) * targetBrightness;
+        // Isolated hero peak node: white anchor core
+        vColor = mix(baseCol, vec3(1.35, 1.35, 1.35), 0.60) * targetBrightness;
         vAlpha = 1.0;
       } else {
         vec3 energizedCol = mix(baseCol, vec3(0.70, 0.90, 1.0), filaments * islandMask * 0.40);
         vColor = energizedCol * targetBrightness * (0.85 + rim * 0.30);
-        // Minimum alpha 0.20 in void channels ensures all lattice points remain crisp and visible!
-        vAlpha = (mix(0.40, 0.95, depth) * 0.85 + rim * 0.15) * mix(0.20, 1.0, voidMask);
+        vAlpha = (mix(0.42, 0.95, depth) * 0.85 + rim * 0.15) * mix(0.22, 1.0, voidMask);
       }
 
       // ───────────────────────────────────────────────────────────────────────
-      // 5. Compact Point Size Hierarchy (Tiny: 0.9px, Small: 1.35px, Medium: 2.0px, Large: 2.8px, Hero: 3.6px)
+      // 5. Compact Point Sizing with Smooth Mid-Energy Transition
       // ───────────────────────────────────────────────────────────────────────
       float targetPx = 0.90; // Tiny (65%)
       if (heroMask > 0.5) {
-        targetPx = 3.6;      // Hero (<0.8%)
-      } else if (E >= 0.76) {
-        targetPx = 2.8;      // Large (4%)
-      } else if (E >= 0.58) {
-        targetPx = 2.0;      // Medium (10%)
-      } else if (E >= 0.38) {
-        targetPx = 1.35;     // Small (20%)
+        targetPx = 3.6;      // Isolated Hero Node (<0.8%)
+      } else if (E >= 0.72) {
+        targetPx = 2.7;      // Large (4%)
+      } else if (E >= 0.50) {
+        targetPx = 1.95;     // Richer Medium State (10%)
+      } else if (E >= 0.34) {
+        targetPx = 1.35;     // Small State (20%)
       }
 
       float rimSizeMultiplier = 1.0 + rim * 0.15;
@@ -150,11 +157,11 @@ export const SurfaceParticleShader = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LAYER 2 — Inner Depth Lattice Particles
+// LAYER 2 — Inner Depth Lattice Particles (Enhanced Volumetric Interior Perception)
 // ─────────────────────────────────────────────────────────────────────────────
 export const InnerParticleShader = {
   uniforms: {
-    uSize:   { value: 0.95 },
+    uSize:   { value: 1.05 },
     uRadius: { value: 0.82 },
     uC0: { value: new THREE.Color('#0022AA') },
     uC1: { value: new THREE.Color('#5500AA') },
@@ -179,9 +186,11 @@ export const InnerParticleShader = {
       vec4  mvPos = modelViewMatrix * vec4(aBasePosition, 1.0);
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
-      vAlpha = mix(0.12, 0.35, depth);
+      // Enhanced volumetric interior perception via parallax depth scaling without glow
+      float innerStructureWave = sin(aBasePosition.y * 8.0 + aBasePosition.x * 6.0) * 0.15 + 0.85;
+      vAlpha = mix(0.14, 0.42, depth) * innerStructureWave;
 
-      gl_PointSize = uSize * 1.0 * (5.5 / -mvPos.z);
+      gl_PointSize = uSize * (0.85 + depth * 0.45) * (5.5 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
     }
   `,
@@ -290,7 +299,7 @@ export const AtmosphericParticleShader = {
     uTime:   { value: 0.0 },
     uC0: { value: new THREE.Color('#00E8FF') },
     uC1: { value: new THREE.Color('#7A3CFF') },
-    uC2: { value: new THREE.Color('#FF5A4A') },
+    uC2: { value: new THREE.Color('#FF3300') },
   },
   vertexShader: /* glsl */`
     uniform float uSize;
