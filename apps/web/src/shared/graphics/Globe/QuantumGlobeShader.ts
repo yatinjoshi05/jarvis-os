@@ -1,13 +1,22 @@
 import * as THREE from 'three';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// QUANTUM GLOBE PRODUCTION RENDERER — FINAL REFERENCE LUMINANCE MATCH
-// Locked Targets:
-// 1. Outer Rim +0% (95%) | Outer Shell +0% (90%)
-// 2. Upper Mid +15% (85%) | Middle +25% (80%)
-// 3. Inner Shell +35% (70%) | Core +40% (60%)
-// 4. Low Energy 50% | Medium Energy 80% (+35%) | High Energy 95%
-// 5. Crisp OLED Dot Profiles (Zero Bloom Increase, Zero Point Size Expansion)
+// QUANTUM GLOBE PRODUCTION RENDERER — FINAL PRODUCTION REFERENCE LOCK
+// Forensic analysis of attached REFERENCE IMAGE ground truth:
+//
+// 1. OUTER RIM: Very bright (95%). Thick organic wave crests. Stays.
+// 2. SHELL (RIM-FACING): 80-90% brightness — luminous but crisp dots.
+// 3. CENTER-FRONT: DARK (~25-35%). Sparse individual blue/violet dots
+//    visible against darkness. NOT uniformly bright. NOT hollow but NOT lit.
+// 4. INTERIOR (INNER LAYER): Very dark particles — near-invisible but
+//    present — blue/indigo dots providing depth without illumination.
+// 5. MEDIUM ENERGY: More visible mid-bright particles around the shell
+//    transition. The reference shows these as individual dots, not blobs.
+//
+// KEY INSIGHT: Previous calibration passes pushed interior brightness
+// too high (1.05 centerOcclusion floor). Reference shows the center
+// should be DARK with sparse visible particles — not uniformly lit.
+// The globe must feel like a GLOWING SHELL around a DARK INTERIOR.
 // ─────────────────────────────────────────────────────────────────────────────
 export const SurfaceParticleShader = {
   uniforms: {
@@ -49,9 +58,9 @@ export const SurfaceParticleShader = {
       float rawE = f1 * 0.45 + f2 * 0.35 + filaments * 0.65;
       float E = clamp(rawE / 1.40, 0.0, 1.0);
 
-      // Void channels & Isolated Hero Peak Nodes
-      float voidMask   = smoothstep(0.14, 0.40, E);
-      float islandMask = step(0.44, E);
+      // Void channels & isolated hero peak nodes
+      float voidMask   = smoothstep(0.18, 0.46, E);
+      float islandMask = step(0.48, E);
 
       float peakSpatial = sin(aBasePosition.x * 33.0 + aBasePosition.y * 41.0 + aBasePosition.z * 37.0) * 0.5 + 0.5;
       float heroPeakSignal = E * (0.60 + peakSpatial * 0.40);
@@ -88,9 +97,19 @@ export const SurfaceParticleShader = {
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
       // ───────────────────────────────────────────────────────────────────────
-      // 3. TARGET LUMINANCE CALIBRATION: Low 50% | Medium 80% (+35%) | High 95%
-      // Outer Rim +0% (95%) | Outer Shell +0% (90%) | Upper Mid +15% (85%)
-      // Middle +25% (80%) | Inner Shell +35% (70%) | Core +40% (60%)
+      // 3. REFERENCE-LOCKED LUMINANCE DISTRIBUTION
+      //
+      // Reference observation: Globe is a BRIGHT GLOWING SHELL around a
+      // DARK INTERIOR. Center-front particles are dim (25-35%). The
+      // brightness concentrates strongly on the rim-facing tangential band.
+      //
+      // Outer Rim:     95% (rim alone)
+      // Shell-facing:  75-85% (depth > 0.7, rim > 0.4)
+      // Mid-facing:    45-60% (moderate depth)
+      // Center-front:  20-35% (depth < 0.3, rim < 0.1)
+      //
+      // The centerOcclusion MUST be LOW at center — that's what produces
+      // the dark interior characteristic of the reference image.
       // ───────────────────────────────────────────────────────────────────────
       float latT = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3 baseCol;
@@ -100,10 +119,17 @@ export const SurfaceParticleShader = {
       else if (latT < 0.88) baseCol = mix(uC3, uC4, smoothstep(0.70, 0.88, latT));
       else                  baseCol = mix(uC4, uC5, smoothstep(0.88, 1.00, latT));
 
-      // Elevated centerOcclusion floor to 1.05 (+25% boost to Upper Mid/Middle, +35% to Inner Shell/Core)
-      float centerOcclusion = mix(1.05, 1.40, rim);
-      float midEnergyRamp   = smoothstep(0.25, 0.68, E);
-      float targetBrightness = mix(0.85, 1.25, voidMask * (0.50 + midEnergyRamp * 0.50)) * centerOcclusion;
+      // KEY CHANGE: centerOcclusion floor returned to LOW value (0.30).
+      // Rim-facing particles get full brightness (1.45).
+      // Center-front particles stay dark (0.30-0.55).
+      // This reproduces the reference's dark-center / bright-rim contrast.
+      float centerOcclusion = mix(0.30, 1.45, rim);
+
+      // Medium-energy particles: slightly brighter to improve visibility
+      // but NOT elevated to hero levels. midEnergyRamp lifts 40-75% energy
+      // particles enough to be individually perceptible as crisp dots.
+      float midEnergyRamp   = smoothstep(0.30, 0.72, E);
+      float targetBrightness = mix(0.40, 1.20, voidMask * (0.45 + midEnergyRamp * 0.55)) * centerOcclusion;
       if (heroMask > 0.5) targetBrightness = 1.48;
 
       if (heroMask > 0.5) {
@@ -113,11 +139,15 @@ export const SurfaceParticleShader = {
         vec3 energizedCol = mix(baseCol, vec3(0.70, 0.90, 1.0), filaments * islandMask * 0.45);
         vec3 rimSpecularCol = mix(energizedCol, vec3(1.0, 1.0, 1.0), rimSpec * 0.50);
         vColor = rimSpecularCol * targetBrightness;
-        // Medium Energy Particle Visibility Target 80%: alpha floor elevated to 0.55
-        vAlpha = (mix(0.78, 0.98, depth) * 0.85 + rim * 0.15) * mix(0.55, 1.0, voidMask);
+
+        // Alpha: depth-based with rim boost. Center-front alpha must remain
+        // LOW (0.25-0.40) to match reference's dark hollow interior.
+        // Rim-facing alpha is HIGH (0.90-1.0) for the bright glowing shell.
+        float baseAlpha = mix(0.25, 0.98, depth);
+        vAlpha = (baseAlpha * 0.82 + rim * 0.18) * mix(0.22, 1.0, voidMask);
       }
 
-      // Point Sizing (Preserved Crisp Particle Scaling)
+      // Point Sizing (unchanged - locked)
       float targetPx = 0.90; // Tiny (65%)
       if (heroMask > 0.5) {
         targetPx = 3.6;      // Isolated Hero Node (<0.8%)
@@ -151,7 +181,7 @@ export const SurfaceParticleShader = {
       float dist = length(uv);
       if (dist > 0.5) discard;
 
-      // Sub-pixel OLED disc anti-aliasing (crisp discs without smooth emissive patches)
+      // Sub-pixel OLED disc anti-aliasing — crisp dots, no smooth emissive patches
       float delta = fwidth(dist);
       float dotCore = smoothstep(0.40 + delta, 0.32 - delta, dist);
       float dotEdge = smoothstep(0.50 + delta, 0.40 - delta, dist) * 0.25;
@@ -163,15 +193,19 @@ export const SurfaceParticleShader = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LAYER 2 — Interior Volumetric Depth (Core Brightness +40%, Core Visibility 70%+)
+// LAYER 2 — Interior Volumetric Depth
+// Reference analysis: interior dots are SPARSE and DARK — blue/indigo color,
+// very low alpha, providing depth cue without filling the center with light.
+// This layer creates the "you can see there are particles inside" feeling
+// without making the center bright.
 // ─────────────────────────────────────────────────────────────────────────────
 export const InnerParticleShader = {
   uniforms: {
     uSize:   { value: 1.05 },
     uRadius: { value: 0.82 },
-    uC0: { value: new THREE.Color('#0044BB') }, // Vivid Midnight Blue
-    uC1: { value: new THREE.Color('#6611BB') }, // Deep Purple
-    uC2: { value: new THREE.Color('#881166') }, // Magenta Core
+    uC0: { value: new THREE.Color('#001466') }, // Very dark Midnight Blue
+    uC1: { value: new THREE.Color('#330866') }, // Very dark Purple
+    uC2: { value: new THREE.Color('#440833') }, // Very dark Magenta
   },
   vertexShader: /* glsl */`
     uniform float uSize;
@@ -187,8 +221,8 @@ export const InnerParticleShader = {
       float t   = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3  col = mix(uC0, uC1, smoothstep(0.0, 0.5, t));
       col       = mix(col, uC2, smoothstep(0.5, 1.0, t));
-      // Core Brightness +40% increase (Target 60%): emission multiplier boosted to 1.65
-      vColor    = col * 1.65;
+      // Low emission — inner particles are dim against the dark center
+      vColor    = col * 0.90;
 
       vec4  mvPos = modelViewMatrix * vec4(aBasePosition, 1.0);
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
@@ -196,10 +230,11 @@ export const InnerParticleShader = {
       float volumetricDepthRamp = smoothstep(0.10, 0.90, depth);
       float innerStructureWave = sin(aBasePosition.y * 8.0 + aBasePosition.x * 6.0) * 0.15 + 0.85;
 
-      // Interior Lattice Visibility Target 70%+: alpha ramp elevated to 0.60 - 0.88
-      vAlpha = mix(0.60, 0.88, volumetricDepthRamp) * innerStructureWave;
+      // Low alpha — visible as individual dots but not filling center with light
+      // Reference: center interior is dark with sparse dots, not glowing
+      vAlpha = mix(0.18, 0.48, volumetricDepthRamp) * innerStructureWave;
 
-      gl_PointSize = uSize * (0.85 + volumetricDepthRamp * 0.45) * (5.5 / -mvPos.z);
+      gl_PointSize = uSize * (0.75 + volumetricDepthRamp * 0.40) * (5.5 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
     }
   `,
@@ -227,7 +262,9 @@ export const InnerParticleShader = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LAYER 3 — Organic Rim Corona (Target Brightness 95%, Preserved)
+// LAYER 3 — Organic Rim Corona (Reference-Locked: 95% Brightness)
+// This layer is the PRIMARY visual driver. In the reference, the thick
+// turbulent cyan-top / red-amber-bottom crest is the defining feature.
 // ─────────────────────────────────────────────────────────────────────────────
 export const RimParticleShader = {
   uniforms: {
@@ -304,7 +341,7 @@ export const RimParticleShader = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LAYER 4 — Detached Atmospheric Spray
+// LAYER 4 — Detached Atmospheric Spray (Sparse, Reference-Matched)
 // ─────────────────────────────────────────────────────────────────────────────
 export const AtmosphericParticleShader = {
   uniforms: {
@@ -336,7 +373,7 @@ export const AtmosphericParticleShader = {
       float t = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3 col = mix(uC0, uC1, smoothstep(0.0, 0.5, t));
       col = mix(col, uC2, smoothstep(0.5, 1.0, t));
-      vColor = col * 0.90;
+      vColor = col * 0.85;
 
       vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
       vec3 vNorm = normalize(normalMatrix * n);
@@ -345,7 +382,7 @@ export const AtmosphericParticleShader = {
       float rim   = pow(1.0 - abs(dot(vNorm, view)), 1.8);
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
-      vAlpha = mix(0.18, 0.35, rim) * mix(0.4, 1.0, depth);
+      vAlpha = mix(0.15, 0.28, rim) * mix(0.4, 1.0, depth);
 
       gl_PointSize = uSize * 1.0 * (5.5 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
