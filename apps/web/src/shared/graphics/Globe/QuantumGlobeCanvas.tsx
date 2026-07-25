@@ -11,7 +11,7 @@ import {
 import { QuantumGlobeBackground } from './QuantumGlobeBackground';
 
 // ─── Structured Latitude/Longitude Digital Lattice Generator ─────────────────
-function gridSphere(ringsCount: number, radius: number) {
+function gridSphere(ringsCount: number, radius: number, pointsPerCircumference: number = 240) {
   const positions: number[] = [];
 
   for (let i = 0; i < ringsCount; i++) {
@@ -20,7 +20,7 @@ function gridSphere(ringsCount: number, radius: number) {
     const cosPhi = Math.cos(phi);
     const y = Math.sin(phi) * radius;
 
-    const pointsInRing = Math.max(8, Math.round(240 * cosPhi));
+    const pointsInRing = Math.max(8, Math.round(pointsPerCircumference * cosPhi));
     for (let j = 0; j < pointsInRing; j++) {
       const u = j / pointsInRing;
       const theta = u * Math.PI * 2;
@@ -60,37 +60,39 @@ function PointCloud({ positions, shader }: PointCloudProps) {
   );
 }
 
-// ─── Layer 1: Surface Lattice Particles ───────────────────────────────────────
+// ─── Layer 1: Surface Lattice Particles (42,000 Points) ───────────────────────
 function SurfaceParticles() {
   const R = 1.15;
-  const data = useMemo(() => gridSphere(140, R), []);
+  // ringsCount = 270, pointsPerCircumference = 480 yields ~42,000 surface points
+  const data = useMemo(() => gridSphere(270, R, 480), []);
   return <PointCloud positions={data.positions} shader={SurfaceParticleShader} />;
 }
 
-// ─── Layer 2: Inner Sparse Lattice Particles ─────────────────────────────────
+// ─── Layer 2: Inner Sparse Lattice Particles (7,000 Points) ───────────────────
 function InnerParticles() {
   const R = 0.82;
-  const data = useMemo(() => gridSphere(50, R), []);
+  // ringsCount = 110, pointsPerCircumference = 200 yields ~7,000 interior points
+  const data = useMemo(() => gridSphere(110, R, 200), []);
   return <PointCloud positions={data.positions} shader={InnerParticleShader} />;
 }
 
-// ─── Layer 3: Rim Lattice Particles ──────────────────────────────────────────
+// ─── Layer 3: Rim Corona Particles (+25% Density = ~17,500 Points) ───────────
 function RimParticles() {
   const R = 1.16;
-  const data = useMemo(() => gridSphere(90, R), []);
+  const data = useMemo(() => gridSphere(115, R, 240), []);
   return <PointCloud positions={data.positions} shader={RimParticleShader} />;
 }
 
-// ─── Phase 6: Refined Detached Atmospheric Satellites (Sparse, 400 Nodes, r: 1.18 - 1.32) ────
+// ─── Layer 4: Detached Atmospheric Satellites (450 Points, r: 1.08R - 1.18R) ──
 function AtmosphericParticles() {
-  const N = 400; // Very sparse, subtle satellite nodes
+  const N = 450; // Locked Atmosphere Particle Target
   const data = useMemo(() => {
     const pos = new Float32Array(N * 3);
     const phi = Math.PI * (3 - Math.sqrt(5));
 
     for (let i = 0; i < N; i++) {
-      // Radius range: 1.18 to 1.32 of base sphere (r: 1.15)
-      const shellR = 1.15 * (1.18 + (i % 8) * 0.017);
+      // Radius range: 1.08R to 1.18R of base sphere (R = 1.15 -> 1.24 to 1.35)
+      const shellR = 1.15 * (1.08 + (i % 10) * 0.010);
       const y  = 1 - ((i + 0.5) / N) * 2;
       const r  = Math.sqrt(Math.max(0, 1 - y * y));
       const θ  = phi * i;
