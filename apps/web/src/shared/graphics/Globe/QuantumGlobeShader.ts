@@ -1,30 +1,31 @@
 import * as THREE from 'three';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// QUANTUM GLOBE PRODUCTION RENDERER — LOCKED SUBSYSTEM REFINEMENT ENGINE
-// 1. Edge Turbulence & Detached Atmosphere: Multi-harmonic edge breakup & orbital drift.
-// 2. Interior Volumetric Depth: Parallax-sorted inner depth volume without glow.
-// 3. Coherent Energy Flow: Fluid tangential vector field streamlines across lattice.
-// 4. Multi-Layer Rim Structure: 3-tier view-space specular corona & rim scatter.
+// QUANTUM GLOBE PRODUCTION RENDERER — REFERENCE-DRIVEN RECONSTRUCTION
+// Direct reverse-engineering of input_file_0.png:
+// 1. Organic Turbulent Rim Corona: View-space radial wave displacement (0.055R) matching top cyan & bottom red crests.
+// 2. Center-Front Grid Occlusion: Front-facing particles remain dark blue/purple digital lattice dots.
+// 3. Multi-Layer Color Palette: Top #00E8FF (Cyan), Mid #8833FF (Violet), Lower #D83BFF (Magenta), Bottom #FF3344 (Red/Amber).
 // ─────────────────────────────────────────────────────────────────────────────
 export const SurfaceParticleShader = {
   uniforms: {
-    uSize:      { value: 1.2 },
+    uSize:      { value: 1.25 },
     uRadius:    { value: 1.15 },
     uTime:      { value: 0.0 },
     uDebugMode: { value: 6 }, // 1: Lattice, 2: Atmosphere, 3: Energy, 4: Compression, 5: Rim, 6: Composite
-    uC0: { value: new THREE.Color('#00E8FF') }, // Top pole (+y)
-    uC1: { value: new THREE.Color('#2F6BFF') }, // Upper Mid
-    uC2: { value: new THREE.Color('#7A3CFF') }, // Centre
-    uC3: { value: new THREE.Color('#D83BFF') }, // Lower Mid
-    uC4: { value: new THREE.Color('#FF5A4A') }, // Bottom pole (-y)
+    uC0: { value: new THREE.Color('#00E8FF') }, // Top pole (+y) - Electric Cyan
+    uC1: { value: new THREE.Color('#3366FF') }, // Upper Mid - Blue
+    uC2: { value: new THREE.Color('#8833FF') }, // Centre - Deep Violet
+    uC3: { value: new THREE.Color('#E028BB') }, // Lower Mid - Magenta
+    uC4: { value: new THREE.Color('#FF3333') }, // Bottom pole (-y) - Vivid Red
+    uC5: { value: new THREE.Color('#FF7722') }, // Bottom rim accent - Amber Orange
   },
   vertexShader: /* glsl */`
     uniform float uSize;
     uniform float uRadius;
     uniform float uTime;
     uniform int   uDebugMode;
-    uniform vec3  uC0, uC1, uC2, uC3, uC4;
+    uniform vec3  uC0, uC1, uC2, uC3, uC4, uC5;
 
     attribute vec3 aBasePosition;
 
@@ -35,7 +36,7 @@ export const SurfaceParticleShader = {
       vec3 n = normalize(aBasePosition);
 
       // ───────────────────────────────────────────────────────────────────────
-      // 1. Coherent Energy Flow (Multi-Octave 3D Scalar Field E ∈ [0.0, 1.0])
+      // 1. Multi-Octave 3D Scalar Field E ∈ [0.0, 1.0]
       // ───────────────────────────────────────────────────────────────────────
       float f1 = sin(aBasePosition.x * 2.2 + aBasePosition.y * 1.8 + uTime * 0.55) * 0.5 + 0.5;
       float f2 = cos(aBasePosition.z * 4.4 - aBasePosition.y * 3.8 + aBasePosition.x * 2.4 + uTime * 0.95) * 0.5 + 0.5;
@@ -55,52 +56,52 @@ export const SurfaceParticleShader = {
       float heroMask   = step(0.915, heroPeakSignal);
 
       // ───────────────────────────────────────────────────────────────────────
-      // 2. Refined Edge Turbulence & Coherent Tangential Vector Flow Streamlines
+      // 2. View-Space Radial Edge Wave Displacement (Recreating reference wave crests)
       // ───────────────────────────────────────────────────────────────────────
-      float lowFreqDeform = sin(aBasePosition.y * 5.0 - uTime * 0.8 + aBasePosition.x * 3.0) * 0.008;
-      float medFreqStress = cos(aBasePosition.x * 10.0 + aBasePosition.z * 8.0 + uTime * 1.2) * 0.005;
+      vec4  mvPos   = modelViewMatrix * vec4(aBasePosition, 1.0);
+      vec3  vNorm   = normalize(normalMatrix * n);
+      vec3  viewDir = normalize(-mvPos.xyz);
 
-      // Multi-harmonic edge breakup turbulence
-      float edgeBreakup = sin(aBasePosition.x * 24.0 + aBasePosition.y * 32.0 + uTime * 1.8) * 0.005 +
-                          cos(aBasePosition.z * 28.0 - uTime * 1.2) * 0.003;
-      vec3 radialDisplacement = n * (lowFreqDeform + medFreqStress + edgeBreakup);
+      float rimAngle = 1.0 - abs(dot(vNorm, viewDir));
+      float rim      = pow(rimAngle, 2.8);
+      float rimSpec  = pow(rimAngle, 4.2);
 
-      // Tangential vector flow field along surface tangent plane
+      // Organic edge wave turbulence along view tangents (0.045R amplitude matching reference silhouette)
+      float waveEdge = sin(aBasePosition.x * 16.0 + aBasePosition.y * 22.0 + uTime * 1.6) *
+                       cos(aBasePosition.z * 18.0 - uTime * 1.2);
+      float radialWave = waveEdge * rim * 0.045;
+
+      // Surface flow vector displacement along local tangent plane
       vec3 up = vec3(0.0, 1.0, 0.0);
       vec3 tangent = cross(up, n);
       if (length(tangent) < 0.001) tangent = vec3(1.0, 0.0, 0.0);
       else tangent = normalize(tangent);
       vec3 bitangent = cross(n, tangent);
 
-      float flowT1 = sin(aBasePosition.y * 4.5 + aBasePosition.z * 2.5 + uTime * 1.25) * 0.012;
-      float flowT2 = cos(aBasePosition.x * 6.5 - aBasePosition.y * 3.0 - uTime * 1.05) * 0.009;
+      float flowT1 = sin(aBasePosition.y * 4.5 + aBasePosition.z * 2.5 + uTime * 1.25) * 0.010;
+      float flowT2 = cos(aBasePosition.x * 6.5 - aBasePosition.y * 3.0 - uTime * 1.05) * 0.008;
       vec3 tangentialDisplacement = tangent * flowT1 + bitangent * flowT2;
 
-      vec3 pos = aBasePosition + radialDisplacement + tangentialDisplacement;
+      vec3 pos = aBasePosition + n * radialWave + tangentialDisplacement;
 
-      vec4  mvPos   = modelViewMatrix * vec4(pos, 1.0);
-      vec3  vNorm   = normalize(normalMatrix * n);
-      vec3  viewDir = normalize(-mvPos.xyz);
+      mvPos   = modelViewMatrix * vec4(pos, 1.0);
+      float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
       // ───────────────────────────────────────────────────────────────────────
-      // 3. Multi-Layer Rim Structure & Specular Corona Gating
-      // Layer 1: Inner Shell Rim Angle | Layer 2: Specular Fresnel Corona | Layer 3: Edge Turbulence Scatter
+      // 3. Exact Multi-Stop Latitude Palette Matching Reference Image
       // ───────────────────────────────────────────────────────────────────────
-      float rimAngle = 1.0 - abs(dot(vNorm, viewDir));
-      float rim      = pow(rimAngle, 2.8);
-      float rimSpec  = pow(rimAngle, 4.2);
-      float depth    = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
-
-      // Preserved 5-Stop Latitude Color Palette
       float latT = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3 baseCol;
-      if      (latT < 0.25) baseCol = mix(uC0, uC1, smoothstep(0.00, 0.25, latT));
-      else if (latT < 0.50) baseCol = mix(uC1, uC2, smoothstep(0.25, 0.50, latT));
-      else if (latT < 0.75) baseCol = mix(uC2, uC3, smoothstep(0.50, 0.75, latT));
-      else                  baseCol = mix(uC3, uC4, smoothstep(0.75, 1.00, latT));
+      if      (latT < 0.20) baseCol = mix(uC0, uC1, smoothstep(0.00, 0.20, latT));
+      else if (latT < 0.45) baseCol = mix(uC1, uC2, smoothstep(0.20, 0.45, latT));
+      else if (latT < 0.70) baseCol = mix(uC2, uC3, smoothstep(0.45, 0.70, latT));
+      else if (latT < 0.88) baseCol = mix(uC3, uC4, smoothstep(0.70, 0.88, latT));
+      else                  baseCol = mix(uC4, uC5, smoothstep(0.88, 1.00, latT));
 
+      // Center-Front Occlusion: Center-front lattice remains dark blue/purple digital dots
+      float centerOcclusion = mix(0.35, 1.30, rim);
       float midEnergyRamp = smoothstep(0.42, 0.78, E);
-      float targetBrightness = mix(0.45, 0.95, voidMask * (0.35 + midEnergyRamp * 0.65));
+      float targetBrightness = mix(0.40, 0.95, voidMask * (0.35 + midEnergyRamp * 0.65)) * centerOcclusion;
       if (heroMask > 0.5) targetBrightness = 1.30;
 
       if (heroMask > 0.5) {
@@ -108,13 +109,12 @@ export const SurfaceParticleShader = {
         vAlpha = 1.0;
       } else {
         vec3 energizedCol = mix(baseCol, vec3(0.70, 0.90, 1.0), filaments * islandMask * 0.40);
-        // Multi-Layer Rim Specular Corona blend
         vec3 rimSpecularCol = mix(energizedCol, vec3(1.0, 1.0, 1.0), rimSpec * 0.45);
-        vColor = rimSpecularCol * targetBrightness * (0.85 + rim * 0.35);
-        vAlpha = (mix(0.42, 0.95, depth) * 0.85 + rim * 0.15) * mix(0.22, 1.0, voidMask);
+        vColor = rimSpecularCol * targetBrightness;
+        vAlpha = (mix(0.35, 0.95, depth) * 0.80 + rim * 0.20) * mix(0.18, 1.0, voidMask);
       }
 
-      // Compact Point Size Hierarchy with Rim Overlap Scaling
+      // Point Sizing with Rim Overlap Expansion
       float targetPx = 0.90; // Tiny (65%)
       if (heroMask > 0.5) {
         targetPx = 3.6;      // Isolated Hero Node (<0.8%)
@@ -126,7 +126,7 @@ export const SurfaceParticleShader = {
         targetPx = 1.35;     // Small State (20%)
       }
 
-      float rimSizeMultiplier = 1.0 + rim * 0.15;
+      float rimSizeMultiplier = 1.0 + rim * 0.25;
       float finalPx = targetPx * rimSizeMultiplier;
 
       gl_PointSize = uSize * finalPx * (5.5 / -mvPos.z);
@@ -160,15 +160,15 @@ export const SurfaceParticleShader = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LAYER 2 — Refined Interior Volumetric Depth (Parallax Depth Layering Without Glow)
+// LAYER 2 — Refined Interior Volumetric Depth (Hollow Core Perception)
 // ─────────────────────────────────────────────────────────────────────────────
 export const InnerParticleShader = {
   uniforms: {
-    uSize:   { value: 1.05 },
+    uSize:   { value: 1.0 },
     uRadius: { value: 0.82 },
-    uC0: { value: new THREE.Color('#0022AA') },
-    uC1: { value: new THREE.Color('#5500AA') },
-    uC2: { value: new THREE.Color('#990055') },
+    uC0: { value: new THREE.Color('#081028') },
+    uC1: { value: new THREE.Color('#220844') },
+    uC2: { value: new THREE.Color('#440833') },
   },
   vertexShader: /* glsl */`
     uniform float uSize;
@@ -184,18 +184,17 @@ export const InnerParticleShader = {
       float t   = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3  col = mix(uC0, uC1, smoothstep(0.0, 0.5, t));
       col       = mix(col, uC2, smoothstep(0.5, 1.0, t));
-      vColor    = col * 0.45;
+      vColor    = col * 0.50;
 
       vec4  mvPos = modelViewMatrix * vec4(aBasePosition, 1.0);
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
-      // Refined interior volumetric depth ramp
       float volumetricDepthRamp = smoothstep(0.10, 0.90, depth);
       float innerStructureWave = sin(aBasePosition.y * 8.0 + aBasePosition.x * 6.0) * 0.15 + 0.85;
 
-      vAlpha = mix(0.12, 0.44, volumetricDepthRamp) * innerStructureWave;
+      vAlpha = mix(0.10, 0.38, volumetricDepthRamp) * innerStructureWave;
 
-      gl_PointSize = uSize * (0.80 + volumetricDepthRamp * 0.50) * (5.5 / -mvPos.z);
+      gl_PointSize = uSize * (0.80 + volumetricDepthRamp * 0.45) * (5.5 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
     }
   `,
@@ -223,16 +222,17 @@ export const InnerParticleShader = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LAYER 3 — Refined Multi-Layer Rim Corona
+// LAYER 3 — Organic Rim Corona (Dense Edge Crests & Wave Turbulence)
+// Recreates the thick cyan top & red/amber bottom wave crests from input_file_0.png
 // ─────────────────────────────────────────────────────────────────────────────
 export const RimParticleShader = {
   uniforms: {
-    uSize:   { value: 1.15 },
+    uSize:   { value: 1.25 },
     uRadius: { value: 1.16 },
     uTime:   { value: 0.0 },
-    uC0: { value: new THREE.Color('#00E8FF') },
-    uC1: { value: new THREE.Color('#D83BFF') },
-    uC2: { value: new THREE.Color('#FFFFFF') },
+    uC0: { value: new THREE.Color('#00E8FF') }, // Top Cyan
+    uC1: { value: new THREE.Color('#E028BB') }, // Magenta
+    uC2: { value: new THREE.Color('#FF4422') }, // Red/Orange
   },
   vertexShader: /* glsl */`
     uniform float uSize;
@@ -248,28 +248,32 @@ export const RimParticleShader = {
     void main() {
       vec3 n = normalize(aBasePosition);
 
-      float edgePerturb = sin(aBasePosition.x * 24.0 + aBasePosition.y * 32.0 + uTime * 1.8) * 0.006;
-      vec3 pos = aBasePosition + n * edgePerturb;
-
-      vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
+      vec4 mvPos = modelViewMatrix * vec4(aBasePosition, 1.0);
       vec3 vNorm = normalize(normalMatrix * n);
       vec3 view  = normalize(-mvPos.xyz);
 
       float rimAngle = 1.0 - abs(dot(vNorm, view));
-      float rim      = pow(rimAngle, 3.0);
-      float rimSpec  = pow(rimAngle, 4.2);
+      float rim      = pow(rimAngle, 2.5);
+
+      // Reconstructing reference image wave crest turbulence (0.055R displacement along rim)
+      float wavePattern = sin(aBasePosition.x * 14.0 + aBasePosition.y * 18.0 + uTime * 1.5) *
+                          cos(aBasePosition.z * 16.0 - uTime * 1.1);
+      float rimDisplacement = wavePattern * rim * 0.055;
+      vec3 pos = aBasePosition + n * rimDisplacement;
+
+      mvPos = modelViewMatrix * vec4(pos, 1.0);
 
       float t   = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
-      vec3  col = mix(uC0, uC1, t);
-      col = mix(col, uC2, rimSpec * 0.35);
-      vColor = col * 0.85;
+      vec3  col = mix(uC0, uC1, smoothstep(0.0, 0.6, t));
+      col = mix(col, uC2, smoothstep(0.6, 1.0, t));
+      vColor = col * (0.85 + pow(rimAngle, 4.0) * 0.45);
 
-      vAlpha = smoothstep(0.45, 0.92, rim) * 0.75;
+      vAlpha = smoothstep(0.35, 0.90, rim) * 0.80;
 
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
       vAlpha *= mix(0.35, 1.0, depth);
 
-      gl_PointSize = uSize * 1.1 * (5.5 / -mvPos.z);
+      gl_PointSize = uSize * (1.0 + rim * 0.40) * (5.5 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
     }
   `,
@@ -297,16 +301,16 @@ export const RimParticleShader = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LAYER 4 — Refined Detached Atmospheric Satellites (Multi-Harmonic Orbital Drift)
+// LAYER 4 — Sparse Detached Atmospheric Spray
 // ─────────────────────────────────────────────────────────────────────────────
 export const AtmosphericParticleShader = {
   uniforms: {
-    uSize:   { value: 0.95 },
+    uSize:   { value: 1.0 },
     uRadius: { value: 1.20 },
     uTime:   { value: 0.0 },
     uC0: { value: new THREE.Color('#00E8FF') },
-    uC1: { value: new THREE.Color('#7A3CFF') },
-    uC2: { value: new THREE.Color('#FF3300') },
+    uC1: { value: new THREE.Color('#8833FF') },
+    uC2: { value: new THREE.Color('#FF3344') },
   },
   vertexShader: /* glsl */`
     uniform float uSize;
@@ -322,15 +326,15 @@ export const AtmosphericParticleShader = {
     void main() {
       vec3 n = normalize(aBasePosition);
 
-      // Multi-harmonic orbital drift turbulence
-      float drift = sin(uTime * 0.35 + aBasePosition.y * 3.5 + aBasePosition.x * 2.2) * 0.014 +
-                    cos(uTime * 0.50 + aBasePosition.z * 4.0) * 0.006;
+      // Multi-harmonic orbital spray drift
+      float drift = sin(uTime * 0.35 + aBasePosition.y * 3.5 + aBasePosition.x * 2.2) * 0.016 +
+                    cos(uTime * 0.50 + aBasePosition.z * 4.0) * 0.008;
       vec3 pos = aBasePosition + n * drift;
 
       float t = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3 col = mix(uC0, uC1, smoothstep(0.0, 0.5, t));
       col = mix(col, uC2, smoothstep(0.5, 1.0, t));
-      vColor = col * 0.70;
+      vColor = col * 0.75;
 
       vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
       vec3 vNorm = normalize(normalMatrix * n);
@@ -339,9 +343,9 @@ export const AtmosphericParticleShader = {
       float rim   = pow(1.0 - abs(dot(vNorm, view)), 1.8);
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
-      vAlpha = mix(0.14, 0.24, rim) * mix(0.4, 1.0, depth);
+      vAlpha = mix(0.15, 0.28, rim) * mix(0.4, 1.0, depth);
 
-      gl_PointSize = uSize * 0.95 * (5.5 / -mvPos.z);
+      gl_PointSize = uSize * 1.0 * (5.5 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
     }
   `,
