@@ -136,24 +136,32 @@ function SurfaceDynamicsController() {
 
 // ─── Canvas Component ─────────────────────────────────────────────────────────
 export function QuantumGlobeCanvas() {
-  const [debugMode, setDebugMode] = useState<'FULL' | 'SURFACE' | 'VOLUME' | 'ATMOSPHERE' | 'BLOOM'>('FULL');
+  const [debugKey, setDebugKey] = useState<number>(6); // Default 6: Final Composite (Debug mode off)
   const [showOverlay, setShowOverlay] = useState<boolean>(false);
   const [fps, setFps] = useState<number>(60);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'F1') { e.preventDefault(); setDebugMode('SURFACE'); }
-      else if (e.key === 'F2') { e.preventDefault(); setDebugMode('VOLUME'); }
-      else if (e.key === 'F3') { e.preventDefault(); setDebugMode('ATMOSPHERE'); }
-      else if (e.key === 'F4') { e.preventDefault(); setDebugMode('BLOOM'); }
-      else if (e.key === 'F5') { e.preventDefault(); setDebugMode('FULL'); }
+      if (e.key === '1') { setDebugKey(1); SurfaceParticleShader.uniforms.uDebugMode.value = 1; }
+      else if (e.key === '2') { setDebugKey(2); SurfaceParticleShader.uniforms.uDebugMode.value = 2; }
+      else if (e.key === '3') { setDebugKey(3); SurfaceParticleShader.uniforms.uDebugMode.value = 3; }
+      else if (e.key === '4') { setDebugKey(4); SurfaceParticleShader.uniforms.uDebugMode.value = 4; }
+      else if (e.key === '5') { setDebugKey(5); SurfaceParticleShader.uniforms.uDebugMode.value = 5; }
+      else if (e.key === '6') { setDebugKey(6); SurfaceParticleShader.uniforms.uDebugMode.value = 6; }
       else if (e.key === 'F6') { e.preventDefault(); setShowOverlay((prev) => !prev); }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const totalParticleCount = 22000;
+  const debugLabels: Record<number, string> = {
+    1: '1: SURFACE LATTICE ONLY',
+    2: '2: ATMOSPHERE ONLY',
+    3: '3: ENERGY FIELD HEATMAP',
+    4: '4: COMPRESSION BANDS HEATMAP',
+    5: '5: RIM PERTURBATION VISUALIZATION',
+    6: '6: FINAL COMPOSITE',
+  };
 
   return (
     <div className="w-full h-full relative flex items-center justify-center overflow-visible">
@@ -180,30 +188,44 @@ export function QuantumGlobeCanvas() {
         <FPSMonitor onFpsUpdate={setFps} />
         <SurfaceDynamicsController />
 
-        {/* Layer Visibility Switches */}
-        {(debugMode === 'FULL' || debugMode === 'VOLUME') && <InnerParticles />}
-        {(debugMode === 'FULL' || debugMode === 'SURFACE') && (
+        {/* Layer Visibility Controls per Debug Mode */}
+        {debugKey === 6 && (
+          <>
+            <InnerParticles />
+            <SurfaceParticles />
+            <RimParticles />
+            <AtmosphericParticles />
+          </>
+        )}
+        {debugKey === 1 && <SurfaceParticles />}
+        {debugKey === 2 && <AtmosphericParticles />}
+        {debugKey === 3 && <SurfaceParticles />}
+        {debugKey === 4 && <SurfaceParticles />}
+        {debugKey === 5 && (
           <>
             <SurfaceParticles />
             <RimParticles />
           </>
         )}
-        {(debugMode === 'FULL' || debugMode === 'ATMOSPHERE') && <AtmosphericParticles />}
       </Canvas>
 
-      {/* F6 Statistics Overlay */}
-      {showOverlay && (
-        <div className="absolute top-4 left-4 z-50 bg-black/80 backdrop-blur-md border border-cyan-500/30 text-cyan-400 p-3 rounded-lg font-mono text-xs shadow-xl space-y-1 w-64">
-          <div className="text-white font-bold border-b border-cyan-500/20 pb-1 mb-1 flex justify-between">
-            <span>GLOBE DEBUG STATS</span>
-            <span className="text-emerald-400">{debugMode} MODE</span>
+      {/* Debug Mode HUD Panel (shown when debugKey !== 6 or showOverlay is true) */}
+      {(debugKey !== 6 || showOverlay) && (
+        <div className="absolute top-4 left-4 z-50 bg-black/85 backdrop-blur-md border border-cyan-500/40 text-cyan-400 p-3 rounded-lg font-mono text-xs shadow-2xl space-y-1.5 w-72">
+          <div className="text-white font-bold border-b border-cyan-500/30 pb-1 flex justify-between items-center">
+            <span>GLOBE SHADER DEBUG</span>
+            <span className="text-amber-400 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-500/30">MODE {debugKey}</span>
           </div>
-          <div className="flex justify-between"><span>Particle Layout:</span> <span className="text-white">Structured Lattice</span></div>
-          <div className="flex justify-between"><span>Point Size:</span> <span className="text-white">2.2 px Constant</span></div>
-          <div className="flex justify-between"><span>Point Discs:</span> <span className="text-white">OLED Anti-Aliased</span></div>
-          <div className="flex justify-between"><span>Camera Position:</span> <span className="text-white">[0, 0, 4.2]</span></div>
-          <div className="flex justify-between font-bold border-t border-cyan-500/20 pt-1 mt-1"><span>FPS:</span> <span className="text-emerald-400">{fps}</span></div>
-          <div className="text-[10px] text-gray-400 pt-1 border-t border-gray-800 mt-1">Shortcuts: F1-F5 Layers | F6 Overlay</div>
+          <div className="text-emerald-400 font-semibold">{debugLabels[debugKey]}</div>
+          <div className="text-[10px] text-gray-300 space-y-0.5 pt-1 border-t border-gray-800">
+            <div><span className="text-cyan-300 font-bold">1</span> Surface Lattice | <span className="text-cyan-300 font-bold">2</span> Atmosphere</div>
+            <div><span className="text-cyan-300 font-bold">3</span> Energy Flow  | <span className="text-cyan-300 font-bold">4</span> Compression</div>
+            <div><span className="text-cyan-300 font-bold">5</span> Rim Breakup  | <span className="text-cyan-300 font-bold">6</span> Composite</div>
+          </div>
+          <div className="flex justify-between font-mono text-[10px] text-gray-400 border-t border-gray-800 pt-1">
+            <span>FPS: <strong className="text-emerald-400">{fps}</strong></span>
+            <span>Key 6 to exit debug</span>
+          </div>
         </div>
       )}
     </div>
