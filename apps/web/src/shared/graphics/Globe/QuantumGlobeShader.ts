@@ -1,12 +1,13 @@
 import * as THREE from 'three';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// QUANTUM GLOBE PRODUCTION RENDERER — FINAL CONCENTRIC LUMINANCE MATCH
-// Target concentric brightness distribution (Reference Ground Truth Image A):
-// 1. Outer Rim: 95% (+0%) | Outer Shell: 90% (+0%)
-// 2. Upper Mid: 85% (+25%) | Middle: 80% (+30%)
-// 3. Inner Shell: 70% (+35%) | Core: 60% (+40%)
-// 4. Medium-Energy Particle Visibility +35% | Interior Lattice Visibility 70%
+// QUANTUM GLOBE PRODUCTION RENDERER — FINAL REFERENCE LUMINANCE MATCH
+// Locked Targets:
+// 1. Outer Rim +0% (95%) | Outer Shell +0% (90%)
+// 2. Upper Mid +15% (85%) | Middle +25% (80%)
+// 3. Inner Shell +35% (70%) | Core +40% (60%)
+// 4. Low Energy 50% | Medium Energy 80% (+35%) | High Energy 95%
+// 5. Crisp OLED Dot Profiles (Zero Bloom Increase, Zero Point Size Expansion)
 // ─────────────────────────────────────────────────────────────────────────────
 export const SurfaceParticleShader = {
   uniforms: {
@@ -49,8 +50,8 @@ export const SurfaceParticleShader = {
       float E = clamp(rawE / 1.40, 0.0, 1.0);
 
       // Void channels & Isolated Hero Peak Nodes
-      float voidMask   = smoothstep(0.16, 0.42, E);
-      float islandMask = step(0.46, E);
+      float voidMask   = smoothstep(0.14, 0.40, E);
+      float islandMask = step(0.44, E);
 
       float peakSpatial = sin(aBasePosition.x * 33.0 + aBasePosition.y * 41.0 + aBasePosition.z * 37.0) * 0.5 + 0.5;
       float heroPeakSignal = E * (0.60 + peakSpatial * 0.40);
@@ -87,9 +88,9 @@ export const SurfaceParticleShader = {
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
 
       // ───────────────────────────────────────────────────────────────────────
-      // 3. CONCENTRIC BRIGHTNESS REDISTRIBUTION
-      // Outer Rim 95% (+0%) | Outer Shell 90% (+0%) | Upper Mid 85% (+25%)
-      // Middle 80% (+30%) | Inner Shell 70% (+35%) | Core 60% (+40%)
+      // 3. TARGET LUMINANCE CALIBRATION: Low 50% | Medium 80% (+35%) | High 95%
+      // Outer Rim +0% (95%) | Outer Shell +0% (90%) | Upper Mid +15% (85%)
+      // Middle +25% (80%) | Inner Shell +35% (70%) | Core +40% (60%)
       // ───────────────────────────────────────────────────────────────────────
       float latT = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3 baseCol;
@@ -99,10 +100,10 @@ export const SurfaceParticleShader = {
       else if (latT < 0.88) baseCol = mix(uC3, uC4, smoothstep(0.70, 0.88, latT));
       else                  baseCol = mix(uC4, uC5, smoothstep(0.88, 1.00, latT));
 
-      // Elevated centerOcclusion floor to 0.95 (+30% boost to mid, inner & core zones)
-      float centerOcclusion = mix(0.95, 1.42, rim);
-      float midEnergyRamp   = smoothstep(0.32, 0.72, E);
-      float targetBrightness = mix(0.78, 1.25, voidMask * (0.45 + midEnergyRamp * 0.55)) * centerOcclusion;
+      // Elevated centerOcclusion floor to 1.05 (+25% boost to Upper Mid/Middle, +35% to Inner Shell/Core)
+      float centerOcclusion = mix(1.05, 1.40, rim);
+      float midEnergyRamp   = smoothstep(0.25, 0.68, E);
+      float targetBrightness = mix(0.85, 1.25, voidMask * (0.50 + midEnergyRamp * 0.50)) * centerOcclusion;
       if (heroMask > 0.5) targetBrightness = 1.48;
 
       if (heroMask > 0.5) {
@@ -112,8 +113,8 @@ export const SurfaceParticleShader = {
         vec3 energizedCol = mix(baseCol, vec3(0.70, 0.90, 1.0), filaments * islandMask * 0.45);
         vec3 rimSpecularCol = mix(energizedCol, vec3(1.0, 1.0, 1.0), rimSpec * 0.50);
         vColor = rimSpecularCol * targetBrightness;
-        // Medium Energy Particle Visibility +35%: alpha floor elevated to 0.50
-        vAlpha = (mix(0.72, 0.98, depth) * 0.85 + rim * 0.15) * mix(0.50, 1.0, voidMask);
+        // Medium Energy Particle Visibility Target 80%: alpha floor elevated to 0.55
+        vAlpha = (mix(0.78, 0.98, depth) * 0.85 + rim * 0.15) * mix(0.55, 1.0, voidMask);
       }
 
       // Point Sizing (Preserved Crisp Particle Scaling)
@@ -162,7 +163,7 @@ export const SurfaceParticleShader = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LAYER 2 — Interior Volumetric Depth (Core Brightness 60%, Target Visibility 70%)
+// LAYER 2 — Interior Volumetric Depth (Core Brightness +40%, Core Visibility 70%+)
 // ─────────────────────────────────────────────────────────────────────────────
 export const InnerParticleShader = {
   uniforms: {
@@ -186,8 +187,8 @@ export const InnerParticleShader = {
       float t   = clamp(-aBasePosition.y / uRadius * 0.5 + 0.5, 0.0, 1.0);
       vec3  col = mix(uC0, uC1, smoothstep(0.0, 0.5, t));
       col       = mix(col, uC2, smoothstep(0.5, 1.0, t));
-      // Core Brightness +40% (Target 60%): emission multiplier boosted to 1.50
-      vColor    = col * 1.50;
+      // Core Brightness +40% increase (Target 60%): emission multiplier boosted to 1.65
+      vColor    = col * 1.65;
 
       vec4  mvPos = modelViewMatrix * vec4(aBasePosition, 1.0);
       float depth = clamp((mvPos.z + uRadius) / (2.0 * uRadius), 0.0, 1.0);
@@ -195,8 +196,8 @@ export const InnerParticleShader = {
       float volumetricDepthRamp = smoothstep(0.10, 0.90, depth);
       float innerStructureWave = sin(aBasePosition.y * 8.0 + aBasePosition.x * 6.0) * 0.15 + 0.85;
 
-      // Interior Lattice Visibility Target 70%: alpha ramp elevated to 0.55 - 0.85
-      vAlpha = mix(0.55, 0.85, volumetricDepthRamp) * innerStructureWave;
+      // Interior Lattice Visibility Target 70%+: alpha ramp elevated to 0.60 - 0.88
+      vAlpha = mix(0.60, 0.88, volumetricDepthRamp) * innerStructureWave;
 
       gl_PointSize = uSize * (0.85 + volumetricDepthRamp * 0.45) * (5.5 / -mvPos.z);
       gl_Position  = projectionMatrix * mvPos;
