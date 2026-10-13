@@ -208,7 +208,7 @@ export default function Topbar() {
     >
 
       {/* LEFT — JARVIS OS label + version */}
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-4">
         <div className="flex items-center space-x-2">
           <span className="bg-gradient-to-r from-[#00DFFF] to-[#FF00FF] bg-clip-text text-transparent font-black tracking-widest text-sm uppercase">
             JARVIS OS
@@ -217,6 +217,15 @@ export default function Topbar() {
             v1.0.0
           </span>
         </div>
+        {!checkTauriRuntime() && (
+          <span
+            className="text-[9px] px-2 py-0.5 rounded border border-amber-500/30 bg-amber-500/10 text-amber-300 font-mono tracking-wider hidden sm:inline-flex items-center gap-1.5"
+            title="Web Preview: Native Windows OS operations, local terminal execution, local file access, and local Ollama inference require the Windows Tauri desktop runtime."
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            WEB PREVIEW • DESKTOP TAURI REQUIRED FOR NATIVE OS / TERMINAL
+          </span>
+        )}
       </div>
 
       {/* CENTER — Greeting → Live Clock with Framer Motion fade transition */}
