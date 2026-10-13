@@ -94,9 +94,17 @@ const router = createBrowserRouter([
         path: 'settings',
         element: <SettingsWorkspace />,
       },
+      {
+        path: '*',
+        element: <HomeWorkspace />,
+      },
     ],
   },
-])
+], {
+  basename: typeof window !== 'undefined' && window.location.pathname.startsWith('/jarvis-os')
+    ? '/jarvis-os'
+    : undefined
+})
 
 export function AppRouter() {
   return <RouterProvider router={router} />
