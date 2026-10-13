@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JARVIS OS - Initializing</title>
+  <style>
+    body {
+      margin: 0;
+      background: transparent;
+      color: #fff;
+      font-family: monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .container {
+      background: rgba(10, 10, 15, 0.9);
+      border: 1px solid rgba(0, 223, 255, 0.25);
+      border-radius: 20px;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 320px;
+      box-shadow: 0 0 40px rgba(0, 223, 255, 0.2), inset 0 0 25px rgba(0, 223, 255, 0.08);
+      backdrop-filter: blur(15px);
+      -webkit-app-region: drag; /* Allows dragging the splash screen window */
+    }
+    .ring {
+      width: 120px;
+      height: 120px;
+      border: 2px solid transparent;
+      border-top: 2px solid #00DFFF;
+      border-right: 2px solid rgba(0, 223, 255, 0.3);
+      border-bottom: 2px solid #FF00FF;
+      border-left: 2px solid rgba(255, 0, 255, 0.3);
+      border-radius: 50%;
+      animation: spin 1.8s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+      box-shadow: 0 0 15px rgba(0, 223, 255, 0.1), 0 0 15px rgba(255, 0, 255, 0.1);
+      position: relative;
+      -webkit-app-region: no-drag;
+    }
+    .ring::after {
+      content: '';
+      position: absolute;
+      top: 6px; left: 6px; right: 6px; bottom: 6px;
+      border: 1px solid transparent;
+      border-top: 1px solid #00DFFF;
+      border-bottom: 1px solid #FF00FF;
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: spin-reverse 1.2s linear infinite;
+    }
+    .logo {
+      margin-top: 30px;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 0.3em;
+      background: linear-gradient(to right, #00DFFF, #FF00FF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+      animation: pulse 2s infinite;
+      text-shadow: 0 0 15px rgba(0, 223, 255, 0.1);
+      -webkit-app-region: no-drag;
+    }
+    .status {
+      margin-top: 15px;
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      -webkit-app-region: no-drag;
+    }
+    .detail {
+      margin-top: 8px;
+      max-width: 300px;
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 8px;
+      line-height: 1.5;
+      text-align: center;
+      -webkit-app-region: no-drag;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes spin-reverse {
+      0% { transform: rotate(360deg); }
+      100% { transform: rotate(0deg); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; text-shadow: 0 0 12px rgba(0, 223, 255, 0.6); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="ring"></div>
+    <div class="logo">JARVIS OS</div>
+    <div id="status" class="status">System Initializing...</div>
+    <div id="detail" class="detail">Connecting to local AI backend...</div>
+  </div>
+    <script>
+      const status = document.getElementById('status');
+      const detail = document.getElementById('detail');
+      const deadline = Date.now() + 12000;
+
+      async function checkBackend() {
+        try {
+          const response = await fetch('/api/health', { cache: 'no-store' });
+          if (response.ok) {
+            status.textContent = 'System Ready';
+            detail.textContent = 'Launching dashboard...';
+            return;
+          }
+        } catch (_) {
+          // Keep retrying while the development backend starts.
+        }
+
+        if (Date.now() >= deadline) {
+          status.textContent = 'Backend Unavailable';
+          detail.textContent = 'Start with dev-tauri.bat and ensure port 3001 is free. Retrying automatically...';
+          window.setTimeout(checkBackend, 3000);
+          return;
+        }
+
+        window.setTimeout(checkBackend, 500);
+      }
+
+      checkBackend();
+    </script>
+  </body>
+</html>

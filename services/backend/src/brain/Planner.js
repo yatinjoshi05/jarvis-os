@@ -1,0 +1,1 @@
+export class Planner { async plan(request, context) { const tools = [...(request.tools || [])]; return { id: crypto.randomUUID(), intent: request.message, steps: tools.map(name => ({ type: 'tool', name })), selectedAgents: context.selectedAgent ? [context.selectedAgent.id] : [], requiresModel: true }; } }

@@ -1,0 +1,1 @@
+export class ResponseComposer { compose({ completion, toolResults = [], agentResults = [] }) { return { text: completion.text, provider: completion.provider, citations: completion.citations || [], toolResults, agentResults, structured: completion.structured || null }; } }

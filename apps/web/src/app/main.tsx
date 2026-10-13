@@ -5,6 +5,7 @@ import { conversationManager } from '../shared/ai/ConversationManager'
 import { initLocalStorageShim } from '../shared/utils/storageShim'
 import { customProviderManager } from '../shared/ai/CustomProviderManager'
 import { displaySettings } from '../shared/theme/DisplaySettings'
+import { sidebarSettings } from '../shared/theme/SidebarSettings'
 import './styles/index.css'
 
 async function initAndMount() {
@@ -12,14 +13,16 @@ async function initAndMount() {
   try {
     await initLocalStorageShim();
     console.log('[Boot] Storage shim initialized successfully.');
-    // Hydrate DisplaySettings NOW — the shim is installed so localStorage reads
+    // Hydrate DisplaySettings & SidebarSettings NOW — the shim is installed so localStorage reads
     // hit the durable Tauri store (or backend-synced browser store) instead of
     // the ephemeral WebView session storage that existed at module-import time.
     displaySettings.hydrate();
+    sidebarSettings.hydrate();
   } catch (err) {
     console.error('[Boot] Storage shim failed to initialize; using fallback memory store:', err);
     // Still hydrate so we apply whatever is in the fallback store
     displaySettings.hydrate();
+    sidebarSettings.hydrate();
   }
 
   console.log('[Boot] Step 2/3: Bootstrapping core managers & provider settings...');

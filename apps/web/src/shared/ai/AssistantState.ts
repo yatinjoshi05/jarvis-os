@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { VoiceState, voiceStateMachine } from './VoiceStateMachine';
+import { globeStateManager } from '../../entities/globe/model/GlobeStateManager';
 
 class AssistantState {
   private listeners: Set<() => void> = new Set();
@@ -11,7 +12,8 @@ class AssistantState {
   private _streamingResponse = '';
 
   constructor() {
-    voiceStateMachine.subscribe(() => {
+    voiceStateMachine.subscribe((newState) => {
+      globeStateManager.setVoiceState(newState);
       this.notify();
     });
   }

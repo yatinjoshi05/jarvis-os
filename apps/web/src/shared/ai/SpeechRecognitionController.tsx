@@ -6,9 +6,10 @@ import { aiResponseManager } from './AIResponseManager'
 import { voiceStateMachine } from './VoiceStateMachine'
 import { VOICE_CONFIG } from './config'
 import { voiceManager } from './VoiceManager'
+import { microphoneManager } from './MicrophoneManager'
 
 /**
- * SpeechRecognitionController — mounts once inside NeuralGlobe's Canvas.
+ * SpeechRecognitionController — mounts once from the persistent application shell.
  *
  * Responsibilities:
  *  1. Passive wake-word detection (IDLE state)
@@ -19,6 +20,7 @@ import { voiceManager } from './VoiceManager'
 export default function SpeechRecognitionController() {
   useEffect(() => {
     let silenceTimeout: ReturnType<typeof setTimeout> | null = null
+    let microphoneStartupPoll: ReturnType<typeof setInterval> | null = null
 
     // ── State machine listener ──────────────────────────────────
     // Stop mic while JARVIS is thinking or speaking.
@@ -116,15 +118,38 @@ export default function SpeechRecognitionController() {
     })
 
     // ── Initial start ───────────────────────────────────────────
-    const state = voiceStateMachine.state
-    if (state === 'IDLE' || state === 'LISTENING') {
-      if (!speechRecognitionManager.listening && !speechRecognitionManager.isStarting) {
+    const startPassiveRecognition = () => {
+      const state = voiceStateMachine.state
+      if (
+        (state === 'IDLE' || state === 'LISTENING') &&
+        !speechRecognitionManager.listening &&
+        !speechRecognitionManager.isStarting
+      ) {
         speechRecognitionManager.start()
       }
     }
 
+    // MicrophoneController owns the single startup permission request. Wait for
+    // its stream before starting recognition so startup never issues a competing
+    // getUserMedia request.
+    if (microphoneManager.hasActiveStream) {
+      startPassiveRecognition()
+    } else {
+      microphoneStartupPoll = setInterval(() => {
+        if (microphoneManager.hasActiveStream) {
+          if (microphoneStartupPoll) clearInterval(microphoneStartupPoll)
+          microphoneStartupPoll = null
+          startPassiveRecognition()
+        } else if (microphoneManager.state === 'denied') {
+          if (microphoneStartupPoll) clearInterval(microphoneStartupPoll)
+          microphoneStartupPoll = null
+        }
+      }, 50)
+    }
+
     return () => {
       if (silenceTimeout) clearTimeout(silenceTimeout)
+      if (microphoneStartupPoll) clearInterval(microphoneStartupPoll)
       unsubscribeState()
       unsubscribeSpeech()
       speechRecognitionManager.stop()

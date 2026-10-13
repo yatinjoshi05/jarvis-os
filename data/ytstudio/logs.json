@@ -1,0 +1,2773 @@
+{
+  "video": [
+    {
+      "id": 1785573621913,
+      "timestamp": "2026-08-01T08:40:21.913Z",
+      "story_id": "story-1785573621803",
+      "action": "RENDER_COMPLETE",
+      "details": "Rendered 1080x1920 video at D:\\jarvis\\data\\ytstudio\\renders\\yt_short_story-1785573621803.mp4",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785573621797,
+      "timestamp": "2026-08-01T08:40:21.797Z",
+      "story_id": "dec_1785573621764",
+      "channel_id": "old-couple",
+      "action": "DIRECTOR_PIPELINE_DISPATCH",
+      "details": "Director dispatched video plan for Old Couple Stories with viral score 94",
+      "status": "DISPATCHED"
+    },
+    {
+      "id": 1785573621731,
+      "timestamp": "2026-08-01T08:40:21.731Z",
+      "story_id": "story-1785573621599",
+      "action": "RENDER_COMPLETE",
+      "details": "Rendered 1080x1920 video at D:\\jarvis\\data\\ytstudio\\renders\\yt_short_story-1785573621599.mp4",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785572963589,
+      "timestamp": "2026-08-01T08:29:23.589Z",
+      "story_id": "story-1785572963476",
+      "action": "RENDER_COMPLETE",
+      "details": "Rendered 1080x1920 video at D:\\jarvis\\data\\ytstudio\\renders\\yt_short_story-1785572963476.mp4",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785572963471,
+      "timestamp": "2026-08-01T08:29:23.471Z",
+      "story_id": "dec_1785572963436",
+      "channel_id": "old-couple",
+      "action": "DIRECTOR_PIPELINE_DISPATCH",
+      "details": "Director dispatched video plan for Old Couple Stories with viral score 94",
+      "status": "DISPATCHED"
+    },
+    {
+      "id": 1785572963421,
+      "timestamp": "2026-08-01T08:29:23.421Z",
+      "story_id": "dec_1785572963381",
+      "channel_id": "old-couple",
+      "action": "DIRECTOR_PIPELINE_DISPATCH",
+      "details": "Director dispatched video plan for Old Couple Stories with viral score 94",
+      "status": "DISPATCHED"
+    },
+    {
+      "id": 1785571357459,
+      "timestamp": "2026-08-01T08:02:37.459Z",
+      "story_id": "story-1785571356965",
+      "action": "JOB_COMPLETED",
+      "details": "Queue render_queue completed job job_render_queue_1785571357047_358",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785571357049,
+      "timestamp": "2026-08-01T08:02:37.049Z",
+      "story_id": "story-1785571356965",
+      "action": "ENQUEUED",
+      "details": "Job job_render_queue_1785571357047_358 added to render_queue",
+      "status": "QUEUED"
+    },
+    {
+      "id": 1785571357045,
+      "timestamp": "2026-08-01T08:02:37.045Z",
+      "story_id": "story-1785571356965",
+      "action": "RENDER_COMPLETE",
+      "details": "Rendered 1080x1920 video at D:\\jarvis\\data\\ytstudio\\renders\\yt_short_story-1785571356965.mp4",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785571351150,
+      "timestamp": "2026-08-01T08:02:31.150Z",
+      "story_id": "dec_1785571351096",
+      "channel_id": "old-couple",
+      "action": "DIRECTOR_PIPELINE_DISPATCH",
+      "details": "Director dispatched video plan for Old Couple Stories with viral score 94",
+      "status": "DISPATCHED"
+    },
+    {
+      "id": 1785571347938,
+      "timestamp": "2026-08-01T08:02:27.938Z",
+      "story_id": "story-1785571347689",
+      "action": "RENDER_COMPLETE",
+      "details": "Rendered 1080x1920 video at D:\\jarvis\\data\\ytstudio\\renders\\yt_short_story-1785571347689.mp4",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785571347679,
+      "timestamp": "2026-08-01T08:02:27.679Z",
+      "story_id": "dec_1785571347631",
+      "channel_id": "old-couple",
+      "action": "DIRECTOR_PIPELINE_DISPATCH",
+      "details": "Director dispatched video plan for Old Couple Stories with viral score 94",
+      "status": "DISPATCHED"
+    },
+    {
+      "id": 1785571347595,
+      "timestamp": "2026-08-01T08:02:27.595Z",
+      "story_id": "story-1785571347373",
+      "action": "RENDER_COMPLETE",
+      "details": "Rendered 1080x1920 video at D:\\jarvis\\data\\ytstudio\\renders\\yt_short_story-1785571347373.mp4",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785571107564,
+      "timestamp": "2026-08-01T07:58:27.564Z",
+      "story_id": "story-1785571107444",
+      "action": "RENDER_COMPLETE",
+      "details": "Rendered 1080x1920 video at D:\\jarvis\\data\\ytstudio\\renders\\yt_short_story-1785571107444.mp4",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785571107438,
+      "timestamp": "2026-08-01T07:58:27.438Z",
+      "story_id": "dec_1785571107406",
+      "channel_id": "old-couple",
+      "action": "DIRECTOR_PIPELINE_DISPATCH",
+      "details": "Director dispatched video plan for Old Couple Stories with viral score 94",
+      "status": "DISPATCHED"
+    },
+    {
+      "id": 1785571107381,
+      "timestamp": "2026-08-01T07:58:27.381Z",
+      "story_id": "story-1785571107219",
+      "action": "RENDER_COMPLETE",
+      "details": "Rendered 1080x1920 video at D:\\jarvis\\data\\ytstudio\\renders\\yt_short_story-1785571107219.mp4",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785567824335,
+      "timestamp": "2026-08-01T07:03:44.335Z",
+      "story_id": "story-1785567823856",
+      "action": "JOB_COMPLETED",
+      "details": "Queue render_queue completed job job_render_queue_1785567823926_869",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785567823927,
+      "timestamp": "2026-08-01T07:03:43.927Z",
+      "story_id": "story-1785567823856",
+      "action": "ENQUEUED",
+      "details": "Job job_render_queue_1785567823926_869 added to render_queue",
+      "status": "QUEUED"
+    },
+    {
+      "id": 1785567823924,
+      "timestamp": "2026-08-01T07:03:43.924Z",
+      "story_id": "story-1785567823856",
+      "action": "RENDER_COMPLETE",
+      "details": "Rendered 1080x1920 video at D:\\jarvis\\data\\ytstudio\\renders\\yt_short_story-1785567823856.mp4",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785567817808,
+      "timestamp": "2026-08-01T07:03:37.808Z",
+      "story_id": "dec_1785567817779",
+      "channel_id": "old-couple",
+      "action": "DIRECTOR_PIPELINE_DISPATCH",
+      "details": "Director dispatched video plan for Old Couple Stories with viral score 94",
+      "status": "DISPATCHED"
+    },
+    {
+      "id": 1785567814832,
+      "timestamp": "2026-08-01T07:03:34.832Z",
+      "story_id": "story-1785567814766",
+      "action": "RENDER_COMPLETE",
+      "details": "Rendered 1080x1920 video at D:\\jarvis\\data\\ytstudio\\renders\\yt_short_story-1785567814766.mp4",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785567814763,
+      "timestamp": "2026-08-01T07:03:34.763Z",
+      "story_id": "dec_1785567814744",
+      "channel_id": "old-couple",
+      "action": "DIRECTOR_PIPELINE_DISPATCH",
+      "details": "Director dispatched video plan for Old Couple Stories with viral score 94",
+      "status": "DISPATCHED"
+    },
+    {
+      "id": 1785567814730,
+      "timestamp": "2026-08-01T07:03:34.730Z",
+      "story_id": "story-1785567814644",
+      "action": "RENDER_COMPLETE",
+      "details": "Rendered 1080x1920 video at D:\\jarvis\\data\\ytstudio\\renders\\yt_short_story-1785567814644.mp4",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785567803167,
+      "timestamp": "2026-08-01T07:03:23.167Z",
+      "story_id": "story-1785567803093",
+      "action": "RENDER_COMPLETE",
+      "details": "Rendered 1080x1920 video at D:\\jarvis\\data\\ytstudio\\renders\\yt_short_story-1785567803093.mp4",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785567803090,
+      "timestamp": "2026-08-01T07:03:23.090Z",
+      "story_id": "dec_1785567803071",
+      "channel_id": "old-couple",
+      "action": "DIRECTOR_PIPELINE_DISPATCH",
+      "details": "Director dispatched video plan for Old Couple Stories with viral score 94",
+      "status": "DISPATCHED"
+    },
+    {
+      "id": 1785567803053,
+      "timestamp": "2026-08-01T07:03:23.053Z",
+      "story_id": "story-1785567802957",
+      "action": "RENDER_COMPLETE",
+      "details": "Rendered 1080x1920 video at D:\\jarvis\\data\\ytstudio\\renders\\yt_short_story-1785567802957.mp4",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785567793706,
+      "timestamp": "2026-08-01T07:03:13.706Z",
+      "story_id": "story-1785567793621",
+      "action": "RENDER_COMPLETE",
+      "details": "Rendered 1080x1920 video at D:\\jarvis\\data\\ytstudio\\renders\\yt_short_story-1785567793621.mp4",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785566628574,
+      "timestamp": "2026-08-01T06:43:48.574Z",
+      "story_id": "story-1785566627950",
+      "action": "JOB_COMPLETED",
+      "details": "Queue render_queue completed job job_render_queue_1785566628061_266",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785566628063,
+      "timestamp": "2026-08-01T06:43:48.063Z",
+      "story_id": "story-1785566627950",
+      "action": "ENQUEUED",
+      "details": "Job job_render_queue_1785566628061_266 added to render_queue",
+      "status": "QUEUED"
+    },
+    {
+      "id": 1785566628059,
+      "timestamp": "2026-08-01T06:43:48.059Z",
+      "story_id": "story-1785566627950",
+      "action": "RENDER_COMPLETE",
+      "details": "Rendered 1080x1920 video at D:\\jarvis\\data\\ytstudio\\renders\\yt_short_story-1785566627950.mp4",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785566618610,
+      "timestamp": "2026-08-01T06:43:38.610Z",
+      "story_id": "dec_1785566618119",
+      "channel_id": "old-couple",
+      "action": "DIRECTOR_PIPELINE_DISPATCH",
+      "details": "Director dispatched video plan for Old Couple Stories with viral score 94",
+      "status": "DISPATCHED"
+    },
+    {
+      "id": 1785565815729,
+      "timestamp": "2026-08-01T06:30:15.729Z",
+      "story_id": "story-1785565815213",
+      "action": "JOB_COMPLETED",
+      "details": "Queue render_queue completed job job_render_queue_1785565815307_876",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785565815309,
+      "timestamp": "2026-08-01T06:30:15.309Z",
+      "story_id": "story-1785565815213",
+      "action": "ENQUEUED",
+      "details": "Job job_render_queue_1785565815307_876 added to render_queue",
+      "status": "QUEUED"
+    },
+    {
+      "id": 1785565815306,
+      "timestamp": "2026-08-01T06:30:15.306Z",
+      "story_id": "story-1785565815213",
+      "action": "RENDER_COMPLETE",
+      "details": "Rendered 1080x1920 video at D:\\jarvis\\data\\ytstudio\\renders\\yt_short_story-1785565815213.mp4",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785565344790,
+      "timestamp": "2026-08-01T06:22:24.790Z",
+      "story_id": "story-1785565344320",
+      "action": "JOB_COMPLETED",
+      "details": "Queue render_queue completed job job_render_queue_1785565344382_170",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785565344383,
+      "timestamp": "2026-08-01T06:22:24.383Z",
+      "story_id": "story-1785565344320",
+      "action": "ENQUEUED",
+      "details": "Job job_render_queue_1785565344382_170 added to render_queue",
+      "status": "QUEUED"
+    },
+    {
+      "id": 1785565344381,
+      "timestamp": "2026-08-01T06:22:24.381Z",
+      "story_id": "story-1785565344320",
+      "action": "RENDER_COMPLETE",
+      "details": "Rendered 1080x1920 video at D:\\jarvis\\data\\ytstudio\\renders\\yt_short_story-1785565344320.mp4",
+      "status": "SUCCESS"
+    }
+  ],
+  "upload": [
+    {
+      "id": 1785573621929,
+      "timestamp": "2026-08-01T08:40:21.929Z",
+      "video_id": "story-1785573621803",
+      "channel_id": "old-couple",
+      "youtube_video_id": "yt_vid_1785573621923",
+      "uploaded_at": "2026-08-01T08:40:21.927Z",
+      "disclaimer_added": true,
+      "status": "PUBLISHED"
+    },
+    {
+      "id": 1785573621748,
+      "timestamp": "2026-08-01T08:40:21.748Z",
+      "video_id": "story-1785573621599",
+      "channel_id": "old-couple",
+      "youtube_video_id": "yt_vid_1785573621742",
+      "uploaded_at": "2026-08-01T08:40:21.746Z",
+      "disclaimer_added": true,
+      "status": "PUBLISHED"
+    },
+    {
+      "id": 1785572963604,
+      "timestamp": "2026-08-01T08:29:23.604Z",
+      "video_id": "story-1785572963476",
+      "channel_id": "old-couple",
+      "youtube_video_id": "yt_vid_1785572963597",
+      "uploaded_at": "2026-08-01T08:29:23.603Z",
+      "disclaimer_added": true,
+      "status": "PUBLISHED"
+    },
+    {
+      "id": 1785571357057,
+      "timestamp": "2026-08-01T08:02:37.057Z",
+      "video_id": "story-1785571356965",
+      "channel_id": "old-couple",
+      "youtube_video_id": "yt_vid_1785571357053",
+      "uploaded_at": "2026-08-01T08:02:37.056Z",
+      "disclaimer_added": true,
+      "status": "PUBLISHED"
+    },
+    {
+      "id": 1785571347956,
+      "timestamp": "2026-08-01T08:02:27.956Z",
+      "video_id": "story-1785571347689",
+      "channel_id": "old-couple",
+      "youtube_video_id": "yt_vid_1785571347948",
+      "uploaded_at": "2026-08-01T08:02:27.953Z",
+      "disclaimer_added": true,
+      "status": "PUBLISHED"
+    },
+    {
+      "id": 1785571347617,
+      "timestamp": "2026-08-01T08:02:27.617Z",
+      "video_id": "story-1785571347373",
+      "channel_id": "old-couple",
+      "youtube_video_id": "yt_vid_1785571347609",
+      "uploaded_at": "2026-08-01T08:02:27.613Z",
+      "disclaimer_added": true,
+      "status": "PUBLISHED"
+    },
+    {
+      "id": 1785571107584,
+      "timestamp": "2026-08-01T07:58:27.584Z",
+      "video_id": "story-1785571107444",
+      "channel_id": "old-couple",
+      "youtube_video_id": "yt_vid_1785571107577",
+      "uploaded_at": "2026-08-01T07:58:27.581Z",
+      "disclaimer_added": true,
+      "status": "PUBLISHED"
+    },
+    {
+      "id": 1785571107396,
+      "timestamp": "2026-08-01T07:58:27.396Z",
+      "video_id": "story-1785571107219",
+      "channel_id": "old-couple",
+      "youtube_video_id": "yt_vid_1785571107392",
+      "uploaded_at": "2026-08-01T07:58:27.394Z",
+      "disclaimer_added": true,
+      "status": "PUBLISHED"
+    },
+    {
+      "id": 1785567823934,
+      "timestamp": "2026-08-01T07:03:43.934Z",
+      "video_id": "story-1785567823856",
+      "channel_id": "old-couple",
+      "youtube_video_id": "yt_vid_1785567823930",
+      "uploaded_at": "2026-08-01T07:03:43.933Z",
+      "disclaimer_added": true,
+      "status": "PUBLISHED"
+    },
+    {
+      "id": 1785567814841,
+      "timestamp": "2026-08-01T07:03:34.841Z",
+      "video_id": "story-1785567814766",
+      "channel_id": "old-couple",
+      "youtube_video_id": "yt_vid_1785567814838",
+      "uploaded_at": "2026-08-01T07:03:34.840Z",
+      "disclaimer_added": true,
+      "status": "PUBLISHED"
+    },
+    {
+      "id": 1785567814738,
+      "timestamp": "2026-08-01T07:03:34.738Z",
+      "video_id": "story-1785567814644",
+      "channel_id": "old-couple",
+      "youtube_video_id": "yt_vid_1785567814735",
+      "uploaded_at": "2026-08-01T07:03:34.737Z",
+      "disclaimer_added": true,
+      "status": "PUBLISHED"
+    },
+    {
+      "id": 1785567803175,
+      "timestamp": "2026-08-01T07:03:23.175Z",
+      "video_id": "story-1785567803093",
+      "channel_id": "old-couple",
+      "youtube_video_id": "yt_vid_1785567803172",
+      "uploaded_at": "2026-08-01T07:03:23.174Z",
+      "disclaimer_added": true,
+      "status": "PUBLISHED"
+    },
+    {
+      "id": 1785567803063,
+      "timestamp": "2026-08-01T07:03:23.063Z",
+      "video_id": "story-1785567802957",
+      "channel_id": "old-couple",
+      "youtube_video_id": "yt_vid_1785567803059",
+      "uploaded_at": "2026-08-01T07:03:23.061Z",
+      "disclaimer_added": true,
+      "status": "PUBLISHED"
+    },
+    {
+      "id": 1785567793713,
+      "timestamp": "2026-08-01T07:03:13.713Z",
+      "video_id": "story-1785567793621",
+      "channel_id": "old-couple",
+      "youtube_video_id": "yt_vid_1785567793711",
+      "uploaded_at": "2026-08-01T07:03:13.712Z",
+      "disclaimer_added": true,
+      "status": "PUBLISHED"
+    },
+    {
+      "id": 1785566628070,
+      "timestamp": "2026-08-01T06:43:48.070Z",
+      "video_id": "story-1785566627950",
+      "channel_id": "old-couple",
+      "youtube_video_id": "yt_vid_1785566628067",
+      "uploaded_at": "2026-08-01T06:43:48.069Z",
+      "disclaimer_added": true,
+      "status": "PUBLISHED"
+    },
+    {
+      "id": 1785565815314,
+      "timestamp": "2026-08-01T06:30:15.314Z",
+      "video_id": "story-1785565815213",
+      "channel_id": "old-couple",
+      "youtube_video_id": "yt_vid_1785565815311",
+      "uploaded_at": "2026-08-01T06:30:15.313Z",
+      "disclaimer_added": true,
+      "status": "PUBLISHED"
+    },
+    {
+      "id": 1785565344388,
+      "timestamp": "2026-08-01T06:22:24.388Z",
+      "video_id": "story-1785565344320",
+      "channel_id": "old-couple",
+      "youtube_video_id": "yt_vid_1785565344386",
+      "uploaded_at": "2026-08-01T06:22:24.387Z",
+      "disclaimer_added": true,
+      "status": "PUBLISHED"
+    }
+  ],
+  "story": [
+    {
+      "id": 1785573621820,
+      "timestamp": "2026-08-01T08:40:21.820Z",
+      "story_id": "story-1785573621817",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad & inspirational, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad & inspirational Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad & inspirational\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785573621808,
+      "timestamp": "2026-08-01T08:40:21.808Z",
+      "story_id": "story-1785573621803",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad & inspirational, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad & inspirational Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad & inspirational\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785573621780,
+      "timestamp": "2026-08-01T08:40:21.780Z",
+      "story_id": "story-1785573621777",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785573621766,
+      "timestamp": "2026-08-01T08:40:21.766Z",
+      "story_id": "dec_1785573621764",
+      "prompt_used": "Create two emotional shorts",
+      "gemini_response": "{\"decisionId\":\"dec_1785573621764\",\"channelId\":\"old-couple\",\"channelName\":\"Old Couple Stories\",\"chosenEmotion\":\"sad\",\"chosenCharacters\":[\"Ramesh\",\"Sita\"],\"duration\":40,\"seriesContinuation\":true,\"seriesTitle\":\"Old Couple Stories Series Arc #3\",\"timestamp\":\"2026-08-01T08:40:21.764Z\"}"
+    },
+    {
+      "id": 1785573621621,
+      "timestamp": "2026-08-01T08:40:21.621Z",
+      "story_id": "story-1785573621616",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785573621603,
+      "timestamp": "2026-08-01T08:40:21.603Z",
+      "story_id": "story-1785573621599",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785572963493,
+      "timestamp": "2026-08-01T08:29:23.493Z",
+      "story_id": "story-1785572963487",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad & inspirational, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad & inspirational Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad & inspirational\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785572963479,
+      "timestamp": "2026-08-01T08:29:23.479Z",
+      "story_id": "story-1785572963476",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad & inspirational, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad & inspirational Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad & inspirational\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785572963454,
+      "timestamp": "2026-08-01T08:29:23.454Z",
+      "story_id": "story-1785572963452",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785572963440,
+      "timestamp": "2026-08-01T08:29:23.440Z",
+      "story_id": "dec_1785572963436",
+      "prompt_used": "Create two emotional shorts",
+      "gemini_response": "{\"decisionId\":\"dec_1785572963436\",\"channelId\":\"old-couple\",\"channelName\":\"Old Couple Stories\",\"chosenEmotion\":\"sad\",\"chosenCharacters\":[\"Ramesh\",\"Sita\"],\"duration\":40,\"seriesContinuation\":true,\"seriesTitle\":\"Old Couple Stories Series Arc #5\",\"timestamp\":\"2026-08-01T08:29:23.436Z\"}"
+    },
+    {
+      "id": 1785572963401,
+      "timestamp": "2026-08-01T08:29:23.401Z",
+      "story_id": "story-1785572963396",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785572963383,
+      "timestamp": "2026-08-01T08:29:23.383Z",
+      "story_id": "dec_1785572963381",
+      "prompt_used": "Create two emotional shorts for Old Couple Stories",
+      "gemini_response": "{\"decisionId\":\"dec_1785572963381\",\"channelId\":\"old-couple\",\"channelName\":\"Old Couple Stories\",\"chosenEmotion\":\"sad\",\"chosenCharacters\":[\"Ramesh\",\"Sita\"],\"duration\":40,\"seriesContinuation\":true,\"seriesTitle\":\"Old Couple Stories Series Arc #7\",\"timestamp\":\"2026-08-01T08:29:23.381Z\"}"
+    },
+    {
+      "id": 1785571356968,
+      "timestamp": "2026-08-01T08:02:36.968Z",
+      "story_id": "story-1785571356965",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: Sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's Sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"Sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785571354041,
+      "timestamp": "2026-08-01T08:02:34.041Z",
+      "story_id": "story-1785571354037",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: Sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's Sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"Sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785571351126,
+      "timestamp": "2026-08-01T08:02:31.126Z",
+      "story_id": "story-1785571351119",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785571351099,
+      "timestamp": "2026-08-01T08:02:31.099Z",
+      "story_id": "dec_1785571351096",
+      "prompt_used": "Create two emotional shorts for Old Couple Stories",
+      "gemini_response": "{\"decisionId\":\"dec_1785571351096\",\"channelId\":\"old-couple\",\"channelName\":\"Old Couple Stories\",\"chosenEmotion\":\"sad\",\"chosenCharacters\":[\"Ramesh\",\"Sita\"],\"duration\":40,\"seriesContinuation\":true,\"seriesTitle\":\"Old Couple Stories Series Arc #10\",\"timestamp\":\"2026-08-01T08:02:31.096Z\"}"
+    },
+    {
+      "id": 1785571351093,
+      "timestamp": "2026-08-01T08:02:31.093Z",
+      "story_id": "dec_1785571351090",
+      "prompt_used": "Create two emotional shorts",
+      "gemini_response": "{\"decisionId\":\"dec_1785571351090\",\"channelId\":\"old-couple\",\"channelName\":\"Old Couple Stories\",\"chosenEmotion\":\"sad\",\"chosenCharacters\":[\"Ramesh\",\"Sita\"],\"duration\":40,\"seriesContinuation\":true,\"seriesTitle\":\"Old Couple Stories Series Arc #4\",\"timestamp\":\"2026-08-01T08:02:31.090Z\"}"
+    },
+    {
+      "id": 1785571347731,
+      "timestamp": "2026-08-01T08:02:27.731Z",
+      "story_id": "story-1785571347726",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad & inspirational, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad & inspirational Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad & inspirational\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785571347697,
+      "timestamp": "2026-08-01T08:02:27.697Z",
+      "story_id": "story-1785571347689",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad & inspirational, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad & inspirational Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad & inspirational\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785571347653,
+      "timestamp": "2026-08-01T08:02:27.653Z",
+      "story_id": "story-1785571347648",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785571347635,
+      "timestamp": "2026-08-01T08:02:27.635Z",
+      "story_id": "dec_1785571347631",
+      "prompt_used": "Create two emotional shorts",
+      "gemini_response": "{\"decisionId\":\"dec_1785571347631\",\"channelId\":\"old-couple\",\"channelName\":\"Old Couple Stories\",\"chosenEmotion\":\"sad\",\"chosenCharacters\":[\"Ramesh\",\"Sita\"],\"duration\":40,\"seriesContinuation\":true,\"seriesTitle\":\"Old Couple Stories Series Arc #10\",\"timestamp\":\"2026-08-01T08:02:27.631Z\"}"
+    },
+    {
+      "id": 1785571347421,
+      "timestamp": "2026-08-01T08:02:27.421Z",
+      "story_id": "story-1785571347414",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785571347380,
+      "timestamp": "2026-08-01T08:02:27.380Z",
+      "story_id": "story-1785571347373",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785571107459,
+      "timestamp": "2026-08-01T07:58:27.459Z",
+      "story_id": "story-1785571107457",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad & inspirational, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad & inspirational Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad & inspirational\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785571107447,
+      "timestamp": "2026-08-01T07:58:27.447Z",
+      "story_id": "story-1785571107444",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad & inspirational, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad & inspirational Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad & inspirational\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785571107420,
+      "timestamp": "2026-08-01T07:58:27.420Z",
+      "story_id": "story-1785571107417",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785571107407,
+      "timestamp": "2026-08-01T07:58:27.407Z",
+      "story_id": "dec_1785571107406",
+      "prompt_used": "Create two emotional shorts",
+      "gemini_response": "{\"decisionId\":\"dec_1785571107406\",\"channelId\":\"old-couple\",\"channelName\":\"Old Couple Stories\",\"chosenEmotion\":\"sad\",\"chosenCharacters\":[\"Ramesh\",\"Sita\"],\"duration\":40,\"seriesContinuation\":true,\"seriesTitle\":\"Old Couple Stories Series Arc #1\",\"timestamp\":\"2026-08-01T07:58:27.406Z\"}"
+    },
+    {
+      "id": 1785571107250,
+      "timestamp": "2026-08-01T07:58:27.250Z",
+      "story_id": "story-1785571107245",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785571107223,
+      "timestamp": "2026-08-01T07:58:27.223Z",
+      "story_id": "story-1785571107219",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785567823859,
+      "timestamp": "2026-08-01T07:03:43.859Z",
+      "story_id": "story-1785567823856",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: Sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's Sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"Sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785567820794,
+      "timestamp": "2026-08-01T07:03:40.794Z",
+      "story_id": "story-1785567820790",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: Sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's Sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"Sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785567817793,
+      "timestamp": "2026-08-01T07:03:37.793Z",
+      "story_id": "story-1785567817791",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785567817781,
+      "timestamp": "2026-08-01T07:03:37.781Z",
+      "story_id": "dec_1785567817779",
+      "prompt_used": "Create two emotional shorts for Old Couple Stories",
+      "gemini_response": "{\"decisionId\":\"dec_1785567817779\",\"channelId\":\"old-couple\",\"channelName\":\"Old Couple Stories\",\"chosenEmotion\":\"sad\",\"chosenCharacters\":[\"Ramesh\",\"Sita\"],\"duration\":40,\"seriesContinuation\":true,\"seriesTitle\":\"Old Couple Stories Series Arc #5\",\"timestamp\":\"2026-08-01T07:03:37.779Z\"}"
+    },
+    {
+      "id": 1785567817773,
+      "timestamp": "2026-08-01T07:03:37.773Z",
+      "story_id": "dec_1785567817769",
+      "prompt_used": "Create two emotional shorts",
+      "gemini_response": "{\"decisionId\":\"dec_1785567817769\",\"channelId\":\"old-couple\",\"channelName\":\"Old Couple Stories\",\"chosenEmotion\":\"sad\",\"chosenCharacters\":[\"Ramesh\",\"Sita\"],\"duration\":40,\"seriesContinuation\":true,\"seriesTitle\":\"Old Couple Stories Series Arc #8\",\"timestamp\":\"2026-08-01T07:03:37.769Z\"}"
+    },
+    {
+      "id": 1785567814775,
+      "timestamp": "2026-08-01T07:03:34.775Z",
+      "story_id": "story-1785567814774",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad & inspirational, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad & inspirational Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad & inspirational\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785567814767,
+      "timestamp": "2026-08-01T07:03:34.767Z",
+      "story_id": "story-1785567814766",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad & inspirational, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad & inspirational Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad & inspirational\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785567814753,
+      "timestamp": "2026-08-01T07:03:34.753Z",
+      "story_id": "story-1785567814751",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785567814745,
+      "timestamp": "2026-08-01T07:03:34.745Z",
+      "story_id": "dec_1785567814744",
+      "prompt_used": "Create two emotional shorts",
+      "gemini_response": "{\"decisionId\":\"dec_1785567814744\",\"channelId\":\"old-couple\",\"channelName\":\"Old Couple Stories\",\"chosenEmotion\":\"sad\",\"chosenCharacters\":[\"Ramesh\",\"Sita\"],\"duration\":40,\"seriesContinuation\":true,\"seriesTitle\":\"Old Couple Stories Series Arc #9\",\"timestamp\":\"2026-08-01T07:03:34.744Z\"}"
+    },
+    {
+      "id": 1785567814659,
+      "timestamp": "2026-08-01T07:03:34.659Z",
+      "story_id": "story-1785567814658",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785567814645,
+      "timestamp": "2026-08-01T07:03:34.645Z",
+      "story_id": "story-1785567814644",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785567803101,
+      "timestamp": "2026-08-01T07:03:23.101Z",
+      "story_id": "story-1785567803100",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad & inspirational, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad & inspirational Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad & inspirational\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785567803095,
+      "timestamp": "2026-08-01T07:03:23.095Z",
+      "story_id": "story-1785567803093",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad & inspirational, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad & inspirational Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad & inspirational\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785567803080,
+      "timestamp": "2026-08-01T07:03:23.080Z",
+      "story_id": "story-1785567803079",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785567803072,
+      "timestamp": "2026-08-01T07:03:23.072Z",
+      "story_id": "dec_1785567803071",
+      "prompt_used": "Create two emotional shorts",
+      "gemini_response": "{\"decisionId\":\"dec_1785567803071\",\"channelId\":\"old-couple\",\"channelName\":\"Old Couple Stories\",\"chosenEmotion\":\"sad\",\"chosenCharacters\":[\"Ramesh\",\"Sita\"],\"duration\":40,\"seriesContinuation\":true,\"seriesTitle\":\"Old Couple Stories Series Arc #2\",\"timestamp\":\"2026-08-01T07:03:23.071Z\"}"
+    },
+    {
+      "id": 1785567802972,
+      "timestamp": "2026-08-01T07:03:22.972Z",
+      "story_id": "story-1785567802969",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785567802958,
+      "timestamp": "2026-08-01T07:03:22.958Z",
+      "story_id": "story-1785567802957",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785567793633,
+      "timestamp": "2026-08-01T07:03:13.633Z",
+      "story_id": "story-1785567793631",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785567793622,
+      "timestamp": "2026-08-01T07:03:13.622Z",
+      "story_id": "story-1785567793621",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785566627953,
+      "timestamp": "2026-08-01T06:43:47.953Z",
+      "story_id": "story-1785566627950",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: Sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's Sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"Sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785566623048,
+      "timestamp": "2026-08-01T06:43:43.048Z",
+      "story_id": "story-1785566623043",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: Sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's Sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"Sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785566618465,
+      "timestamp": "2026-08-01T06:43:38.465Z",
+      "story_id": "story-1785566618441",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785566618125,
+      "timestamp": "2026-08-01T06:43:38.125Z",
+      "story_id": "dec_1785566618119",
+      "prompt_used": "Create two emotional shorts for Old Couple Stories",
+      "gemini_response": "{\"decisionId\":\"dec_1785566618119\",\"channelId\":\"old-couple\",\"channelName\":\"Old Couple Stories\",\"chosenEmotion\":\"sad\",\"chosenCharacters\":[\"Ramesh\",\"Sita\"],\"duration\":40,\"seriesContinuation\":true,\"seriesTitle\":\"Old Couple Stories Series Arc #8\",\"timestamp\":\"2026-08-01T06:43:38.119Z\"}"
+    },
+    {
+      "id": 1785566618115,
+      "timestamp": "2026-08-01T06:43:38.115Z",
+      "story_id": "dec_1785566618112",
+      "prompt_used": "Create two emotional shorts",
+      "gemini_response": "{\"decisionId\":\"dec_1785566618112\",\"channelId\":\"old-couple\",\"channelName\":\"Old Couple Stories\",\"chosenEmotion\":\"sad\",\"chosenCharacters\":[\"Ramesh\",\"Sita\"],\"duration\":40,\"seriesContinuation\":true,\"seriesTitle\":\"Old Couple Stories Series Arc #8\",\"timestamp\":\"2026-08-01T06:43:38.112Z\"}"
+    },
+    {
+      "id": 1785565815217,
+      "timestamp": "2026-08-01T06:30:15.217Z",
+      "story_id": "story-1785565815213",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: Sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's Sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"Sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785565811859,
+      "timestamp": "2026-08-01T06:30:11.859Z",
+      "story_id": "story-1785565811857",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: Sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's Sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"Sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785565794815,
+      "timestamp": "2026-08-01T06:29:54.815Z",
+      "story_id": "story-1785565794799",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: Sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's Sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"Sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    },
+    {
+      "id": 1785565344321,
+      "timestamp": "2026-08-01T06:22:24.321Z",
+      "story_id": "story-1785565344320",
+      "prompt_used": "Channel: Old Couple Stories, Emotion: Sad, Characters: Ramesh, Sita",
+      "gemini_response": "{\"title\":\"Ramesh's Sad Secret\",\"description\":\"A deeply moving 40-second story from Old Couple Stories featuring Ramesh and Sita.\",\"hook\":\"You won't believe what happened to Ramesh on that rainy morning...\",\"story\":\"Ramesh and Sita faced an extraordinary test of love and sacrifice in their small village home.\",\"climax\":\"Just when all hope seemed lost, a long-hidden promise changed everything.\",\"ending\":\"Hand in hand, they stepped into a peaceful new tomorrow.\",\"CTA\":\"Subscribe to Old Couple Stories for daily heartwarming emotional stories!\",\"scenes\":[{\"sceneNumber\":1,\"visual\":\"Close-up shot of Ramesh looking out the window at rain\",\"narration\":\"Every morning, he sat by the same window waiting for news...\",\"duration\":8},{\"sceneNumber\":2,\"visual\":\"Sita holding an old faded envelope with trembling hands\",\"narration\":\"She held the letter tight, praying the rumors weren't true.\",\"duration\":8},{\"sceneNumber\":3,\"visual\":\"Cinematic wide shot of village path bathed in evening sun\",\"narration\":\"Together they walked to the edge of the village where memory lived.\",\"duration\":8},{\"sceneNumber\":4,\"visual\":\"Emotional climax reunion scene with golden lighting\",\"narration\":\"And in that single tear, forty years of silence melted away.\",\"duration\":8},{\"sceneNumber\":5,\"visual\":\"Warm closing portrait of Ramesh and Sita smiling\",\"narration\":\"Love doesn't fade with time—it only grows deeper.\",\"duration\":8}],\"characters\":[\"Ramesh\",\"Sita\"],\"emotions\":[\"Sad\",\"Hopeful\"],\"hashtags\":[\"#Shorts\",\"#ViralStory\",\"#Emotional\",\"#OldCoupleStories\"]}"
+    }
+  ],
+  "api": [
+    {
+      "id": 1785575820014,
+      "timestamp": "2026-08-01T09:17:00.014Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/connectChannel",
+      "status_code": 201,
+      "latency_ms": 60
+    },
+    {
+      "id": 1785575777338,
+      "timestamp": "2026-08-01T09:16:17.338Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/connectChannel",
+      "status_code": 201,
+      "latency_ms": 60
+    },
+    {
+      "id": 1785573621933,
+      "timestamp": "2026-08-01T08:40:21.933Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/youtube/v3/videos/insert",
+      "status_code": 200,
+      "latency_ms": 320
+    },
+    {
+      "id": 1785573621918,
+      "timestamp": "2026-08-01T08:40:21.918Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785573621880,
+      "timestamp": "2026-08-01T08:40:21.880Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785573621875,
+      "timestamp": "2026-08-01T08:40:21.875Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785573621869,
+      "timestamp": "2026-08-01T08:40:21.869Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785573621863,
+      "timestamp": "2026-08-01T08:40:21.863Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785573621856,
+      "timestamp": "2026-08-01T08:40:21.856Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785573621849,
+      "timestamp": "2026-08-01T08:40:21.849Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785573621843,
+      "timestamp": "2026-08-01T08:40:21.843Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785573621838,
+      "timestamp": "2026-08-01T08:40:21.838Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785573621825,
+      "timestamp": "2026-08-01T08:40:21.825Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785573621785,
+      "timestamp": "2026-08-01T08:40:21.785Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785573621755,
+      "timestamp": "2026-08-01T08:40:21.755Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/youtube/v3/videos/insert",
+      "status_code": 200,
+      "latency_ms": 320
+    },
+    {
+      "id": 1785573621736,
+      "timestamp": "2026-08-01T08:40:21.736Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785573621680,
+      "timestamp": "2026-08-01T08:40:21.680Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785573621676,
+      "timestamp": "2026-08-01T08:40:21.676Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785573621671,
+      "timestamp": "2026-08-01T08:40:21.671Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785573621665,
+      "timestamp": "2026-08-01T08:40:21.665Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785573621660,
+      "timestamp": "2026-08-01T08:40:21.660Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785573621655,
+      "timestamp": "2026-08-01T08:40:21.655Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785573621648,
+      "timestamp": "2026-08-01T08:40:21.648Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785573621642,
+      "timestamp": "2026-08-01T08:40:21.642Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785573621627,
+      "timestamp": "2026-08-01T08:40:21.627Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785572963608,
+      "timestamp": "2026-08-01T08:29:23.608Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/youtube/v3/videos/insert",
+      "status_code": 200,
+      "latency_ms": 320
+    },
+    {
+      "id": 1785572963593,
+      "timestamp": "2026-08-01T08:29:23.593Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785572963545,
+      "timestamp": "2026-08-01T08:29:23.545Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785572963540,
+      "timestamp": "2026-08-01T08:29:23.540Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785572963537,
+      "timestamp": "2026-08-01T08:29:23.537Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785572963533,
+      "timestamp": "2026-08-01T08:29:23.533Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785572963530,
+      "timestamp": "2026-08-01T08:29:23.530Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785572963526,
+      "timestamp": "2026-08-01T08:29:23.526Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785572963512,
+      "timestamp": "2026-08-01T08:29:23.512Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785572963507,
+      "timestamp": "2026-08-01T08:29:23.507Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785572963496,
+      "timestamp": "2026-08-01T08:29:23.496Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785572963459,
+      "timestamp": "2026-08-01T08:29:23.459Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785572963406,
+      "timestamp": "2026-08-01T08:29:23.406Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785572963340,
+      "timestamp": "2026-08-01T08:29:23.340Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/channels/old-couple/sync",
+      "status_code": 200,
+      "latency_ms": 20
+    },
+    {
+      "id": 1785571357069,
+      "timestamp": "2026-08-01T08:02:37.069Z",
+      "service_id": "gemini-api",
+      "endpoint": "/test-connection",
+      "status_code": 200,
+      "latency_ms": 16
+    },
+    {
+      "id": 1785571357060,
+      "timestamp": "2026-08-01T08:02:37.060Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/youtube/v3/videos/insert",
+      "status_code": 200,
+      "latency_ms": 320
+    },
+    {
+      "id": 1785571356999,
+      "timestamp": "2026-08-01T08:02:36.999Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785571356995,
+      "timestamp": "2026-08-01T08:02:36.995Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571356990,
+      "timestamp": "2026-08-01T08:02:36.990Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571356985,
+      "timestamp": "2026-08-01T08:02:36.985Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571356982,
+      "timestamp": "2026-08-01T08:02:36.982Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571356978,
+      "timestamp": "2026-08-01T08:02:36.978Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571356972,
+      "timestamp": "2026-08-01T08:02:36.972Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785571356960,
+      "timestamp": "2026-08-01T08:02:36.960Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571356952,
+      "timestamp": "2026-08-01T08:02:36.952Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/channels/old-couple/sync",
+      "status_code": 200,
+      "latency_ms": 12
+    },
+    {
+      "id": 1785571354044,
+      "timestamp": "2026-08-01T08:02:34.044Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785571351133,
+      "timestamp": "2026-08-01T08:02:31.133Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785571347962,
+      "timestamp": "2026-08-01T08:02:27.962Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/youtube/v3/videos/insert",
+      "status_code": 200,
+      "latency_ms": 320
+    },
+    {
+      "id": 1785571347943,
+      "timestamp": "2026-08-01T08:02:27.943Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785571347855,
+      "timestamp": "2026-08-01T08:02:27.855Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785571347847,
+      "timestamp": "2026-08-01T08:02:27.847Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571347837,
+      "timestamp": "2026-08-01T08:02:27.837Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571347820,
+      "timestamp": "2026-08-01T08:02:27.820Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571347802,
+      "timestamp": "2026-08-01T08:02:27.802Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571347779,
+      "timestamp": "2026-08-01T08:02:27.779Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571347764,
+      "timestamp": "2026-08-01T08:02:27.764Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785571347758,
+      "timestamp": "2026-08-01T08:02:27.758Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571347739,
+      "timestamp": "2026-08-01T08:02:27.739Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785571347661,
+      "timestamp": "2026-08-01T08:02:27.661Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785571347622,
+      "timestamp": "2026-08-01T08:02:27.622Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/youtube/v3/videos/insert",
+      "status_code": 200,
+      "latency_ms": 320
+    },
+    {
+      "id": 1785571347602,
+      "timestamp": "2026-08-01T08:02:27.602Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785571347509,
+      "timestamp": "2026-08-01T08:02:27.509Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785571347500,
+      "timestamp": "2026-08-01T08:02:27.500Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571347492,
+      "timestamp": "2026-08-01T08:02:27.492Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571347486,
+      "timestamp": "2026-08-01T08:02:27.486Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571347478,
+      "timestamp": "2026-08-01T08:02:27.478Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571347470,
+      "timestamp": "2026-08-01T08:02:27.470Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571347462,
+      "timestamp": "2026-08-01T08:02:27.462Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785571347455,
+      "timestamp": "2026-08-01T08:02:27.455Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571347427,
+      "timestamp": "2026-08-01T08:02:27.427Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785571107588,
+      "timestamp": "2026-08-01T07:58:27.588Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/youtube/v3/videos/insert",
+      "status_code": 200,
+      "latency_ms": 320
+    },
+    {
+      "id": 1785571107570,
+      "timestamp": "2026-08-01T07:58:27.570Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785571107514,
+      "timestamp": "2026-08-01T07:58:27.514Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785571107509,
+      "timestamp": "2026-08-01T07:58:27.509Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571107502,
+      "timestamp": "2026-08-01T07:58:27.502Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571107498,
+      "timestamp": "2026-08-01T07:58:27.498Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571107491,
+      "timestamp": "2026-08-01T07:58:27.491Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571107486,
+      "timestamp": "2026-08-01T07:58:27.486Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571107483,
+      "timestamp": "2026-08-01T07:58:27.483Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785571107478,
+      "timestamp": "2026-08-01T07:58:27.478Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571107464,
+      "timestamp": "2026-08-01T07:58:27.464Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785571107424,
+      "timestamp": "2026-08-01T07:58:27.424Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785571107399,
+      "timestamp": "2026-08-01T07:58:27.399Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/youtube/v3/videos/insert",
+      "status_code": 200,
+      "latency_ms": 320
+    },
+    {
+      "id": 1785571107386,
+      "timestamp": "2026-08-01T07:58:27.386Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785571107316,
+      "timestamp": "2026-08-01T07:58:27.316Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785571107311,
+      "timestamp": "2026-08-01T07:58:27.311Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571107307,
+      "timestamp": "2026-08-01T07:58:27.307Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571107301,
+      "timestamp": "2026-08-01T07:58:27.301Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571107297,
+      "timestamp": "2026-08-01T07:58:27.297Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571107291,
+      "timestamp": "2026-08-01T07:58:27.291Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571107282,
+      "timestamp": "2026-08-01T07:58:27.282Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785571107274,
+      "timestamp": "2026-08-01T07:58:27.274Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785571107254,
+      "timestamp": "2026-08-01T07:58:27.254Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785567823944,
+      "timestamp": "2026-08-01T07:03:43.944Z",
+      "service_id": "gemini-api",
+      "endpoint": "/test-connection",
+      "status_code": 200,
+      "latency_ms": 13
+    },
+    {
+      "id": 1785567823938,
+      "timestamp": "2026-08-01T07:03:43.938Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/youtube/v3/videos/insert",
+      "status_code": 200,
+      "latency_ms": 320
+    },
+    {
+      "id": 1785567823884,
+      "timestamp": "2026-08-01T07:03:43.884Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785567823881,
+      "timestamp": "2026-08-01T07:03:43.881Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567823878,
+      "timestamp": "2026-08-01T07:03:43.878Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567823874,
+      "timestamp": "2026-08-01T07:03:43.874Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567823871,
+      "timestamp": "2026-08-01T07:03:43.871Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567823867,
+      "timestamp": "2026-08-01T07:03:43.867Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567823862,
+      "timestamp": "2026-08-01T07:03:43.862Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785567823851,
+      "timestamp": "2026-08-01T07:03:43.851Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567823844,
+      "timestamp": "2026-08-01T07:03:43.844Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/channels/old-couple/sync",
+      "status_code": 200,
+      "latency_ms": 16
+    },
+    {
+      "id": 1785567820797,
+      "timestamp": "2026-08-01T07:03:40.797Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785567817798,
+      "timestamp": "2026-08-01T07:03:37.798Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785567814843,
+      "timestamp": "2026-08-01T07:03:34.843Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/youtube/v3/videos/insert",
+      "status_code": 200,
+      "latency_ms": 320
+    },
+    {
+      "id": 1785567814835,
+      "timestamp": "2026-08-01T07:03:34.835Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785567814806,
+      "timestamp": "2026-08-01T07:03:34.806Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785567814803,
+      "timestamp": "2026-08-01T07:03:34.803Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567814800,
+      "timestamp": "2026-08-01T07:03:34.800Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567814797,
+      "timestamp": "2026-08-01T07:03:34.797Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567814794,
+      "timestamp": "2026-08-01T07:03:34.794Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567814791,
+      "timestamp": "2026-08-01T07:03:34.791Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567814789,
+      "timestamp": "2026-08-01T07:03:34.789Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785567814785,
+      "timestamp": "2026-08-01T07:03:34.785Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567814778,
+      "timestamp": "2026-08-01T07:03:34.778Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785567814756,
+      "timestamp": "2026-08-01T07:03:34.756Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785567814740,
+      "timestamp": "2026-08-01T07:03:34.740Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/youtube/v3/videos/insert",
+      "status_code": 200,
+      "latency_ms": 320
+    },
+    {
+      "id": 1785567814732,
+      "timestamp": "2026-08-01T07:03:34.732Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785567814689,
+      "timestamp": "2026-08-01T07:03:34.689Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785567814686,
+      "timestamp": "2026-08-01T07:03:34.686Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567814684,
+      "timestamp": "2026-08-01T07:03:34.684Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567814681,
+      "timestamp": "2026-08-01T07:03:34.681Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567814679,
+      "timestamp": "2026-08-01T07:03:34.679Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567814676,
+      "timestamp": "2026-08-01T07:03:34.676Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567814673,
+      "timestamp": "2026-08-01T07:03:34.673Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785567814670,
+      "timestamp": "2026-08-01T07:03:34.670Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567814661,
+      "timestamp": "2026-08-01T07:03:34.661Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785567803178,
+      "timestamp": "2026-08-01T07:03:23.178Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/youtube/v3/videos/insert",
+      "status_code": 200,
+      "latency_ms": 320
+    },
+    {
+      "id": 1785567803170,
+      "timestamp": "2026-08-01T07:03:23.170Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785567803136,
+      "timestamp": "2026-08-01T07:03:23.136Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785567803134,
+      "timestamp": "2026-08-01T07:03:23.134Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567803131,
+      "timestamp": "2026-08-01T07:03:23.131Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567803128,
+      "timestamp": "2026-08-01T07:03:23.128Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567803125,
+      "timestamp": "2026-08-01T07:03:23.125Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567803122,
+      "timestamp": "2026-08-01T07:03:23.122Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567803119,
+      "timestamp": "2026-08-01T07:03:23.119Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785567803116,
+      "timestamp": "2026-08-01T07:03:23.116Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567803108,
+      "timestamp": "2026-08-01T07:03:23.108Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785567803082,
+      "timestamp": "2026-08-01T07:03:23.082Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785567803065,
+      "timestamp": "2026-08-01T07:03:23.065Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/youtube/v3/videos/insert",
+      "status_code": 200,
+      "latency_ms": 320
+    },
+    {
+      "id": 1785567803056,
+      "timestamp": "2026-08-01T07:03:23.056Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785567803002,
+      "timestamp": "2026-08-01T07:03:23.002Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785567803000,
+      "timestamp": "2026-08-01T07:03:23.000Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567802997,
+      "timestamp": "2026-08-01T07:03:22.997Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567802995,
+      "timestamp": "2026-08-01T07:03:22.995Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567802991,
+      "timestamp": "2026-08-01T07:03:22.991Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567802989,
+      "timestamp": "2026-08-01T07:03:22.989Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567802986,
+      "timestamp": "2026-08-01T07:03:22.986Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785567802983,
+      "timestamp": "2026-08-01T07:03:22.983Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567802974,
+      "timestamp": "2026-08-01T07:03:22.974Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785567793716,
+      "timestamp": "2026-08-01T07:03:13.716Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/youtube/v3/videos/insert",
+      "status_code": 200,
+      "latency_ms": 320
+    },
+    {
+      "id": 1785567793708,
+      "timestamp": "2026-08-01T07:03:13.708Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785567793660,
+      "timestamp": "2026-08-01T07:03:13.660Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785567793658,
+      "timestamp": "2026-08-01T07:03:13.658Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567793656,
+      "timestamp": "2026-08-01T07:03:13.656Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567793653,
+      "timestamp": "2026-08-01T07:03:13.653Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567793651,
+      "timestamp": "2026-08-01T07:03:13.651Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567793648,
+      "timestamp": "2026-08-01T07:03:13.648Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567793646,
+      "timestamp": "2026-08-01T07:03:13.646Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785567793644,
+      "timestamp": "2026-08-01T07:03:13.644Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785567793636,
+      "timestamp": "2026-08-01T07:03:13.636Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785566628080,
+      "timestamp": "2026-08-01T06:43:48.080Z",
+      "service_id": "gemini-api",
+      "endpoint": "/test-connection",
+      "status_code": 200,
+      "latency_ms": 12
+    },
+    {
+      "id": 1785566628072,
+      "timestamp": "2026-08-01T06:43:48.072Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/youtube/v3/videos/insert",
+      "status_code": 200,
+      "latency_ms": 320
+    },
+    {
+      "id": 1785566627990,
+      "timestamp": "2026-08-01T06:43:47.990Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785566627985,
+      "timestamp": "2026-08-01T06:43:47.985Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785566627980,
+      "timestamp": "2026-08-01T06:43:47.980Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785566627977,
+      "timestamp": "2026-08-01T06:43:47.977Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785566627972,
+      "timestamp": "2026-08-01T06:43:47.972Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785566627968,
+      "timestamp": "2026-08-01T06:43:47.968Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785566627960,
+      "timestamp": "2026-08-01T06:43:47.960Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785566627944,
+      "timestamp": "2026-08-01T06:43:47.944Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785566627934,
+      "timestamp": "2026-08-01T06:43:47.934Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/channels/old-couple/sync",
+      "status_code": 200,
+      "latency_ms": 17
+    },
+    {
+      "id": 1785566623050,
+      "timestamp": "2026-08-01T06:43:43.050Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785566618478,
+      "timestamp": "2026-08-01T06:43:38.478Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785565815323,
+      "timestamp": "2026-08-01T06:30:15.323Z",
+      "service_id": "gemini-api",
+      "endpoint": "/test-connection",
+      "status_code": 200,
+      "latency_ms": 16
+    },
+    {
+      "id": 1785565815316,
+      "timestamp": "2026-08-01T06:30:15.316Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/youtube/v3/videos/insert",
+      "status_code": 200,
+      "latency_ms": 320
+    },
+    {
+      "id": 1785565815249,
+      "timestamp": "2026-08-01T06:30:15.249Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785565815245,
+      "timestamp": "2026-08-01T06:30:15.245Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785565815242,
+      "timestamp": "2026-08-01T06:30:15.242Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785565815235,
+      "timestamp": "2026-08-01T06:30:15.235Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785565815231,
+      "timestamp": "2026-08-01T06:30:15.231Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785565815226,
+      "timestamp": "2026-08-01T06:30:15.226Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785565815221,
+      "timestamp": "2026-08-01T06:30:15.221Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785565815204,
+      "timestamp": "2026-08-01T06:30:15.204Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785565815185,
+      "timestamp": "2026-08-01T06:30:15.185Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/channels/old-couple/sync",
+      "status_code": 200,
+      "latency_ms": 26
+    },
+    {
+      "id": 1785565811861,
+      "timestamp": "2026-08-01T06:30:11.861Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785565794823,
+      "timestamp": "2026-08-01T06:29:54.823Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785565344395,
+      "timestamp": "2026-08-01T06:22:24.395Z",
+      "service_id": "gemini-api",
+      "endpoint": "/test-connection",
+      "status_code": 200,
+      "latency_ms": 13
+    },
+    {
+      "id": 1785565344389,
+      "timestamp": "2026-08-01T06:22:24.389Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/youtube/v3/videos/insert",
+      "status_code": 200,
+      "latency_ms": 320
+    },
+    {
+      "id": 1785565344337,
+      "timestamp": "2026-08-01T06:22:24.337Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-thumbnail",
+      "status_code": 200,
+      "latency_ms": 140
+    },
+    {
+      "id": 1785565344336,
+      "timestamp": "2026-08-01T06:22:24.336Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785565344333,
+      "timestamp": "2026-08-01T06:22:24.333Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785565344331,
+      "timestamp": "2026-08-01T06:22:24.331Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785565344329,
+      "timestamp": "2026-08-01T06:22:24.329Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785565344326,
+      "timestamp": "2026-08-01T06:22:24.327Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785565344323,
+      "timestamp": "2026-08-01T06:22:24.323Z",
+      "service_id": "google-flow-api",
+      "endpoint": "/google-flow/generate-scenes",
+      "status_code": 200,
+      "latency_ms": 180
+    },
+    {
+      "id": 1785565344315,
+      "timestamp": "2026-08-01T06:22:24.315Z",
+      "service_id": "voice-engine",
+      "endpoint": "/google-flow/generate-voice",
+      "status_code": 200,
+      "latency_ms": 120
+    },
+    {
+      "id": 1785565344310,
+      "timestamp": "2026-08-01T06:22:24.310Z",
+      "service_id": "yt-data-api",
+      "endpoint": "/channels/old-couple/sync",
+      "status_code": 200,
+      "latency_ms": 14
+    }
+  ],
+  "character": [
+    {
+      "id": 1785573621833,
+      "timestamp": "2026-08-01T08:40:21.833Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785573621793,
+      "timestamp": "2026-08-01T08:40:21.793Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785573621635,
+      "timestamp": "2026-08-01T08:40:21.635Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785572963502,
+      "timestamp": "2026-08-01T08:29:23.502Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785572963466,
+      "timestamp": "2026-08-01T08:29:23.466Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785572963416,
+      "timestamp": "2026-08-01T08:29:23.416Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785571354050,
+      "timestamp": "2026-08-01T08:02:34.050Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785571351144,
+      "timestamp": "2026-08-01T08:02:31.144Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785571347750,
+      "timestamp": "2026-08-01T08:02:27.750Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785571347671,
+      "timestamp": "2026-08-01T08:02:27.671Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785571347445,
+      "timestamp": "2026-08-01T08:02:27.445Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785571107473,
+      "timestamp": "2026-08-01T07:58:27.473Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785571107433,
+      "timestamp": "2026-08-01T07:58:27.433Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785571107264,
+      "timestamp": "2026-08-01T07:58:27.264Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785567820804,
+      "timestamp": "2026-08-01T07:03:40.804Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785567817804,
+      "timestamp": "2026-08-01T07:03:37.804Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785567814782,
+      "timestamp": "2026-08-01T07:03:34.782Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785567814760,
+      "timestamp": "2026-08-01T07:03:34.760Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785567814666,
+      "timestamp": "2026-08-01T07:03:34.666Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785567803113,
+      "timestamp": "2026-08-01T07:03:23.113Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785567803088,
+      "timestamp": "2026-08-01T07:03:23.088Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785567802980,
+      "timestamp": "2026-08-01T07:03:22.980Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785567793640,
+      "timestamp": "2026-08-01T07:03:13.640Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785566623059,
+      "timestamp": "2026-08-01T06:43:43.059Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785566618602,
+      "timestamp": "2026-08-01T06:43:38.602Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785565811865,
+      "timestamp": "2026-08-01T06:30:11.865Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    },
+    {
+      "id": 1785565794877,
+      "timestamp": "2026-08-01T06:29:54.877Z",
+      "character_id": "char-ramesh",
+      "event": "CONSISTENCY_PIPELINE_COMPLETE",
+      "note": "Consistency Pipeline finished with score 95%. Regenerated: false"
+    }
+  ],
+  "analytics": [],
+  "learning": [
+    {
+      "id": 1785573618808,
+      "timestamp": "2026-08-01T08:40:18.808Z",
+      "action": "24_HOUR_SELF_IMPROVEMENT_CYCLE",
+      "details": "Completed self-improvement cycle. Graph nodes: 3, Patterns: 6",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785572963628,
+      "timestamp": "2026-08-01T08:29:23.628Z",
+      "action": "24_HOUR_SELF_IMPROVEMENT_CYCLE",
+      "details": "Completed self-improvement cycle. Graph nodes: 3, Patterns: 5",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785571343651,
+      "timestamp": "2026-08-01T08:02:23.651Z",
+      "action": "24_HOUR_SELF_IMPROVEMENT_CYCLE",
+      "details": "Completed self-improvement cycle. Graph nodes: 3, Patterns: 5",
+      "status": "SUCCESS"
+    },
+    {
+      "id": 1785571334980,
+      "timestamp": "2026-08-01T08:02:14.980Z",
+      "action": "24_HOUR_SELF_IMPROVEMENT_CYCLE",
+      "details": "Completed self-improvement cycle. Graph nodes: 3, Patterns: 1",
+      "status": "SUCCESS"
+    }
+  ],
+  "[object Object]": [
+    {
+      "id": 1785575824950,
+      "timestamp": "2026-08-01T09:17:04.950Z"
+    },
+    {
+      "id": 1785575824939,
+      "timestamp": "2026-08-01T09:17:04.939Z"
+    },
+    {
+      "id": 1785575824932,
+      "timestamp": "2026-08-01T09:17:04.932Z"
+    },
+    {
+      "id": 1785573615726,
+      "timestamp": "2026-08-01T08:40:15.726Z"
+    },
+    {
+      "id": 1785573615723,
+      "timestamp": "2026-08-01T08:40:15.723Z"
+    },
+    {
+      "id": 1785573615720,
+      "timestamp": "2026-08-01T08:40:15.720Z"
+    }
+  ]
+}

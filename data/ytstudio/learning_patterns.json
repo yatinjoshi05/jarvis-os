@@ -1,0 +1,71 @@
+[
+  {
+    "id": "pattern_1785575824921",
+    "created_at": "2026-08-01T09:17:04.921Z",
+    "pattern_type": "TREND_DISCOVERY",
+    "topic": "Old Teacher Secret Pension Donation",
+    "confidence": 89,
+    "success_rate": 88
+  },
+  {
+    "id": "pattern_1785575824919",
+    "created_at": "2026-08-01T09:17:04.919Z",
+    "pattern_type": "TREND_DISCOVERY",
+    "topic": "Villager Saves Flooded Puppy",
+    "confidence": 96,
+    "success_rate": 93
+  },
+  {
+    "id": "pattern_1785575824918",
+    "created_at": "2026-08-01T09:17:04.918Z",
+    "pattern_type": "TREND_DISCOVERY",
+    "topic": "Grandfather Lost Gold Watch Story",
+    "confidence": 94,
+    "success_rate": 91
+  },
+  {
+    "id": "pattern_1785573618790",
+    "created_at": "2026-08-01T08:40:18.790Z",
+    "pattern_type": "EMOTION_RETENTION",
+    "confidence": 96,
+    "success_rate": 94.2
+  },
+  {
+    "id": "pattern_1785573615706",
+    "created_at": "2026-08-01T08:40:15.706Z",
+    "pattern_type": "TREND_DISCOVERY",
+    "topic": "Old Teacher Secret Pension Donation",
+    "confidence": 89,
+    "success_rate": 88
+  },
+  {
+    "id": "pattern_1785573615705",
+    "created_at": "2026-08-01T08:40:15.705Z",
+    "pattern_type": "TREND_DISCOVERY",
+    "topic": "Villager Saves Flooded Puppy",
+    "confidence": 96,
+    "success_rate": 93
+  },
+  {
+    "id": "pattern_1785573615704",
+    "created_at": "2026-08-01T08:40:15.704Z",
+    "pattern_type": "TREND_DISCOVERY",
+    "topic": "Grandfather Lost Gold Watch Story",
+    "confidence": 94,
+    "success_rate": 91
+  },
+  {
+    "id": "pattern_1785571343622",
+    "created_at": "2026-08-01T08:02:23.622Z",
+    "pattern_type": "EMOTION_RETENTION",
+    "confidence": 96,
+    "success_rate": 94.2
+  },
+  {
+    "id": "pattern_1785571334960",
+    "created_at": "2026-08-01T08:02:14.960Z",
+    "pattern_type": "EMOTION_RETENTION",
+    "confidence": 96,
+    "success_rate": 94.2
+  }
+]

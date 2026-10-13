@@ -1,0 +1,233 @@
+[
+  {
+    "id": "imp_1785573618807",
+    "created_at": "2026-08-01T08:40:18.807Z",
+    "problem_detected": "Generic character introduction",
+    "recommendation": "Inject Ramesh facial anchor in frame 1",
+    "applied": true,
+    "improvement_score": 98
+  },
+  {
+    "id": "imp_1785573618806",
+    "created_at": "2026-08-01T08:40:18.806Z",
+    "problem_detected": "CTR dropped below 7%",
+    "recommendation": "Use high-contrast yellow headline text",
+    "applied": true,
+    "improvement_score": 96
+  },
+  {
+    "id": "imp_1785573618804",
+    "created_at": "2026-08-01T08:40:18.804Z",
+    "problem_detected": "Pacing slowdown at 12s mark",
+    "recommendation": "Trim 1.2s of silent gap in dialogue",
+    "applied": true,
+    "improvement_score": 94
+  },
+  {
+    "id": "imp_1785573618803",
+    "created_at": "2026-08-01T08:40:18.803Z",
+    "source_video": "vid_sample",
+    "problem_detected": "Weak hook or slow intro pacing; Low thumbnail CTR or uninspiring headline",
+    "recommendation": "Inject high-stakes emotional question in first 3 seconds; Use high-contrast facial close-up with bold 3-word headline",
+    "applied": false,
+    "improvement_score": 90
+  },
+  {
+    "id": "imp_1785573618799",
+    "created_at": "2026-08-01T08:40:18.799Z",
+    "problem_detected": "Generic character introduction",
+    "recommendation": "Inject Ramesh facial anchor in frame 1",
+    "applied": true,
+    "improvement_score": 98
+  },
+  {
+    "id": "imp_1785573618798",
+    "created_at": "2026-08-01T08:40:18.798Z",
+    "problem_detected": "CTR dropped below 7%",
+    "recommendation": "Use high-contrast yellow headline text",
+    "applied": true,
+    "improvement_score": 96
+  },
+  {
+    "id": "imp_1785573618796",
+    "created_at": "2026-08-01T08:40:18.796Z",
+    "problem_detected": "Pacing slowdown at 12s mark",
+    "recommendation": "Trim 1.2s of silent gap in dialogue",
+    "applied": true,
+    "improvement_score": 94
+  },
+  {
+    "id": "imp_1785573618793",
+    "created_at": "2026-08-01T08:40:18.793Z",
+    "source_video": "vid_weak_01",
+    "problem_detected": "Weak hook or slow intro pacing; Low thumbnail CTR or uninspiring headline",
+    "recommendation": "Inject high-stakes emotional question in first 3 seconds; Use high-contrast facial close-up with bold 3-word headline",
+    "applied": false,
+    "improvement_score": 90
+  },
+  {
+    "id": "imp_1785572963626",
+    "created_at": "2026-08-01T08:29:23.626Z",
+    "problem_detected": "Generic character introduction",
+    "recommendation": "Inject Ramesh facial anchor in frame 1",
+    "applied": true,
+    "improvement_score": 98
+  },
+  {
+    "id": "imp_1785572963624",
+    "created_at": "2026-08-01T08:29:23.624Z",
+    "problem_detected": "CTR dropped below 7%",
+    "recommendation": "Use high-contrast yellow headline text",
+    "applied": true,
+    "improvement_score": 96
+  },
+  {
+    "id": "imp_1785572963622",
+    "created_at": "2026-08-01T08:29:23.622Z",
+    "problem_detected": "Pacing slowdown at 12s mark",
+    "recommendation": "Trim 1.2s of silent gap in dialogue",
+    "applied": true,
+    "improvement_score": 94
+  },
+  {
+    "id": "imp_1785572963621",
+    "created_at": "2026-08-01T08:29:23.621Z",
+    "source_video": "vid_sample",
+    "problem_detected": "Weak hook or slow intro pacing; Low thumbnail CTR or uninspiring headline",
+    "recommendation": "Inject high-stakes emotional question in first 3 seconds; Use high-contrast facial close-up with bold 3-word headline",
+    "applied": false,
+    "improvement_score": 90
+  },
+  {
+    "id": "imp_1785571343647",
+    "created_at": "2026-08-01T08:02:23.647Z",
+    "problem_detected": "Generic character introduction",
+    "recommendation": "Inject Ramesh facial anchor in frame 1",
+    "applied": true,
+    "improvement_score": 98
+  },
+  {
+    "id": "imp_1785571343644",
+    "created_at": "2026-08-01T08:02:23.644Z",
+    "problem_detected": "CTR dropped below 7%",
+    "recommendation": "Use high-contrast yellow headline text",
+    "applied": true,
+    "improvement_score": 96
+  },
+  {
+    "id": "imp_1785571343642",
+    "created_at": "2026-08-01T08:02:23.642Z",
+    "problem_detected": "Pacing slowdown at 12s mark",
+    "recommendation": "Trim 1.2s of silent gap in dialogue",
+    "applied": true,
+    "improvement_score": 94
+  },
+  {
+    "id": "imp_1785571343638",
+    "created_at": "2026-08-01T08:02:23.638Z",
+    "source_video": "vid_sample",
+    "problem_detected": "Weak hook or slow intro pacing; Low thumbnail CTR or uninspiring headline",
+    "recommendation": "Inject high-stakes emotional question in first 3 seconds; Use high-contrast facial close-up with bold 3-word headline",
+    "applied": false,
+    "improvement_score": 90
+  },
+  {
+    "id": "imp_1785571343633",
+    "created_at": "2026-08-01T08:02:23.633Z",
+    "problem_detected": "Generic character introduction",
+    "recommendation": "Inject Ramesh facial anchor in frame 1",
+    "applied": true,
+    "improvement_score": 98
+  },
+  {
+    "id": "imp_1785571343630",
+    "created_at": "2026-08-01T08:02:23.630Z",
+    "problem_detected": "CTR dropped below 7%",
+    "recommendation": "Use high-contrast yellow headline text",
+    "applied": true,
+    "improvement_score": 96
+  },
+  {
+    "id": "imp_1785571343628",
+    "created_at": "2026-08-01T08:02:23.628Z",
+    "problem_detected": "Pacing slowdown at 12s mark",
+    "recommendation": "Trim 1.2s of silent gap in dialogue",
+    "applied": true,
+    "improvement_score": 94
+  },
+  {
+    "id": "imp_1785571343625",
+    "created_at": "2026-08-01T08:02:23.625Z",
+    "source_video": "vid_weak_01",
+    "problem_detected": "Weak hook or slow intro pacing; Low thumbnail CTR or uninspiring headline",
+    "recommendation": "Inject high-stakes emotional question in first 3 seconds; Use high-contrast facial close-up with bold 3-word headline",
+    "applied": false,
+    "improvement_score": 90
+  },
+  {
+    "id": "imp_1785571334979",
+    "created_at": "2026-08-01T08:02:14.979Z",
+    "problem_detected": "Generic character introduction",
+    "recommendation": "Inject Ramesh facial anchor in frame 1",
+    "applied": true,
+    "improvement_score": 98
+  },
+  {
+    "id": "imp_1785571334977",
+    "created_at": "2026-08-01T08:02:14.977Z",
+    "problem_detected": "CTR dropped below 7%",
+    "recommendation": "Use high-contrast yellow headline text",
+    "applied": true,
+    "improvement_score": 96
+  },
+  {
+    "id": "imp_1785571334976",
+    "created_at": "2026-08-01T08:02:14.976Z",
+    "problem_detected": "Pacing slowdown at 12s mark",
+    "recommendation": "Trim 1.2s of silent gap in dialogue",
+    "applied": true,
+    "improvement_score": 94
+  },
+  {
+    "id": "imp_1785571334974",
+    "created_at": "2026-08-01T08:02:14.974Z",
+    "source_video": "vid_sample",
+    "problem_detected": "Weak hook or slow intro pacing; Low thumbnail CTR or uninspiring headline",
+    "recommendation": "Inject high-stakes emotional question in first 3 seconds; Use high-contrast facial close-up with bold 3-word headline",
+    "applied": false,
+    "improvement_score": 90
+  },
+  {
+    "id": "imp_1785571334970",
+    "created_at": "2026-08-01T08:02:14.970Z",
+    "problem_detected": "Generic character introduction",
+    "recommendation": "Inject Ramesh facial anchor in frame 1",
+    "applied": true,
+    "improvement_score": 98
+  },
+  {
+    "id": "imp_1785571334969",
+    "created_at": "2026-08-01T08:02:14.969Z",
+    "problem_detected": "CTR dropped below 7%",
+    "recommendation": "Use high-contrast yellow headline text",
+    "applied": true,
+    "improvement_score": 96
+  },
+  {
+    "id": "imp_1785571334967",
+    "created_at": "2026-08-01T08:02:14.967Z",
+    "problem_detected": "Pacing slowdown at 12s mark",
+    "recommendation": "Trim 1.2s of silent gap in dialogue",
+    "applied": true,
+    "improvement_score": 94
+  },
+  {
+    "id": "imp_1785571334963",
+    "created_at": "2026-08-01T08:02:14.963Z",
+    "source_video": "vid_weak_01",
+    "problem_detected": "Weak hook or slow intro pacing; Low thumbnail CTR or uninspiring headline",
+    "recommendation": "Inject high-stakes emotional question in first 3 seconds; Use high-contrast facial close-up with bold 3-word headline",
+    "applied": false,
+    "improvement_score": 90
+  }
+]

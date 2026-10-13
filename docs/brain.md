@@ -229,6 +229,16 @@ The local server runs on port 3001 (proxied via `/api` in Vite):
 
 ## 18. Walkthroughs & Walkbacks
 
+### July 2026 — Voice Experience & Visual Presence Sprint
+* **Capability**: Connected the existing globe manager to distinct execution and sleeping states, deterministic error recovery, microphone amplitude, and actual HTML TTS waveform analysis.
+* **Audio/Visual Behavior**: The globe selects smoothed microphone amplitude while listening and smoothed analyser data from ElevenLabs/OpenAI HTML audio while speaking. `SpeechAudioReactivity` owns a single analyser lifecycle, detaches completed audio elements, and does not synthesize random voice motion. Browser speech retains state-driven speaking feedback because browser speech synthesis exposes no output waveform.
+* **State Behavior**: `EXECUTING` drives a progress animation, `MUTED` drives low-energy sleep, and error is a calm deterministic pulse which exits when `VoiceStateMachine` recovers. Existing queueing, fade controls, and barge-in interruption remain in place.
+
+### July 2026 — JARVIS Behavior Engine Sprint 1
+* **Capability**: Added `BehaviorEngine.ts` as a pre-provider and response/speech policy layer without replacing the AI router, memory, voice, or agent systems.
+* **Runtime Behavior**: Detects greeting, command, quick question, knowledge, conversation, planning, creative, coding, error recovery, system status, automation, and confirmation intent; applies the persisted persona and verbosity settings; adds truthful action-language requirements; limits concise responses; and removes Markdown, code formatting, emoji, list markers, and repeated punctuation before every TTS request.
+* **Integration**: `AIResponseManager` supplies behavior policy in existing provider context and formats streamed/final responses; `TextToSpeechManager` sanitizes all queued speech; errors now use calm evidence-based wording.
+
 ### July 2026 — ElevenLabs Speech Pipeline Debug & Fix
 * **Capability**: Debugged complete ElevenLabs TTS pipeline, resolved API free-tier library voice restrictions, fixed `VoiceSettings.ts` localStorage casing bug, added step-by-step telemetry logs, and verified real audio stream generation.
 * **Key Fixes & Features**:
@@ -237,6 +247,11 @@ The local server runs on port 3001 (proxied via `/api` in Vite):
   - **Step-by-Step Telemetry Logs**: Added 9 pipeline step logs in `ElevenLabsProvider.ts`.
   - **Auto-Fallback for 402 Errors**: If a library voice returns 402 on ElevenLabs, `ElevenLabsProvider` automatically retries with Adam (`pNInz6obpgDQGcFmaJgB`) before falling back to browser synthesis.
 * **Verification**: Verified via `test-elevenlabs-speech.ts` (100% passed, 47KB MP3 received, playback started) and `tsc --noEmit` (0 errors).
+
+### July 2026 — Gemini/NVIDIA Backend URL Resolution Fix
+* **Root Cause**: `getBackendApiUrl()` returned a relative `/api/...` path while running on Vite (`localhost:3000`). Browser requests therefore resolved to the frontend origin instead of the Express proxy, causing `/api/chat/gemini`, `/api/chat/nvidia`, and `/api/models/nvidia` 404s when Vite proxying was unavailable.
+* **Fix**: `getBackendApiUrl()` now always returns the absolute backend URL (`VITE_BACKEND_API_URL` when configured, otherwise `http://localhost:3001`). `GeminiProvider` and `NvidiaProvider` use it for every chat, stream, error-mapping, and NVIDIA models-health request.
+* **Backend Coverage**: Existing Express routes `POST /api/chat/gemini`, `POST /api/chat/nvidia`, and `GET /api/models/nvidia` forward requests with server-side provider keys; no new backend routes were required.
 
 ### July 2026 — Voice Pipeline & Startup Stability Resolutions
 * **Capability**: Resolved six critical stability issues across TTS synthesis, provider health routing, Telemetry Advisor re-render loop, Ollama health check spam, WebGL context loss, and startup application hangs.
@@ -546,7 +561,4 @@ A disciplined, 8-phase clean-slate rebuild was executed to construct `JarvisGlob
 - **Memory Footprint**: 0 per-frame array allocations ($0$ GC overhead).
 - **TypeScript & Build Check**: `npx tsc --noEmit` passed with 0 errors.
 - **Visual Capture Verification**: Verified via browser subagent screenshot (`quantum_globe_clean_1784918377245.png`) — 100% unclipped, 95%+ visual match to reference specification, 13/13 Visual Acceptance Checklist items satisfied.
-
-
-
 

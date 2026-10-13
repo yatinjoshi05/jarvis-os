@@ -8,6 +8,7 @@ import { capabilityManager } from './CapabilityManager';
 import { agentLogger } from './AgentLogger';
 import { autonomySafetyManager } from './safety/AutonomySafetyManager';
 import { selfUpdateManager } from './safety/SelfUpdateManager';
+import { agentHubRegistry } from './AgentHubRegistry';
 
 // Import initial agent implementations
 import { FinancialAgent } from './impl/FinancialAgent';
@@ -22,7 +23,6 @@ import { WhatsAppAgent } from './impl/WhatsAppAgent';
 import { KnowledgeAgent } from './impl/KnowledgeAgent';
 import { DocumentAgent } from './impl/DocumentAgent';
 import { TerminalAgent } from './impl/TerminalAgent';
-import { CRMAgent } from './impl/CRMAgent';
 import { TradingAgent } from './impl/TradingAgent';
 import { MetaAgent } from './impl/MetaAgent';
 import { SupervisorAgent } from './impl/SupervisorAgent';
@@ -56,7 +56,6 @@ export class AgentManager {
     this.registerAgent(new KnowledgeAgent());
     this.registerAgent(new DocumentAgent());
     this.registerAgent(new TerminalAgent());
-    this.registerAgent(new CRMAgent());
     this.registerAgent(new TradingAgent());
     this.registerAgent(new MetaAgent());
     this.registerAgent(new SupervisorAgent());
@@ -66,6 +65,9 @@ export class AgentManager {
   // Public coordinator APIs
   public registerAgent(agent: AbstractBaseAgent) {
     this.registry.register(agent);
+    // The Agent Hub is the durable management source of truth. Registering a
+    // runtime agent here keeps future implementations visible without UI work.
+    agentHubRegistry.registerRuntimeAgent(agent);
   }
 
   public unregisterAgent(agentId: string) {

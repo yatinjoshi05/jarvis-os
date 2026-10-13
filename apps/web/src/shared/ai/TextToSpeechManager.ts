@@ -6,6 +6,8 @@ import { VOICE_CONFIG } from './config';
 import { speechQueue } from './SpeechQueue';
 import { aiLogger, latencyTracker } from './Logger';
 import { elevenLabsProvider } from './ElevenLabsProvider';
+import { behaviorEngine } from './BehaviorEngine';
+import { speechAudioReactivity } from '../audio/SpeechAudioReactivity';
 
 const SPEECH_START_TIMEOUT_MS = 1200;
 
@@ -33,7 +35,7 @@ class TextToSpeechManager {
 
   addSentence(sentence: string, priority: 'HIGH' | 'NORMAL' | 'LOW' = 'NORMAL') {
     if (this.cancelled) return;
-    const trimmed = sentence.trim();
+    const trimmed = behaviorEngine.formatForSpeech(sentence);
     if (!trimmed) return;
     
     speechQueue.enqueue(trimmed, priority);
@@ -62,6 +64,7 @@ class TextToSpeechManager {
     // Stop external TTS audio playback
     if (this.currentAudioElement) {
       try {
+        speechAudioReactivity.detach(this.currentAudioElement);
         this.currentAudioElement.pause();
         this.currentAudioElement = null;
       } catch (_) { /* ignore */ }
@@ -281,6 +284,7 @@ class TextToSpeechManager {
       const cleanup = () => {
         audio.onended = null;
         audio.onerror = null;
+        speechAudioReactivity.detach(audio);
         URL.revokeObjectURL(url);
         if (this.currentAudioElement === audio) {
           this.currentAudioElement = null;
@@ -296,6 +300,7 @@ class TextToSpeechManager {
       };
 
       audio.play().then(() => {
+        speechAudioReactivity.attach(audio);
         aiLogger.info('LatencyMetrics', `TTS start / Total time (elapsed: ${latencyTracker.getElapsed()}ms)`);
       }).catch((err) => {
         console.error('[JARVIS TTS] Audio play failed:', err);

@@ -1,11 +1,13 @@
 import { financialManager } from '../entities/financial';
-import { crmManager } from '../entities/crm';
 import { automationManager } from '../entities/automation';
 import { browserAgentManager } from '../entities/browser';
 import { codingAgentManager } from '../entities/coding';
 import { audioManager } from '../shared/audio';
 import { MemoryCompression } from '../shared/memory/MemoryCompression';
 import { aiRouter } from '../shared/ai/AIRouter';
+import { agentHubRegistry } from '../shared/agents/AgentHubRegistry';
+import { agentManager } from '../shared/agents/AgentManager';
+import { agentRuntime } from '../shared/agents/AgentRuntime';
 
 /**
  * Bootstraps and registers core domain entities.
@@ -13,9 +15,13 @@ import { aiRouter } from '../shared/ai/AIRouter';
  * and starts the Ambient Audio Engine lifecycle.
  */
 export function bootstrap() {
+  // Runs after the storage shim is ready, so imported agents and hub settings
+  // are restored into the same durable store as the rest of the application.
+  agentHubRegistry.rehydrate();
+  void agentManager;
+  void agentRuntime.restore();
   const instances = {
     financialManager,
-    crmManager,
     automationManager,
     browserAgentManager,
     codingAgentManager,

@@ -1,0 +1,208 @@
+@import '../../widgets/workspace/ui/mission-workspace.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --jarvis-accent-color: #00FFCC;
+  --jarvis-accent-rgb: 0, 255, 204;
+  --jarvis-font-family: 'JetBrains Mono', monospace;
+  --jarvis-base-text-scale: 1;
+  --jarvis-zoom-scale: 1;
+
+  --jarvis-scale-sidebar: 1;
+  --jarvis-scale-title: 1;
+  --jarvis-scale-body: 1;
+  --jarvis-scale-chart: 1;
+  --jarvis-scale-button: 1;
+  --jarvis-scale-chat: 1;
+
+  --jarvis-bg-main: #090d16;
+  --jarvis-bg-card: #0d1322;
+  --jarvis-border-color: rgba(255, 255, 255, 0.1);
+}
+
+.theme-cyber_dark {
+  --jarvis-bg-main: #090d16;
+  --jarvis-bg-card: #0d1322;
+  --jarvis-border-color: rgba(255, 255, 255, 0.1);
+}
+
+.theme-midnight_blue {
+  --jarvis-bg-main: #061126;
+  --jarvis-bg-card: #0a1a3a;
+  --jarvis-border-color: rgba(0, 223, 255, 0.15);
+}
+
+.theme-oled_black {
+  --jarvis-bg-main: #000000;
+  --jarvis-bg-card: #050505;
+  --jarvis-border-color: rgba(255, 255, 255, 0.08);
+}
+
+.theme-synthwave {
+  --jarvis-bg-main: #130424;
+  --jarvis-bg-card: #1f083a;
+  --jarvis-border-color: rgba(255, 0, 255, 0.2);
+}
+
+html {
+  font-size: calc(16px * var(--jarvis-base-text-scale, 1));
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--jarvis-bg-main, #090d16);
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--jarvis-bg-main, #090d16);
+  font-family: var(--jarvis-font-family, 'JetBrains Mono', monospace) !important;
+  transition: background-color 0.3s ease;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--jarvis-bg-main, #090d16);
+  font-family: var(--jarvis-font-family, 'JetBrains Mono', monospace) !important;
+  zoom: var(--jarvis-zoom-scale, 1);
+  transition: background-color 0.3s ease;
+}
+
+/* Force global font family cascade over hardcoded Tailwind utility classes */
+body, #root, .font-mono, .font-sans, button, input, select, textarea {
+  font-family: var(--jarvis-font-family, 'JetBrains Mono', monospace) !important;
+}
+
+/* Layer 4 Typography Category Scale Rules */
+.text-cat-sidebar, nav button, nav a {
+  font-size: calc(1em * var(--jarvis-scale-sidebar, 1));
+}
+
+.text-cat-title, h1, h2, h3 {
+  font-size: calc(1em * var(--jarvis-scale-title, 1));
+}
+
+.text-cat-body, p {
+  font-size: calc(1em * var(--jarvis-scale-body, 1));
+}
+
+.text-cat-chart, .ticker-text {
+  font-size: calc(1em * var(--jarvis-scale-chart, 1));
+}
+
+.text-cat-button, button:not(nav *) {
+  font-size: calc(1em * var(--jarvis-scale-button, 1));
+}
+
+.text-cat-chat, .chat-message {
+  font-size: calc(1em * var(--jarvis-scale-chat, 1));
+}
+
+/* Dynamic Theme Accent Utilities */
+.jarvis-accent-color, .text-accent { color: var(--jarvis-accent-color) !important; }
+.jarvis-accent-bg, .bg-accent { background-color: var(--jarvis-accent-color) !important; }
+.jarvis-accent-border, .border-accent { border-color: var(--jarvis-accent-color) !important; }
+
+/* Hide scrollbar but keep scrolling */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Keep all Agent Hub surfaces scrollable without exposing platform scrollbars. */
+.agent-hub,
+.agent-hub * {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.agent-hub::-webkit-scrollbar,
+.agent-hub *::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* Keep all Terminal surfaces scrollable without exposing platform scrollbars. */
+.terminal-module,
+.terminal-module * {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.terminal-module::-webkit-scrollbar,
+.terminal-module *::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* Agent Hub summary: explicit grid prevents workspace layout rules from stacking cards. */
+.agent-hub-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+/* Futuristic YT Studio Custom Scrollbar */
+.yt-studio-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.yt-studio-scrollbar::-webkit-scrollbar-track {
+  background: #030509;
+  border-radius: 9999px;
+}
+.yt-studio-scrollbar::-webkit-scrollbar-thumb {
+  background: #1E293B;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+}
+.yt-studio-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #DC2626;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+}
+
+/* Agent Hub shares the Home dashboard's neutral black glass surfaces. */
+.agent-hub [class~="bg-[#07101d]"],
+.agent-hub [class~="bg-[#080c14]"],
+.agent-hub [class~="bg-[#05080f]"],
+.agent-hub [class~="bg-[#09111f]"] {
+  background-color: #070707 !important;
+}
+
+.agent-hub [class~="bg-[#0b1423]"] {
+  background-color: #090909 !important;
+}
+
+.agent-hub [class~="border-white/10"] {
+  border-color: rgb(255 255 255 / 0.06) !important;
+}
+
+/* Keep the pagination divider in normal document flow beneath the agent grid. */
+.agent-hub main > div > footer {
+  border-top: 1px solid rgb(255 255 255 / 0.06);
+  padding-top: 0.75rem;
+}
+
+/* These panels retain wheel/trackpad scrolling while their scrollbars stay hidden above. */
+.agent-hub aside > section {
+  max-height: 50vh;
+  overflow-y: auto;
+}

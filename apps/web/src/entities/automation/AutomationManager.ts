@@ -23,7 +23,6 @@ import { notificationManager } from '../../shared/dashboard';
 import { serviceRegistry } from '../../shared/providers';
 
 // CRM & Financial OS Events Integrations
-import { crmEventEmitter, CRMEvents } from '../crm';
 import { financialEventEmitter, FinancialEntityEvents } from '../financial';
 
 export class AutomationManager {
@@ -38,7 +37,6 @@ export class AutomationManager {
     backgroundWorker.setRunner((job) => this.runJobPayload(job));
     backgroundWorker.start();
 
-    this.hookCRMEvents();
     this.hookFinancialEvents();
     this.startCronLoop();
 
@@ -120,24 +118,7 @@ export class AutomationManager {
     ).catch(() => {});
   }
 
-  // ─── CRM & FINANCIAL OS HOOKS ──────────────────────────────
-
-  private hookCRMEvents() {
-    crmEventEmitter.on(CRMEvents.LEAD_CREATED, (lead: any) => {
-      this.log('event', `CRM event: LEAD_CREATED for ${lead.name}`);
-      this.evaluateEventTriggers(CRMEvents.LEAD_CREATED, { lead });
-    });
-
-    crmEventEmitter.on(CRMEvents.LEAD_ASSIGNED, (data: any) => {
-      this.log('event', `CRM event: LEAD_ASSIGNED to owner ${data.ownerId}`);
-      this.evaluateEventTriggers(CRMEvents.LEAD_ASSIGNED, data);
-    });
-
-    crmEventEmitter.on(CRMEvents.TASK_COMPLETED, (task: any) => {
-      this.log('event', `CRM event: TASK_COMPLETED for task "${task.title}"`);
-      this.evaluateEventTriggers(CRMEvents.TASK_COMPLETED, { task });
-    });
-  }
+  // ─── FINANCIAL OS HOOKS ──────────────────────────────
 
   private hookFinancialEvents() {
     financialEventEmitter.on(FinancialEntityEvents.ENTRY_POSTED, (data: any) => {

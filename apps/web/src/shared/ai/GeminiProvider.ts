@@ -1,5 +1,5 @@
 import { AIProvider, ProviderRequestOptions } from "./AIProvider";
-import { AI_CONFIG } from "./config";
+import { AI_CONFIG, getBackendApiUrl } from "./config";
 import { retryManager } from "./RetryManager";
 import { ErrorManager } from "./ErrorManager";
 import { identitySettings } from "./IdentitySettings";
@@ -10,6 +10,10 @@ export class GeminiProvider implements AIProvider {
 
   constructor() {
     this.status = 'online';
+  }
+
+  private getApiUrl(): string {
+    return getBackendApiUrl('/api/chat/gemini');
   }
 
   private resolveModel(options?: ProviderRequestOptions): string {
@@ -46,7 +50,7 @@ export class GeminiProvider implements AIProvider {
 
     try {
       return await retryManager.execute(async () => {
-        const response = await fetch('/api/chat/gemini', {
+        const response = await fetch(this.getApiUrl(), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -70,7 +74,7 @@ export class GeminiProvider implements AIProvider {
         return text;
       });
     } catch (error) {
-      throw ErrorManager.mapProviderError('GeminiProvider', error, '/api/chat/gemini');
+      throw ErrorManager.mapProviderError('GeminiProvider', error, this.getApiUrl());
     }
   }
 
@@ -85,7 +89,7 @@ export class GeminiProvider implements AIProvider {
 
     try {
       await retryManager.execute(async () => {
-        const response = await fetch('/api/chat/gemini', {
+        const response = await fetch(this.getApiUrl(), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -129,7 +133,7 @@ export class GeminiProvider implements AIProvider {
         }
       });
     } catch (error) {
-      throw ErrorManager.mapProviderError('GeminiProvider', error, '/api/chat/gemini');
+      throw ErrorManager.mapProviderError('GeminiProvider', error, this.getApiUrl());
     }
   }
 
@@ -142,7 +146,7 @@ export class GeminiProvider implements AIProvider {
 
   async healthCheck(): Promise<boolean> {
     try {
-      const response = await fetch('/api/chat/gemini', {
+      const response = await fetch(this.getApiUrl(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

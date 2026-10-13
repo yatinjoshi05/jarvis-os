@@ -1,0 +1,1 @@
+export class ContextEngine { async build({ conversation, selectedAgent = null, runtime = {}, preferences = {}, memoryReferences = [], activeTasks = [] }) { return { conversation, selectedAgent, runtime, preferences, memoryReferences, activeTasks, generatedAt: new Date().toISOString() }; } }

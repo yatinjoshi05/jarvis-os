@@ -1,11 +1,15 @@
-export { QuantumGlobe, default as JarvisGlobe } from './ui/QuantumGlobe'
-export { CoreLayer } from './ui/CoreLayer'
-export { SurfaceParticleLayer } from './ui/SurfaceParticleLayer'
-export { EdgeRimLayer } from './ui/EdgeRimLayer'
-export { FloatingOrbitLayer } from './ui/FloatingOrbitLayer'
-export { DustLayer } from './ui/DustLayer'
-export { GlowLayer } from './ui/GlowLayer'
-export { LightingLayer } from './ui/LightingLayer'
-export { globeStateController, GlobeStateController } from './model/GlobeStateController'
-export { DEFAULT_GLOBE_CONFIG as globeConfig } from './config/globe.config'
-export * from './types/globe.types'
+export { QuantumGlobe, default as JarvisGlobe } from './ui/QuantumGlobe';
+export { QuantumGlobeCanvas } from '../../shared/graphics/Globe/QuantumGlobeCanvas';
+
+export * from './model/GlobeTypes';
+export { GlobeStateManager, globeStateManager } from './model/GlobeStateManager';
+export { MoodManager, moodManager } from './model/MoodManager';
+export { AudioAnalyzer, audioAnalyzer } from './model/AudioAnalyzer';
+export { MusicAnalyzer, musicAnalyzer } from './model/MusicAnalyzer';
+export { TransitionController, transitionController } from './model/TransitionController';
+export { ParameterInterpolator, parameterInterpolator } from './model/ParameterInterpolator';
+export { DebugController, debugController } from './model/DebugController';
+export { QuantumGlobeEngine, quantumGlobeEngine } from './model/QuantumGlobeEngine';
+export { useQuantumGlobeEngine } from './model/useQuantumGlobeEngine';
+export { GlobeDebugPanel } from './ui/GlobeDebugPanel';
+export { GlobeStatusButton } from './ui/GlobeStatusButton';

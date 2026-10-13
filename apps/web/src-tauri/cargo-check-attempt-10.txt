@@ -1,0 +1,7 @@
+﻿cargo :     Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.23s
+At D:\jarvis\apps\web\src-tauri\test_launches.ps1:8 char:15
++     $output = cargo check 2>&1
++               ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (    Finished `d...get(s) in 1.23s:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

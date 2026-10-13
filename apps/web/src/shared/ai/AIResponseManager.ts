@@ -10,6 +10,7 @@ import { systemControl } from './SystemControl';
 import { agentOrchestrator } from '../agents/AgentOrchestrator';
 import { MemoryContextBuilder } from '../memory/MemoryContextBuilder';
 import { notificationManager } from '../dashboard/notification';
+import { behaviorEngine } from './BehaviorEngine';
 
 function splitIntoSentences(text: string): string[] {
   const sentences: string[] = [];
@@ -68,6 +69,7 @@ class AIResponseManager {
     assistantState.streamingResponse = '';
 
     // System Control is a first-class, named-command category.
+    voiceStateMachine.transitionTo('EXECUTING');
     const systemResult = await systemControl.tryExecute(prompt);
     if (systemResult.handled) {
       if (systemResult.error) {
@@ -90,6 +92,8 @@ class AIResponseManager {
 
     // Dynamically retrieve contextual AI memory representation
     const memoryContext = await MemoryContextBuilder.buildContext(prompt);
+    const behavior = behaviorEngine.decide(prompt);
+    const behaviorContext = [memoryContext, behavior.instructions].filter(Boolean).join('\n\n');
 
     const MAX_HISTORY_TOKENS = 2000;
     const rawHistory = conversationManager.history.filter(m => m.role !== 'system');
@@ -105,13 +109,14 @@ class AIResponseManager {
     const responsePromise = aiRouter.generateResponse(
       prompt,
       (accumulatedText) => {
-        assistantState.streamingResponse = accumulatedText;
+        const formattedText = behaviorEngine.formatResponse(accumulatedText, behavior);
+        assistantState.streamingResponse = formattedText;
 
         if (voiceStateMachine.state === 'THINKING') {
           voiceStateMachine.transitionTo('STREAMING');
         }
 
-        const sentences = splitIntoSentences(accumulatedText);
+        const sentences = splitIntoSentences(formattedText);
         if (isFirstSentence && sentences.length > 0) {
           isFirstSentence = false;
           aiLogger.info('LatencyMetrics', `First sentence complete: "${sentences[0]}" (elapsed: ${latencyTracker.getElapsed()}ms)`);
@@ -129,7 +134,7 @@ class AIResponseManager {
         }
       },
       {
-        context: memoryContext,
+        context: behaviorContext,
         history: trimmedHistory,
       }
     );
@@ -145,7 +150,8 @@ class AIResponseManager {
       const speakPromise = textToSpeechManager.startQueue();
 
       // Race response against safety timeout
-      const fullResponse = await Promise.race([responsePromise, timeoutPromise]);
+      const providerResponse = await Promise.race([responsePromise, timeoutPromise]);
+      const fullResponse = behaviorEngine.formatResponse(providerResponse, behavior);
 
       conversationManager.addAssistant(fullResponse);
       assistantState.streamingResponse = '';
@@ -178,7 +184,7 @@ class AIResponseManager {
       conversationManager.removeLatestUserMessage();
       assistantState.streamingResponse = '';
 
-      const friendlyMessage = 'No AI provider is currently available.';
+      const friendlyMessage = behaviorEngine.formatError(error);
       assistantState.setError(friendlyMessage);
       notificationManager.showNotification('error', 'AI Unavailable', friendlyMessage);
 

@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "skills": {
+    "3d-modeling": {
+      "source": "omer-metin/skills-for-antigravity",
+      "sourceType": "github",
+      "skillPath": "skills/3d-modeling/SKILL.md",
+      "computedHash": "dd0beea41a5f5711c6a8b209bb2218340ab7afabe26147eb1560e4d26d65f7c5"
+    },
+    "agent-browser": {
+      "source": "vercel-labs/agent-browser",
+      "sourceType": "github",
+      "skillPath": "skills/agent-browser/SKILL.md",
+      "computedHash": "ecc7641aea05f85ca3b11e7759d32aaf52fe05946ab4b63739c7bf78a41237a2"
+    },
+    "ai-video-generation": {
+      "source": "101-skills/skills",
+      "sourceType": "github",
+      "skillPath": "tools/video/ai-video-generation/SKILL.md",
+      "computedHash": "4b3676be1595da7a745804e01cdaa9b89ef1b4ac4db50120f37f240124d0ed67"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "93f53fd1c0352d3d7ec17b8f73d7351bf76f4821e55d123c9d2abc2c53ba48e4"
+    },
+    "huashu-design": {
+      "source": "alchaincyf/huashu-design",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "73bff3eabe7fe30abbc7b3d7399a35b1b2b0a41bb9bd4bed8a8bc7f68b0e4cd3"
+    },
+    "hyperframes": {
+      "source": "heygen-com/hyperframes",
+      "sourceType": "github",
+      "skillPath": "skills/hyperframes/SKILL.md",
+      "computedHash": "6cff4ef2b582b81b340704b2849833c1856a89103c7611630c772aa29feebc6a"
+    },
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/impeccable/SKILL.md",
+      "computedHash": "d4f0d4ff9f1ebfd86fd3cdde3caf7b73234f2281e5bbeb2d4eb905b274ae7208"
+    },
+    "playwright-cli": {
+      "source": "microsoft/playwright-cli",
+      "sourceType": "github",
+      "skillPath": "skills/playwright-cli/SKILL.md",
+      "computedHash": "39d67000951a05e8ab3c0e802a2dd55d8d6cb51239b30824c0e3b6c070b7d88f"
+    },
+    "taste-design": {
+      "source": "google-labs-code/stitch-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/stitch-utilities/skills/taste-design/SKILL.md",
+      "computedHash": "3772ea408777070865890e10d693118baa1e1de14ee5bacdf6ab46fdea7359bb"
+    },
+    "ui-ux-pro-max": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/ui-ux-pro-max/SKILL.md",
+      "computedHash": "90739ddf380aa66d4fff7ba7767a0a6537a1e8287e5c5c408676e0a9e6b2c21d"
+    }
+  }
+}

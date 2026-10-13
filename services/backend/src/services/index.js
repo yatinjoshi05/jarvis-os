@@ -1,0 +1,13 @@
+export { BrainService } from './BrainService.js';
+export { MemoryService, memoryService } from './MemoryService.js';
+export { SearchService } from './SearchService.js';
+export { DesktopService } from './DesktopService.js';
+export { FileService } from './FileService.js';
+export { WindowService, windowService } from './WindowService.js';
+export { MediaService } from './MediaService.js';
+export { AutomationService, automationService } from './AutomationService.js';
+export { VoiceService } from './VoiceService.js';
+export { SettingsService } from './SettingsService.js';
+export { NotificationService } from './NotificationService.js';
+export { HealthService } from './HealthService.js';
+export { PluginService, pluginService } from './PluginService.js';

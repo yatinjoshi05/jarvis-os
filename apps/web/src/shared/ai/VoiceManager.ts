@@ -20,9 +20,13 @@ class VoiceManager {
 
     speechRecognitionManager.subscribe((event) => {
       if (event.type === 'silence_timeout') {
-        console.info('[VoiceManager] No speech detected during an active recognition session.');
-        aiEventEmitter.emit('voice:silence_timeout');
-        this.stopListening();
+        // Passive IDLE recognition is the wake-word listener. It must remain
+        // active through silence; only an active user-command session times out.
+        if (voiceStateMachine.state === 'LISTENING') {
+          console.info('[VoiceManager] No speech detected during an active recognition session.');
+          aiEventEmitter.emit('voice:silence_timeout');
+          this.stopListening();
+        }
       } else if (event.type === 'start') {
         aiEventEmitter.emit(AIEvents.AI_REQUEST_STARTED);
       } else if (event.type === 'error') {

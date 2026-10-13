@@ -9,9 +9,11 @@ import {
   AtmosphericParticleShader,
 } from './QuantumGlobeShader';
 import { QuantumGlobeBackground } from './QuantumGlobeBackground';
+import { quantumGlobeEngine } from '../../../entities/globe/model/QuantumGlobeEngine';
 
 // ─── Structured Latitude/Longitude Digital Lattice Generator ─────────────────
-function gridSphere(ringsCount: number, radius: number, pointsPerCircumference: number = 240) {
+// Creates an organized, woven grid of flowing parallel latitude rings without pole pinching.
+function gridSphere(ringsCount: number, radius: number) {
   const positions: number[] = [];
 
   for (let i = 0; i < ringsCount; i++) {
@@ -20,7 +22,8 @@ function gridSphere(ringsCount: number, radius: number, pointsPerCircumference: 
     const cosPhi = Math.cos(phi);
     const y = Math.sin(phi) * radius;
 
-    const pointsInRing = Math.max(8, Math.round(pointsPerCircumference * cosPhi));
+    // Number of points in this latitude ring proportional to circumference (cosPhi)
+    const pointsInRing = Math.max(8, Math.round(240 * cosPhi));
     for (let j = 0; j < pointsInRing; j++) {
       const u = j / pointsInRing;
       const theta = u * Math.PI * 2;
@@ -42,13 +45,11 @@ interface PointCloudProps {
 }
 
 function PointCloud({ positions, shader }: PointCloudProps) {
-  const count = positions.length / 3;
-
   return (
     <points>
       <bufferGeometry>
-        <bufferAttribute attach="attributes-position"      array={positions} count={count} itemSize={3} />
-        <bufferAttribute attach="attributes-aBasePosition" array={positions} count={count} itemSize={3} />
+        <bufferAttribute attach="attributes-position"      array={positions} count={positions.length / 3} itemSize={3} />
+        <bufferAttribute attach="attributes-aBasePosition" array={positions} count={positions.length / 3} itemSize={3} />
       </bufferGeometry>
       <shaderMaterial
         args={[shader]}
@@ -60,39 +61,37 @@ function PointCloud({ positions, shader }: PointCloudProps) {
   );
 }
 
-// ─── Layer 1: Surface Lattice Particles (42,000 Points) ───────────────────────
+// ─── Layer 1: Surface Lattice Particles ───────────────────────────────────────
 function SurfaceParticles() {
   const R = 1.15;
-  // ringsCount = 270, pointsPerCircumference = 480 yields ~42,000 surface points
-  const data = useMemo(() => gridSphere(270, R, 480), []);
+  const data = useMemo(() => gridSphere(140, R), []);
   return <PointCloud positions={data.positions} shader={SurfaceParticleShader} />;
 }
 
-// ─── Layer 2: Inner Sparse Lattice Particles (7,000 Points) ───────────────────
+// ─── Layer 2: Inner Sparse Lattice Particles ─────────────────────────────────
 function InnerParticles() {
   const R = 0.82;
-  // ringsCount = 110, pointsPerCircumference = 200 yields ~7,000 interior points
-  const data = useMemo(() => gridSphere(110, R, 200), []);
+  const data = useMemo(() => gridSphere(50, R), []);
   return <PointCloud positions={data.positions} shader={InnerParticleShader} />;
 }
 
-// ─── Layer 3: Rim Corona Particles (+25% Density = ~17,500 Points) ───────────
+// ─── Layer 3: Rim Lattice Particles ──────────────────────────────────────────
 function RimParticles() {
   const R = 1.16;
-  const data = useMemo(() => gridSphere(115, R, 240), []);
+  const data = useMemo(() => gridSphere(90, R), []);
   return <PointCloud positions={data.positions} shader={RimParticleShader} />;
 }
 
-// ─── Layer 4: Detached Atmospheric Satellites (450 Points, r: 1.08R - 1.18R) ──
+// ─── Layer 4: Detached Atmospheric Particles (Sparse, 2,000 Nodes, r: 1.03 - 1.12) ────
 function AtmosphericParticles() {
-  const N = 450; // Locked Atmosphere Particle Target
+  const N = 2000;
   const data = useMemo(() => {
     const pos = new Float32Array(N * 3);
     const phi = Math.PI * (3 - Math.sqrt(5));
 
     for (let i = 0; i < N; i++) {
-      // Radius range: 1.08R to 1.18R of base sphere (R = 1.15 -> 1.24 to 1.35)
-      const shellR = 1.15 * (1.08 + (i % 10) * 0.010);
+      // Radius range: 1.03 to 1.12 of base sphere (r: 1.15)
+      const shellR = 1.15 * (1.03 + (i % 10) * 0.009);
       const y  = 1 - ((i + 0.5) / N) * 2;
       const r  = Math.sqrt(Math.max(0, 1 - y * y));
       const θ  = phi * i;
@@ -125,13 +124,37 @@ function FPSMonitor({ onFpsUpdate }: { onFpsUpdate: (fps: number) => void }) {
   return null;
 }
 
-// ─── Surface Dynamics Frame Animation Controller ────────────────────────────
-function SurfaceDynamicsController() {
-  useFrame(({ clock }) => {
-    const elapsedTime = clock.getElapsedTime();
-    SurfaceParticleShader.uniforms.uTime.value = elapsedTime;
-    RimParticleShader.uniforms.uTime.value = elapsedTime;
-    AtmosphericParticleShader.uniforms.uTime.value = elapsedTime;
+// ─── Globe Interaction Frame Controller (Consumes QuantumGlobeEngine v2.0) ───
+function GlobeInteractionController({ groupRef }: { groupRef: React.RefObject<THREE.Group | null> }) {
+  useFrame((_, delta) => {
+    // 1. Dumb renderer consumes calculated parameter stack from QuantumGlobeEngine v2.0
+    const params = quantumGlobeEngine.update(delta);
+
+    // 2. Drive shader uTime advance based on energyFlowSpeed
+    const timeIncrement = delta * params.energyFlowSpeed;
+    SurfaceParticleShader.uniforms.uTime.value += timeIncrement;
+    RimParticleShader.uniforms.uTime.value += timeIncrement;
+    AtmosphericParticleShader.uniforms.uTime.value += timeIncrement;
+
+    // 3. Drive Particle Displacement and Sizes
+    SurfaceParticleShader.uniforms.uRadius.value = 1.15 + params.particleDisplacement;
+    RimParticleShader.uniforms.uRadius.value = 1.16 + params.particleDisplacement;
+    AtmosphericParticleShader.uniforms.uRadius.value = 1.20 + params.particleDisplacement;
+
+    SurfaceParticleShader.uniforms.uSize.value = 1.25 * params.glowIntensity * params.rimIntensity;
+    RimParticleShader.uniforms.uSize.value = 1.25 * params.glowIntensity * params.rimIntensity;
+    InnerParticleShader.uniforms.uSize.value = 1.05 * params.glowIntensity;
+
+    if (groupRef.current) {
+      // 4. Drive Globe Continuous Rotation
+      groupRef.current.rotation.y += delta * 0.25 * params.rotationMultiplier;
+
+      // 5. Drive Globe Scale Interpolation
+      groupRef.current.scale.setScalar(params.scale);
+
+      // 6. Drive Shake Offset (for Error state feedback)
+      groupRef.current.position.set(params.shakeOffset.x, params.shakeOffset.y, 0);
+    }
   });
   return null;
 }
@@ -141,6 +164,7 @@ export function QuantumGlobeCanvas() {
   const [debugKey, setDebugKey] = useState<number>(6); // Default 6: Final Composite (Debug mode off)
   const [showOverlay, setShowOverlay] = useState<boolean>(false);
   const [fps, setFps] = useState<number>(60);
+  const groupRef = useRef<THREE.Group>(null);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -158,11 +182,11 @@ export function QuantumGlobeCanvas() {
 
   const debugLabels: Record<number, string> = {
     1: '1: SURFACE LATTICE ONLY',
-    2: '2: ATMOSPHERE SATELLITES ONLY',
+    2: '2: ATMOSPHERE ONLY',
     3: '3: ENERGY FIELD HEATMAP',
     4: '4: COMPRESSION BANDS HEATMAP',
     5: '5: RIM PERTURBATION VISUALIZATION',
-    6: '6: FINAL COMPOSITE (PRODUCTION RENDERER)',
+    6: '6: FINAL COMPOSITE',
   };
 
   return (
@@ -188,39 +212,41 @@ export function QuantumGlobeCanvas() {
         className="w-full h-full overflow-visible relative z-10"
       >
         <FPSMonitor onFpsUpdate={setFps} />
-        <SurfaceDynamicsController />
+        <GlobeInteractionController groupRef={groupRef} />
 
-        {/* Layer Visibility Controls per Debug Mode */}
-        {debugKey === 6 && (
-          <>
-            <InnerParticles />
-            <SurfaceParticles />
-            <RimParticles />
-            <AtmosphericParticles />
-          </>
-        )}
-        {debugKey === 1 && <SurfaceParticles />}
-        {debugKey === 2 && <AtmosphericParticles />}
-        {debugKey === 3 && <SurfaceParticles />}
-        {debugKey === 4 && <SurfaceParticles />}
-        {debugKey === 5 && (
-          <>
-            <SurfaceParticles />
-            <RimParticles />
-          </>
-        )}
+        <group ref={groupRef}>
+          {/* Layer Visibility Controls per Debug Mode */}
+          {debugKey === 6 && (
+            <>
+              <InnerParticles />
+              <SurfaceParticles />
+              <RimParticles />
+              <AtmosphericParticles />
+            </>
+          )}
+          {debugKey === 1 && <SurfaceParticles />}
+          {debugKey === 2 && <AtmosphericParticles />}
+          {debugKey === 3 && <SurfaceParticles />}
+          {debugKey === 4 && <SurfaceParticles />}
+          {debugKey === 5 && (
+            <>
+              <SurfaceParticles />
+              <RimParticles />
+            </>
+          )}
+        </group>
       </Canvas>
 
       {/* Debug Mode HUD Panel (shown when debugKey !== 6 or showOverlay is true) */}
       {(debugKey !== 6 || showOverlay) && (
-        <div className="absolute top-4 left-4 z-50 bg-black/85 backdrop-blur-md border border-cyan-500/40 text-cyan-400 p-3 rounded-lg font-mono text-xs shadow-2xl space-y-1.5 w-72">
+        <div className="absolute top-4 left-4 z-50 bg-black/85 backdrop-blur-md border border-cyan-500/40 text-cyan-400 p-3 rounded-lg font-mono text-xs shadow-2xl space-y-1.5 w-72 select-none">
           <div className="text-white font-bold border-b border-cyan-500/30 pb-1 flex justify-between items-center">
             <span>GLOBE SHADER DEBUG</span>
             <span className="text-amber-400 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-500/30">MODE {debugKey}</span>
           </div>
           <div className="text-emerald-400 font-semibold">{debugLabels[debugKey]}</div>
           <div className="text-[10px] text-gray-300 space-y-0.5 pt-1 border-t border-gray-800">
-            <div><span className="text-cyan-300 font-bold">1</span> Surface Lattice | <span className="text-cyan-300 font-bold">2</span> Satellites</div>
+            <div><span className="text-cyan-300 font-bold">1</span> Surface Lattice | <span className="text-cyan-300 font-bold">2</span> Atmosphere</div>
             <div><span className="text-cyan-300 font-bold">3</span> Energy Flow  | <span className="text-cyan-300 font-bold">4</span> Compression</div>
             <div><span className="text-cyan-300 font-bold">5</span> Rim Breakup  | <span className="text-cyan-300 font-bold">6</span> Composite</div>
           </div>

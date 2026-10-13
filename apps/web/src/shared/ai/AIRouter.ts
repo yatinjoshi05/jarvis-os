@@ -228,6 +228,12 @@ export class AIRouter {
     onChunk?: (chunk: string) => void,
     options?: ProviderRequestOptions & { providerId?: string }
   ): Promise<string> {
+    // Circuit-breaker: bail immediately if system is in global backoff cooldown
+    if (aiHealthManager.isGlobalSystemInCooldown()) {
+      console.warn('[AIRouter] Blocked by global cooldown — all providers recently failed. Skipping request.');
+      throw ErrorManager.createError('AIRouter', 'AIProviderUnavailable: No AI provider is currently available.', 503);
+    }
+
     const providersToTry = this.getProvidersToTry(options?.providerId);
     const promptTier = this.classifyPrompt(prompt);
     let firstAttemptedError: any;
@@ -339,7 +345,8 @@ export class AIRouter {
       }
     }
 
-    console.log('[AIRouter] All AI providers failed. Returning AIProviderUnavailable error immediately.');
+    aiHealthManager.recordAllProvidersFailed(30000);
+    console.warn('[AIRouter] All AI providers failed. Entering 30s global cooldown.');
     throw ErrorManager.createError('AIRouter', 'AIProviderUnavailable: No AI provider is currently available.', 503);
   }
 
@@ -348,6 +355,12 @@ export class AIRouter {
     onChunk: (chunk: string) => void,
     options?: ProviderRequestOptions & { providerId?: string }
   ): Promise<void> {
+    // Circuit-breaker: bail immediately if system is in global backoff cooldown
+    if (aiHealthManager.isGlobalSystemInCooldown()) {
+      console.warn('[AIRouter] Blocked by global cooldown — all providers recently failed. Skipping stream request.');
+      throw ErrorManager.createError('AIRouter', 'AIProviderUnavailable: No AI provider is currently available.', 503);
+    }
+
     const providersToTry = this.getProvidersToTry(options?.providerId);
     const promptTier = this.classifyPrompt(prompt);
     let firstAttemptedError: any;
@@ -452,7 +465,8 @@ export class AIRouter {
       }
     }
 
-    console.log('[AIRouter] All AI providers failed. Returning AIProviderUnavailable error immediately.');
+    aiHealthManager.recordAllProvidersFailed(30000);
+    console.warn('[AIRouter] All AI providers failed (stream). Entering 30s global cooldown.');
     throw ErrorManager.createError('AIRouter', 'AIProviderUnavailable: No AI provider is currently available.', 503);
   }
 

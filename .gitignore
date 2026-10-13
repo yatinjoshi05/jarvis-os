@@ -1,0 +1,66 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Local Environment & Secrets
+.env
+.env.*
+!.env.example
+*.env.custom-keys
+
+# OS / Tooling / AI Agent scratch directories
+.agents/
+.agent/
+.claude/
+.sixth/
+.kilo/
+.uix/
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# Large Binaries, Model Weights & Installers
+OllamaSetup.exe
+ollama_models/
+*.exe
+*.bin
+*.iso
+*.tar.gz
+*.mp4
+data/ytstudio/renders/
+
+# Production & Build Outputs
+dist/
+dist-ssr/
+build/
+*.tsbuildinfo
+apps/web/dist/
+apps/desktop/target/
+src-tauri/target/
+
+# Local Logs & Diagnostic Dumps
+*.log
+*.stdout.log
+*.stderr.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+browser_logs/
+browser_evidence/
+browser_*.json
+browser_*.md
+mission_*.json
+mission_*.md
+voice_debug_report.json
+
+# Local Runtime Database & Generated State
+channels.json
+services/backend/data/*.json
+!services/backend/data/.gitkeep

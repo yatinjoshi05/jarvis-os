@@ -1,0 +1,129 @@
+.mission-workspace {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  margin-top: 0 !important;
+  padding-top: 6px !important;
+  padding-right: 0;
+  padding-left: 0;
+  align-content: start !important;
+  background: #000000;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.mission-workspace::-webkit-scrollbar,
+.mission-workspace *::-webkit-scrollbar {
+  display: none;
+}
+
+.mission-workspace * {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.mission-surface {
+  border: 1px solid rgba(255, 255, 255, .09);
+  border-radius: 12px;
+  background: #0b101b;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .025), 0 12px 32px rgba(0, 0, 0, .14);
+}
+
+/* Mission Header 140px fixed single-row layout */
+.mission-header {
+  background: #0b101b;
+  height: 140px !important;
+  min-height: 140px !important;
+  max-height: 140px !important;
+  padding: 10px 20px 14px 20px !important;
+  display: grid !important;
+  grid-template-columns: 340px 180px 110px 130px 140px 120px !important;
+  grid-template-rows: minmax(0, 1fr) !important;
+  align-items: center !important;
+  justify-items: stretch !important;
+  justify-content: space-between !important;
+  column-gap: 0 !important;
+  row-gap: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  white-space: nowrap !important;
+}
+
+.mission-header * {
+  box-sizing: border-box;
+}
+
+.mission-header__col {
+  min-width: 0;
+  height: 100%;
+}
+
+.mission-header__btn {
+  width: 100%;
+  height: 32px;
+  min-height: 32px;
+}
+
+/* Approved V2 three-column layout (22% / 58% / 20%). */
+.mission-workspace > .grid {
+  grid-template-columns: minmax(0, 22fr) minmax(0, 58fr) minmax(0, 20fr) !important;
+  min-width: 0;
+  min-height: clamp(420px, calc(100dvh - 320px), 590px);
+  gap: 1rem !important;
+}
+
+.mission-workspace > .grid > * {
+  min-width: 0;
+}
+
+/* Keep the original panels fully present rather than adding panel-level scrolling. */
+.mission-workspace > .grid > * .overflow-y-auto {
+  overflow-y: visible;
+}
+
+/* Activity Dock height and padding to prevent bottom clipping. */
+.mission-workspace > .mt-3:last-child {
+  margin-top: .75rem;
+  height: 146px;
+  min-height: 146px;
+}
+
+.mission-workspace > .mt-3:last-child > .mission-surface {
+  height: 100%;
+  overflow: hidden;
+  padding: .75rem 1rem;
+}
+
+.mission-workspace > .mt-3:last-child .mb-3 {
+  margin-bottom: .5rem;
+}
+
+.mission-workspace > .mt-3:last-child .overflow-x-auto {
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+}
+
+/* Compact status badge pills for Mission List cards */
+.mission-workspace article .inline-flex {
+  box-sizing: border-box;
+  height: 20px !important;
+  min-height: 20px !important;
+  min-width: auto !important;
+  width: auto !important;
+  flex-shrink: 0;
+  padding: 2px 8px !important;
+  border-radius: 999px !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+@media (max-width: 1279px) {
+  .mission-workspace {
+    padding-bottom: .625rem;
+  }
+}

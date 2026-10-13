@@ -1,0 +1,18 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "enables the default permissions",
+  "windows": [
+    "main",
+    "splashscreen"
+  ],
+  "permissions": [
+    "core:default",
+    "window-state:default",
+    "autostart:allow-enable",
+    "autostart:allow-disable",
+    "autostart:allow-is-enabled",
+    "notification:default",
+    "clipboard-manager:default"
+  ]
+}

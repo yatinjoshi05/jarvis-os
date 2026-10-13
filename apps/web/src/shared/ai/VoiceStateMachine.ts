@@ -5,6 +5,7 @@ export type VoiceState =
   | 'THINKING'
   | 'GENERATING'
   | 'STREAMING'
+  | 'EXECUTING'
   | 'SPEAKING'
   | 'ERROR'
   | 'INTERRUPTED'

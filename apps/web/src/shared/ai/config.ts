@@ -14,20 +14,14 @@ function getEnv(key: string): string {
 
 /**
  * Returns the correct absolute URL for backend API calls.
- * - In Vite dev server (http://localhost:3000): return relative path (proxied by Vite).
- * - In Tauri app (tauri://localhost) or any other origin: return absolute http://localhost:3001.
+ * The browser must contact the backend directly. Returning a relative `/api` path
+ * resolves against the Vite dev server in development, which can produce
+ * frontend-origin 404s when proxying is unavailable.
  */
 export function getBackendApiUrl(endpoint: string): string {
   const p = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  try {
-    if (typeof window !== 'undefined' && window.location?.origin) {
-      const o = window.location.origin;
-      if (o === 'http://localhost:3000' || o === 'http://127.0.0.1:3000') {
-        return p; // Vite dev proxy handles it
-      }
-    }
-  } catch (_) {}
-  return `http://localhost:3001${p}`;
+  const backendOrigin = getEnv('VITE_BACKEND_API_URL') || 'http://localhost:3001';
+  return `${backendOrigin.replace(/\/+$/, '')}${p}`;
 }
 
 export const AI_CONFIG = {
@@ -35,7 +29,7 @@ export const AI_CONFIG = {
     gemini: {
       apiKey: getEnv('GEMINI_API_KEY'),
       fastModel: getEnv('VITE_GEMINI_FAST_MODEL') || 'gemini-2.0-flash-lite',
-      model: getEnv('VITE_GEMINI_MODEL') || 'gemini-3.5-flash',
+      model: getEnv('VITE_GEMINI_MODEL') === 'gemini-3.5-flash' ? 'gemini-2.0-flash' : (getEnv('VITE_GEMINI_MODEL') || 'gemini-2.0-flash'),
       complexModel: getEnv('VITE_GEMINI_COMPLEX_MODEL') || 'gemini-2.5-pro',
     },
     openai: {
