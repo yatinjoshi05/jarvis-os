@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createHashRouter, RouterProvider } from 'react-router-dom'
 import { Shell } from '../../pages/dashboard'
 import { HomeWorkspace, ModulePlaceholder, ChatWorkspace, CodingWorkspace, FinancialWorkspace, CRMWorkspace, SettingsWorkspace, AgentHubWorkspace, MissionWorkspace, MemoryWorkspace, FilesWorkspace, TerminalWorkspace, BrowserWorkspace } from '../../widgets/workspace'
 import { MissionControlPage } from '../../widgets/mission-control'
@@ -9,7 +9,7 @@ import FacebookPage from '../../pages/Facebook'
 
 import { WorkspaceErrorBoundary } from '../../shared/ui/WorkspaceErrorBoundary'
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: '/',
     element: <Shell />,
@@ -100,11 +100,7 @@ const router = createBrowserRouter([
       },
     ],
   },
-], {
-  basename: typeof window !== 'undefined' && window.location.pathname.startsWith('/jarvis-os')
-    ? '/jarvis-os'
-    : undefined
-})
+])
 
 export function AppRouter() {
   return <RouterProvider router={router} />
