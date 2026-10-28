@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "b7c8876f-372e-46c0-8eaf-d943a4e06478",
+  "status": "current",
+  "command": "deliver",
+  "type": "dataflow",
+  "input": "D:\\jarvis\\archify\\jarvis-dataflow.dataflow.json",
+  "output": "D:\\jarvis\\archify\\jarvis-dataflow.html",
+  "specification": {
+    "sha256": "87375ad30622da4f13247b16d75e165b83b19c3b28a7820f8a213ea203e1b24f",
+    "bytes": 4688
+  },
+  "artifact": {
+    "sha256": "d4201f5f8ef366269e5878d621257184d546b19d66f4b51748d12d341e507aa0",
+    "bytes": 841924
+  }
+}

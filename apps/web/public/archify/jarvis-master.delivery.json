@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "c09426d4-6935-4470-9672-db1dc3896114",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "D:\\jarvis\\archify\\jarvis-master.architecture.json",
+  "output": "D:\\jarvis\\archify\\jarvis-master.html",
+  "specification": {
+    "sha256": "cc47264f8555b20779c581189f1fa0ebc4a9db381f11295a4cf60dd7b2a00767",
+    "bytes": 6730
+  },
+  "artifact": {
+    "sha256": "42397b76efa576ffa0d9279f7742f535d37a96a1e255105c64fafcb9c4618445",
+    "bytes": 865587
+  }
+}

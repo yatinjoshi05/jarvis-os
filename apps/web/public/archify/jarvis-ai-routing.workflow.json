@@ -1,0 +1,76 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "JARVIS OS — AI Multi-Provider Routing & Fallback Workflow",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "output": "archify/jarvis-ai-routing.html"
+  },
+  "lanes": [
+    { "id": "intake", "label": "Client Request Layer" },
+    { "id": "policy", "label": "Behavior & Prompt Engine" },
+    { "id": "models", "label": "AI Provider Cascade (with Auto-Fallback)" },
+    { "id": "output", "label": "Response Composer & Delivery" }
+  ],
+  "phases": [
+    { "id": "classification", "label": "Intent & Policy", "fromCol": 0, "toCol": 1 },
+    { "id": "prompt_assembly", "label": "Prompt Formulation", "fromCol": 2, "toCol": 2, "variant": "emphasis" },
+    { "id": "provider_inference", "label": "Cascade Execution", "fromCol": 3, "toCol": 4, "variant": "security" },
+    { "id": "response_delivery", "label": "Delivery / Error", "fromCol": 5, "toCol": 5, "variant": "dashed" }
+  ],
+  "groups": [
+    { "id": "policy_group", "label": "Behavior Policy Synthesis", "lane": "policy", "fromCol": 1, "toCol": 2, "variant": "emphasis" },
+    { "id": "cascade_group", "label": "Multi-Provider Cascade", "lane": "models", "fromCol": 3, "toCol": 4, "variant": "security" },
+    { "id": "output_group", "label": "Completion Output", "lane": "output", "fromCol": 4, "toCol": 5, "variant": "dashed" }
+  ],
+  "mainPath": ["user_req", "intent_classifier", "personality_builder", "nvidia_primary", "response_finalizer"],
+  "nodes": [
+    { "id": "user_req", "lane": "intake", "col": 0, "type": "external", "label": "User Query", "sublabel": "Prompt / Conversation", "width": 136 },
+    { "id": "intent_classifier", "lane": "policy", "col": 1, "type": "backend", "label": "BehaviorEngine", "sublabel": "createPolicy(intent)", "tag": "confidence score", "width": 136 },
+    { "id": "personality_builder", "lane": "policy", "col": 2, "type": "backend", "label": "applyPersonality", "sublabel": "System Prompt Injection", "tag": "voice/tone lock", "width": 136 },
+    { "id": "nvidia_primary", "lane": "models", "col": 3, "type": "cloud", "label": "NVIDIA NIM", "sublabel": "Llama 3.1 70B Instruct", "tag": "preferredProvider", "width": 136 },
+    { "id": "gemini_fallback", "lane": "models", "col": 4, "type": "cloud", "label": "Google Gemini", "sublabel": "gemini-1.5-flash", "tag": "auto-fallback", "width": 136 },
+    { "id": "error_handler", "lane": "policy", "col": 5, "type": "security", "label": "Cascade Failure", "sublabel": "All Providers Failed", "tag": "HTTP 502 / Throw", "width": 136 },
+    { "id": "response_finalizer", "lane": "output", "col": 5, "type": "frontend", "label": "finalizeText", "sublabel": "Emit Clean Output", "tag": "metadata tagged", "width": 136 }
+  ],
+  "edges": [
+    { "id": "req-to-classifier", "from": "user_req", "to": "intent_classifier", "label": "dispatch query", "variant": "default" },
+    { "id": "classifier-to-builder", "from": "intent_classifier", "to": "personality_builder", "label": "policy", "variant": "emphasis" },
+    { "id": "builder-to-nvidia", "from": "personality_builder", "to": "nvidia_primary", "label": "try NVIDIA", "variant": "emphasis" },
+    { "id": "nvidia-success", "from": "nvidia_primary", "to": "response_finalizer", "label": "200 completion", "variant": "emphasis" },
+    { "id": "nvidia-fail", "from": "nvidia_primary", "to": "gemini_fallback", "label": "NVIDIA timeout/error", "variant": "security", "role": "branch" },
+    { "id": "gemini-success", "from": "gemini_fallback", "to": "response_finalizer", "label": "Gemini 200 OK", "variant": "default" },
+    { "id": "gemini-fail", "from": "gemini_fallback", "to": "error_handler", "label": "Gemini error", "variant": "security", "role": "error" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Behavior Policy & Personality",
+      "items": [
+        "BehaviorEngine analyzes user intent and assigns confidence metrics",
+        "System prompt dynamically combines personality presets and intent constraints",
+        "Source messages normalized into standard roles (user, model, system)"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Zero-Config Fallback Cascade",
+      "items": [
+        "Prefers NVIDIA NIM Llama 3.1 70B hosted on integrate.api.nvidia.com",
+        "Automatically falls back to Google Gemini 1.5 Flash upon HTTP error or timeout",
+        "Continues down cascade to secondary provider keys if configured in environment"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Output Finalization & Resiliency",
+      "items": [
+        "Successful completions pass through finalizeText for policy compliance",
+        "Returns verified metadata including provider name, intent, and confidence score",
+        "Gracefully returns HTTP 502 with descriptive diagnostics if all providers fail"
+      ]
+    }
+  ]
+}

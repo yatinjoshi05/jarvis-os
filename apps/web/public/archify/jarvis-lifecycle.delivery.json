@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "5904f695-67ee-419e-813f-30dad05b6577",
+  "status": "current",
+  "command": "deliver",
+  "type": "lifecycle",
+  "input": "D:\\jarvis\\archify\\jarvis-lifecycle.lifecycle.json",
+  "output": "D:\\jarvis\\archify\\jarvis-lifecycle.html",
+  "specification": {
+    "sha256": "b59551a8dac89514605c8ea87748039196e7a58a5f09f6605fa6b45e14c3a5fb",
+    "bytes": 4011
+  },
+  "artifact": {
+    "sha256": "d114cc7b498dd5f719eae780f5b7313513344a61de990c4494ac8badd1f5896d",
+    "bytes": 847626
+  }
+}

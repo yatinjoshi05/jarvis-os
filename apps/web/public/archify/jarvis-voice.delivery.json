@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "a9a63c50-6b7c-4b57-b9e2-9d2731d8c7bd",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "D:\\jarvis\\archify\\jarvis-voice.architecture.json",
+  "output": "D:\\jarvis\\archify\\jarvis-voice.html",
+  "specification": {
+    "sha256": "cefc650a04bdfea2de10161c5ba8393ec22a4d7db1cb5d3d9498906fbfb9dcd0",
+    "bytes": 5027
+  },
+  "artifact": {
+    "sha256": "1dd1a76991e6689895e224c0a183f42adea4228a6b2227ac471465a7b7a51296",
+    "bytes": 853143
+  }
+}

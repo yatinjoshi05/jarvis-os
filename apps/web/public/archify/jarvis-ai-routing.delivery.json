@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "fcba555b-dea1-4020-8634-a3c42cad9993",
+  "status": "current",
+  "command": "deliver",
+  "type": "workflow",
+  "input": "D:\\jarvis\\archify\\jarvis-ai-routing.workflow.json",
+  "output": "D:\\jarvis\\archify\\jarvis-ai-routing.html",
+  "specification": {
+    "sha256": "56520e3e2e33a9493cbcdcbf773940ad28cce1e45675dd2ea91c46f91ec269df",
+    "bytes": 4900
+  },
+  "artifact": {
+    "sha256": "f7bf89389a89262736ee5040b0a27dc6e42d3da3dded2101eca44ecf63a1bd02",
+    "bytes": 845670
+  }
+}

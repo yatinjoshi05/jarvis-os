@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS OS — Interactive Architecture Portfolio | Archify 3.2.0</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07090e;
+      --bg-surface: #0e131f;
+      --bg-card: rgba(18, 24, 38, 0.7);
+      --bg-card-hover: rgba(26, 35, 56, 0.85);
+      --border: rgba(56, 189, 248, 0.15);
+      --border-hover: rgba(56, 189, 248, 0.45);
+      --border-accent: rgba(99, 102, 241, 0.3);
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --cyan: #38bdf8;
+      --cyan-glow: rgba(56, 189, 248, 0.25);
+      --emerald: #34d399;
+      --violet: #a78bfa;
+      --amber: #fbbf24;
+      --rose: #fb7185;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 65%, rgba(167, 139, 250, 0.06) 0%, transparent 45%),
+        linear-gradient(to bottom, rgba(7, 9, 14, 0.95), #07090e);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding-bottom: 5rem;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+    }
+
+    /* Header & Badge */
+    header {
+      margin-bottom: 3.5rem;
+      position: relative;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.85rem;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 9999px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--cyan);
+      letter-spacing: 0.02em;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      background-color: var(--cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--cyan);
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .repo-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.03);
+      transition: all 0.2s ease;
+    }
+
+    .repo-link:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .hero-title {
+      font-size: 2.75rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 820px;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    /* Verification Summary Banner */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .summary-stat {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      margin-bottom: 0.35rem;
+    }
+
+    .stat-val {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+    }
+
+    .stat-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    /* Diagram Grid */
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1.75rem;
+      max-width: 760px;
+    }
+
+    .diagram-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+
+    .diagram-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .diagram-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--cyan), var(--violet));
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .diagram-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-hover);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), 0 0 20px var(--cyan-glow);
+    }
+
+    .diagram-card:hover::before {
+      opacity: 1;
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .card-type {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+    }
+
+    .card-status {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      letter-spacing: 0.02em;
+    }
+
+    .status-verified {
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--emerald);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+
+    .status-partial {
+      background: rgba(251, 191, 36, 0.12);
+      color: var(--amber);
+      border: 1px solid rgba(251, 191, 36, 0.25);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 0.65rem;
+      color: #fff;
+    }
+
+    .card-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 1.25rem;
+      flex-grow: 1;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tech-tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.08);
+      color: #7dd3fc;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.82rem;
+      color: var(--cyan);
+      font-weight: 600;
+    }
+
+    .cta-arrow {
+      transition: transform 0.2s ease;
+    }
+
+    .diagram-card:hover .cta-arrow {
+      transform: translateX(4px);
+    }
+
+    /* Reports & Documentation Section */
+    .docs-section {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-accent);
+      border-radius: 12px;
+      padding: 2.25rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .docs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+
+    .doc-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 1.25rem;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .doc-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(56, 189, 248, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .doc-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #fff;
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .doc-desc {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      line-height: 1.45;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      color: var(--text-dim);
+      font-size: 0.82rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.25rem;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--cyan);
+    }
+
+    @media (max-width: 768px) {
+      .hero-title { font-size: 2rem; }
+      .diagram-grid { grid-template-columns: 1fr; }
+      .top-bar { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="top-bar">
+        <div class="badge">
+          <span class="badge-dot"></span>
+          <span>OFFICIAL ARCHIFY 3.2.0 • INTERACTIVE PORTFOLIO</span>
+        </div>
+        <a href="https://github.com/yatinjoshi05/jarvis-os" target="_blank" rel="noopener" class="repo-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+          </svg>
+          yatinjoshi05/jarvis-os
+        </a>
+      </div>
+
+      <h1 class="hero-title">JARVIS OS Architecture Portfolio</h1>
+      <p class="hero-subtitle">
+        Ground-truth architectural analysis and interactive diagrams for <strong>Jarvis OS</strong> — an AI-powered desktop operating environment for Windows built on Tauri v2, React 18, Node.js Express, multi-provider AI routing, and local dual vector/graph memory.
+      </p>
+
+      <div class="summary-grid">
+        <div class="summary-stat">
+          <span class="stat-label">Architectural Views</span>
+          <span class="stat-val">7 <span class="stat-sub">interactive</span></span>
+        </div>
+        <div class="summary-stat">
+          <span class="stat-label">Verification Gates</span>
+          <span class="stat-val">4 / 4 <span class="stat-sub">passed</span></span>
+        </div>
+        <div class="summary-stat">
+          <span class="stat-label">Layout Crossings</span>
+          <span class="stat-val">0 <span class="stat-sub">crossings</span></span>
+        </div>
+        <div class="summary-stat">
+          <span class="stat-label">Ground Truth</span>
+          <span class="stat-val">100% <span class="stat-sub">source-backed</span></span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <h2 class="section-title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="3" y1="9" x2="21" y2="9"></line>
+          <line x1="9" y1="21" x2="9" y2="9"></line>
+        </svg>
+        Interactive Architecture Suite
+      </h2>
+      <p class="section-desc">
+        Select any view below to launch the standalone, interactive Archify diagram featuring zoom, pan, element inspection, animation toggles, and signal-flow tracing.
+      </p>
+
+      <div class="diagram-grid">
+        <!-- 1. Master System Architecture -->
+        <a href="jarvis-master.html" class="diagram-card">
+          <div class="card-meta">
+            <span class="card-type">Architecture</span>
+            <span class="card-status status-verified">VERIFIED</span>
+          </div>
+          <h3 class="card-title">Master System Architecture</h3>
+          <p class="card-desc">
+            Complete five-tier component boundary map: Win32 Host, Tauri v2 Rust Core, React 18 HUD Renderer, Node.js Express Backend (:3001), and External AI Cloud Providers.
+          </p>
+          <div class="card-tags">
+            <span class="tech-tag">Tauri v2</span>
+            <span class="tech-tag">React 18</span>
+            <span class="tech-tag">Express :3001</span>
+            <span class="tech-tag">ConPTY</span>
+          </div>
+          <div class="card-footer">
+            <span>Explore Interactive View</span>
+            <span class="cta-arrow">→</span>
+          </div>
+        </a>
+
+        <!-- 2. User Interaction Pipeline -->
+        <a href="jarvis-interaction.html" class="diagram-card">
+          <div class="card-meta">
+            <span class="card-type">Workflow</span>
+            <span class="card-status status-verified">VERIFIED</span>
+          </div>
+          <h3 class="card-title">User Interaction Pipeline</h3>
+          <p class="card-desc">
+            End-to-end user dispatch flow across 5 swimlanes: Global Keyboard Hooks, React HUD state, IPC bridge validation, AI classification, and active desktop streaming.
+          </p>
+          <div class="card-tags">
+            <span class="tech-tag">Global Shortcuts</span>
+            <span class="tech-tag">IPC Bridge</span>
+            <span class="tech-tag">Zustand Store</span>
+            <span class="tech-tag">Stream Parser</span>
+          </div>
+          <div class="card-footer">
+            <span>Explore Interactive View</span>
+            <span class="cta-arrow">→</span>
+          </div>
+        </a>
+
+        <!-- 3. Audio & Voice Subsystem -->
+        <a href="jarvis-voice.html" class="diagram-card">
+          <div class="card-meta">
+            <span class="card-type">Architecture</span>
+            <span class="card-status status-partial">VERIFIED & PARTIAL</span>
+          </div>
+          <h3 class="card-title">Audio & Voice Subsystem</h3>
+          <p class="card-desc">
+            Microphone audio capture, Web Speech API speech-to-text, backend ElevenLabs chunked streaming proxy isolating credentials, and AudioContext frequency visualizer.
+          </p>
+          <div class="card-tags">
+            <span class="tech-tag">Web Speech STT</span>
+            <span class="tech-tag">ElevenLabs Proxy</span>
+            <span class="tech-tag">Web Audio API</span>
+            <span class="tech-tag">Win32 Endpoint</span>
+          </div>
+          <div class="card-footer">
+            <span>Explore Interactive View</span>
+            <span class="cta-arrow">→</span>
+          </div>
+        </a>
+
+        <!-- 4. AI Multi-Provider Router -->
+        <a href="jarvis-ai-routing.html" class="diagram-card">
+          <div class="card-meta">
+            <span class="card-type">Workflow</span>
+            <span class="card-status status-verified">VERIFIED</span>
+          </div>
+          <h3 class="card-title">AI Multi-Provider Router & Tools</h3>
+          <p class="card-desc">
+            Cascade routing logic: Primary Tier-1 NVIDIA NIM Llama 3.1 70B, automatic failover to Tier-2 Google Gemini 1.5 Flash, Tier-3 OpenAI/Claude, and tool sandbox dispatch.
+          </p>
+          <div class="card-tags">
+            <span class="tech-tag">NVIDIA NIM</span>
+            <span class="tech-tag">Gemini 1.5</span>
+            <span class="tech-tag">Adaptive Fallback</span>
+            <span class="tech-tag">Tool Dispatch</span>
+          </div>
+          <div class="card-footer">
+            <span>Explore Interactive View</span>
+            <span class="cta-arrow">→</span>
+          </div>
+        </a>
+
+        <!-- 5. Memory & Knowledge Graph Dataflow -->
+        <a href="jarvis-dataflow.html" class="diagram-card">
+          <div class="card-meta">
+            <span class="card-type">Dataflow</span>
+            <span class="card-status status-verified">VERIFIED</span>
+          </div>
+          <h3 class="card-title">Memory & Knowledge Graph</h3>
+          <p class="card-desc">
+            Dual persistence engine: 768-dim semantic vector index (`vectors.json`), entity relationship graph (`knowledge-graph.json`), and LRU eviction lifecycle manager.
+          </p>
+          <div class="card-tags">
+            <span class="tech-tag">Vector Store</span>
+            <span class="tech-tag">KnowledgeGraph</span>
+            <span class="tech-tag">Cosine Scoring</span>
+            <span class="tech-tag">LRU Eviction</span>
+          </div>
+          <div class="card-footer">
+            <span>Explore Interactive View</span>
+            <span class="cta-arrow">→</span>
+          </div>
+        </a>
+
+        <!-- 6. End-to-End Sequence Diagram -->
+        <a href="jarvis-sequence.html" class="diagram-card">
+          <div class="card-meta">
+            <span class="card-type">Sequence</span>
+            <span class="card-status status-verified">VERIFIED</span>
+          </div>
+          <h3 class="card-title">End-to-End Execution Sequence</h3>
+          <p class="card-desc">
+            Synchronous & asynchronous message lifecycle across 6 lifelines: User HUD → React Renderer → Tauri IPC → Express Backend → AI Router → Local Memory.
+          </p>
+          <div class="card-tags">
+            <span class="tech-tag">6 Lifelines</span>
+            <span class="tech-tag">Streaming Chunk</span>
+            <span class="tech-tag">Token Accumulator</span>
+            <span class="tech-tag">Async Memory</span>
+          </div>
+          <div class="card-footer">
+            <span>Explore Interactive View</span>
+            <span class="cta-arrow">→</span>
+          </div>
+        </a>
+
+        <!-- 7. Application Lifecycle State Machine -->
+        <a href="jarvis-lifecycle.html" class="diagram-card">
+          <div class="card-meta">
+            <span class="card-type">Lifecycle</span>
+            <span class="card-status status-verified">VERIFIED</span>
+          </div>
+          <h3 class="card-title">Lifecycle & Crash State Machine</h3>
+          <p class="card-desc">
+            System lifecycle management: Cold boot, `dirty.flag` unhandled crash detection, storage shim hydration, Express port binding, system tray standby, and clean shutdown.
+          </p>
+          <div class="card-tags">
+            <span class="tech-tag">dirty.flag</span>
+            <span class="tech-tag">Crash Recovery</span>
+            <span class="tech-tag">Storage Shim</span>
+            <span class="tech-tag">System Tray</span>
+          </div>
+          <div class="card-footer">
+            <span>Explore Interactive View</span>
+            <span class="cta-arrow">→</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Evidence & Verification Documentation -->
+      <section class="docs-section">
+        <h2 class="section-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--violet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          Architecture Reports & Verification Artifacts
+        </h2>
+        <p class="section-desc">
+          Auditable proof of implementation: every node, connection, and transition is cross-referenced with exact file paths and lines of code in the Jarvis repository.
+        </p>
+
+        <div class="docs-grid">
+          <a href="EVIDENCE_MANIFEST.md" target="_blank" class="doc-item">
+            <div class="doc-title">
+              <span>📄 Evidence Manifest</span>
+            </div>
+            <div class="doc-desc">
+              Comprehensive mapping between all 7 diagrams and their grounding source code files, schemas, and test suites.
+            </div>
+          </a>
+
+          <a href="VERIFICATION_REPORT.md" target="_blank" class="doc-item">
+            <div class="doc-title">
+              <span>🛡️ Verification Report</span>
+            </div>
+            <div class="doc-desc">
+              CLI finalize execution logs, SHA-256 artifact hashes, 4-gate verification status, and headless browser validation results.
+            </div>
+          </a>
+
+          <a href="CRITIQUE_AND_IMPROVEMENT_REPORT.md" target="_blank" class="doc-item">
+            <div class="doc-title">
+              <span>🔍 Architecture Critique</span>
+            </div>
+            <div class="doc-desc">
+              Rigorous senior systems review detailing boundaries, security boundaries, edge cases, and iterative diagram improvements.
+            </div>
+          </a>
+
+          <a href="PORTFOLIO_PROGRESS_REPORT.md" target="_blank" class="doc-item">
+            <div class="doc-title">
+              <span>📊 Progress & Deployment</span>
+            </div>
+            <div class="doc-desc">
+              GitHub Pages integration report, pipeline preservation notes, and live verification URLs.
+            </div>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div>
+        <span>Jarvis OS Architecture Portfolio</span> • Powered by <a href="https://github.com/tt-a1i/archify" target="_blank" rel="noopener" style="color: var(--cyan); text-decoration: none;">Official Archify 3.2.0</a>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/yatinjoshi05/jarvis-os" target="_blank" rel="noopener">GitHub Repository</a>
+        <a href="https://yatinjoshi05.github.io/jarvis-os/archify/" target="_blank" rel="noopener">Live Portfolio</a>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

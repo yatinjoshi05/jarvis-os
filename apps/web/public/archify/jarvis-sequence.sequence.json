@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "JARVIS OS — End-to-End Execution Sequence",
+    "output": "archify/jarvis-sequence.html",
+    "viewBox": [1080, 640],
+    "column_fit": "spread",
+    "animation": "trace",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    { "id": "user", "type": "external", "label": "User", "sublabel": "Desktop / Voice" },
+    { "id": "web_ui", "type": "frontend", "label": "React HUD", "sublabel": "Workspace UI" },
+    { "id": "backend", "type": "backend", "label": "Express API", "sublabel": "localhost:3001" },
+    { "id": "brain", "type": "backend", "label": "BrainEngine", "sublabel": "Context & Planner" },
+    { "id": "memory", "type": "database", "label": "Memory Store", "sublabel": "Vector + Graph" },
+    { "id": "llm", "type": "cloud", "label": "NVIDIA NIM", "sublabel": "Llama 3.1 70B" },
+    { "id": "tauri_shell", "type": "frontend", "label": "Tauri v2", "sublabel": "Win32 Sandbox" },
+    { "id": "tts", "type": "security", "label": "TTS Proxy", "sublabel": "ElevenLabs Stream" }
+  ],
+  "segments": [
+    { "from": 150, "to": 280, "label": "Intake & Memory Augmentation" },
+    { "from": 290, "to": 380, "label": "AI Inference & Tool Planning" },
+    { "from": 390, "to": 538, "label": "Native Action & Audio Feedback" }
+  ],
+  "messages": [
+    { "id": "user-query", "from": "user", "to": "web_ui", "y": 160, "label": "User command / query", "variant": "default" },
+    { "id": "ui-to-backend", "from": "web_ui", "to": "backend", "y": 185, "label": "POST /api/brain/execute", "variant": "emphasis" },
+    { "id": "backend-to-brain", "from": "backend", "to": "brain", "y": 212, "label": "execute(message)", "variant": "emphasis" },
+    { "id": "brain-to-memory", "from": "brain", "to": "memory", "y": 238, "label": "retrieveRelevant(query)", "variant": "default" },
+    { "id": "memory-to-brain", "from": "memory", "to": "brain", "y": 268, "label": "top-k memories + graph", "variant": "return" },
+    { "id": "brain-to-llm", "from": "brain", "to": "llm", "y": 300, "label": "routeAICompletion(prompt)", "variant": "emphasis" },
+    { "id": "llm-to-brain", "from": "llm", "to": "brain", "y": 335, "label": "200 completion + action", "variant": "return" },
+    { "id": "brain-to-backend", "from": "brain", "to": "backend", "y": 365, "label": "composed plan & action", "variant": "return" },
+    { "id": "backend-to-tauri", "from": "backend", "to": "tauri_shell", "y": 400, "label": "dispatch native tool call", "variant": "security" },
+    { "id": "tauri-to-backend", "from": "tauri_shell", "to": "backend", "y": 428, "label": "tool output (ConPTY / Win32)", "variant": "return" },
+    { "id": "backend-to-tts", "from": "backend", "to": "tts", "y": 460, "label": "stream synthesis request", "variant": "security" },
+    { "id": "tts-to-ui", "from": "tts", "to": "web_ui", "y": 492, "label": "chunked MPEG audio stream", "variant": "emphasis" },
+    { "id": "ui-to-user", "from": "web_ui", "to": "user", "y": 524, "label": "render response & play audio", "variant": "return" }
+  ],
+  "activations": [
+    { "participant": "web_ui", "from": 160, "to": 528, "type": "frontend" },
+    { "participant": "backend", "from": 185, "to": 498, "type": "backend" },
+    { "participant": "brain", "from": 212, "to": 370, "type": "backend" },
+    { "participant": "memory", "from": 238, "to": 272, "type": "database" },
+    { "participant": "llm", "from": 300, "to": 340, "type": "cloud" },
+    { "participant": "tauri_shell", "from": 400, "to": 432, "type": "frontend" },
+    { "participant": "tts", "from": 460, "to": 496, "type": "security" }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Context-Enriched Execution",
+      "items": [
+        "Inbound requests immediately trigger semantic and relational recall from MemoryIntelligence",
+        "Retrieved user facts are bound into the system prompt prior to LLM model invocation",
+        "Clear demarcation between frontend orchestration and backend execution layers"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Local System & Cloud Synergy",
+      "items": [
+        "High-performance reasoning runs against remote NVIDIA NIM (Llama 3.1 70B)",
+        "System modifications route through Tauri v2 Rust core with KnownFolder validation",
+        "Audio synthesis streams directly to Web Audio player via server-side proxy"
+      ]
+    }
+  ]
+}

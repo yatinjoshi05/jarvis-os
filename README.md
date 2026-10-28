@@ -13,6 +13,27 @@ The long-term vision is a unified, privacy-conscious digital assistant capable o
 
 ---
 
+## Interactive Architecture Portfolio — Powered by Archify
+
+> 🌐 **Live Portfolio Hub:** [**Explore the Interactive Jarvis OS Architecture →**](https://yatinjoshi05.github.io/jarvis-os/archify/)<br>
+> Ground-truth interactive architecture diagrams generated with official **Archify 3.2.0**, passing all 4 verification gates (`validate`, `deliver`, `check`, `browser-check`) with 0 layout crossings.
+
+### Diagram Directory
+
+| Diagram | Purpose | Live View |
+| :--- | :--- | :--- |
+| **Master Architecture** | Five-tier component boundaries (Tauri v2, React HUD, Express :3001, AI Cloud) | [Open Diagram →](https://yatinjoshi05.github.io/jarvis-os/archify/jarvis-master.html) |
+| **User Interaction** | 5-swimlane input-to-response dispatch workflow and streaming pipeline | [Open Diagram →](https://yatinjoshi05.github.io/jarvis-os/archify/jarvis-interaction.html) |
+| **Voice Subsystem** | Web Speech STT, ElevenLabs chunked proxy, and Web Audio API visualizer | [Open Diagram →](https://yatinjoshi05.github.io/jarvis-os/archify/jarvis-voice.html) |
+| **AI Multi-Provider Routing** | Cascading priority routing (NVIDIA NIM → Gemini 1.5 → Claude) & tools | [Open Diagram →](https://yatinjoshi05.github.io/jarvis-os/archify/jarvis-ai-routing.html) |
+| **Dataflow & Memory** | Dual store (768-dim Vector Store + Knowledge Graph) & LRU eviction | [Open Diagram →](https://yatinjoshi05.github.io/jarvis-os/archify/jarvis-dataflow.html) |
+| **Sequence Diagram** | Complete end-to-end user request execution across 6 system lifelines | [Open Diagram →](https://yatinjoshi05.github.io/jarvis-os/archify/jarvis-sequence.html) |
+| **Lifecycle State Machine** | Process boot, `dirty.flag` crash recovery, system tray standby, clean quit | [Open Diagram →](https://yatinjoshi05.github.io/jarvis-os/archify/jarvis-lifecycle.html) |
+
+*Auditable verification reports and source-to-diagram mappings are available in the [Evidence Manifest](https://yatinjoshi05.github.io/jarvis-os/archify/EVIDENCE_MANIFEST.md) and [Verification Report](https://yatinjoshi05.github.io/jarvis-os/archify/VERIFICATION_REPORT.md).*
+
+---
+
 ## 2. Verified Technology Stack
 
 | Layer | Technologies | Verification Details |

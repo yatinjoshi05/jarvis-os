@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "ok": false,
+  "command": "browser-check",
+  "evidenceKind": "automated-browser",
+  "status": "fail",
+  "visualReview": "not-requested",
+  "provenance": "current",
+  "deliveryReceiptId": "b7c8876f-372e-46c0-8eaf-d943a4e06478",
+  "artifact": {
+    "path": "D:\\jarvis\\archify\\jarvis-dataflow.html",
+    "sha256": "d4201f5f8ef366269e5878d621257184d546b19d66f4b51748d12d341e507aa0",
+    "bytes": 841924
+  },
+  "state": {
+    "detail": "read",
+    "motion": "still"
+  },
+  "chrome": {
+    "status": "available",
+    "executable": "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
+  },
+  "diagnostics": [
+    {
+      "code": "viewer/temp-cleanup-incomplete",
+      "severity": "error",
+      "message": "Browser cleanup could not safely finish; inspect the reported retained path.",
+      "subject": {
+        "artifact": "D:\\jarvis\\archify\\jarvis-dataflow.html"
+      },
+      "evidence": {
+        "reason": "Chrome did not exit; retained temporary profile \"C:\\Users\\H\\AppData\\Local\\Temp\\archify-visual-check-profile-c0Ue9c\".",
+        "retainedDirectory": "C:\\Users\\H\\AppData\\Local\\Temp\\archify-visual-check-profile-c0Ue9c"
+      },
+      "supportedFixes": [
+        "resolve the reported process or filesystem failure; verify directory ownership before manual cleanup"
+      ]
+    }
+  ],
+  "containment": {
+    "status": "fail",
+    "policy": "fit-or-reader-declared-readable-vertical-scroll",
+    "viewports": []
+  },
+  "themeStates": {
+    "status": "fail",
+    "viewports": []
+  },
+  "readability": {
+    "status": "fail",
+    "minimumProjectedNodeTextPx": 6,
+    "viewports": []
+  },
+  "viewerChrome": {
+    "status": "fail",
+    "viewports": []
+  },
+  "captures": {
+    "status": "not-requested",
+    "screenshots": [],
+    "contactSheet": null
+  },
+  "sidecars": {
+    "receipt": "jarvis-dataflow.browser-check.json",
+    "files": []
+  },
+  "error": "Chrome did not exit; retained temporary profile \"C:\\Users\\H\\AppData\\Local\\Temp\\archify-visual-check-profile-c0Ue9c\"."
+}

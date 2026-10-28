@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "sequence",
+  "quality": "showcase",
+  "specification": {
+    "path": "D:\\jarvis\\archify\\jarvis-sequence.sequence.json",
+    "sha256": "a8bfbf3aec7ce761661f8f6ed603fce475eb50ebe65ca6ed3cb613a6a500740d",
+    "bytes": 4414
+  },
+  "artifact": {
+    "path": "D:\\jarvis\\archify\\jarvis-sequence.html",
+    "sha256": "839d8ef61357091c1fc1e30b9145fe5fc9ec1eca51dafc0e6585e73777552839",
+    "bytes": 842672
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "D:\\jarvis\\archify\\jarvis-sequence.finalize.json",
+    "summaryReceipt": "D:\\jarvis\\archify\\jarvis-sequence.finalize-summary.json",
+    "browserCheckReceipt": "D:\\jarvis\\archify\\jarvis-sequence.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-10-28T07:48:24.353Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 15184,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  }
+}

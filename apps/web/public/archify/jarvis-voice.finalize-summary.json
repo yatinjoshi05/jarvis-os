@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "architecture",
+  "quality": "showcase",
+  "specification": {
+    "path": "D:\\jarvis\\archify\\jarvis-voice.architecture.json",
+    "sha256": "c10a011e5882f06e612a1e7701a0bb0b70a8d0bd48df8f760ae8a92d9da8696d",
+    "bytes": 4949
+  },
+  "artifact": {
+    "path": "D:\\jarvis\\archify\\jarvis-voice.html",
+    "sha256": "38ef1db629a70fc4543f75842a406f02fd86785f8a5aaa761b800d6c55a6c089",
+    "bytes": 853470
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "D:\\jarvis\\archify\\jarvis-voice.finalize.json",
+    "summaryReceipt": "D:\\jarvis\\archify\\jarvis-voice.finalize-summary.json",
+    "browserCheckReceipt": "D:\\jarvis\\archify\\jarvis-voice.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-10-28T07:48:24.353Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 9241,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  },
+  "visualReviewRecommendation": {
+    "action": "inspect-route-readability",
+    "signals": {
+      "routesOverSuggestedBends": 3,
+      "routesOverSuggestedStretch": 1
+    },
+    "reason": "Automated gates passed, but crossings or detours still need perceptual review before claiming visual quality.",
+    "affectedRoutes": {
+      "crossings": [],
+      "detours": [
+        {
+          "relationship": {
+            "id": "mic-to-speech",
+            "from": "user_mic",
+            "to": "web_speech",
+            "label": "Audio Stream",
+            "collectionIndex": 0,
+            "artifactIndex": 1
+          },
+          "bends": 3,
+          "stretch": 1.327
+        },
+        {
+          "relationship": {
+            "id": "service-to-proxy",
+            "from": "voice_service",
+            "to": "tts_proxy",
+            "label": "Synthesize Speech",
+            "collectionIndex": 3,
+            "artifactIndex": 4
+          },
+          "bends": 3,
+          "stretch": 1.146,
+          "directCorridorBlockers": [
+            {
+              "id": "voice_fallback",
+              "label": "Provider Fallbacks",
+              "box": [
+                480,
+                340,
+                160,
+                64
+              ]
+            }
+          ]
+        },
+        {
+          "relationship": {
+            "id": "player-to-speaker",
+            "from": "audio_player",
+            "to": "user_speaker",
+            "label": "Sound Output",
+            "collectionIndex": 8,
+            "artifactIndex": 9
+          },
+          "bends": 3,
+          "stretch": 1.364
+        }
+      ],
+      "truncated": false
+    },
+    "hints": [
+      "user_mic → web_speech needs 3 bends: move node user_mic or web_speech so they share a row or column with matching centers, or sit diagonally with a clear corner.",
+      "audio_player → user_speaker needs 3 bends: move node audio_player or user_speaker so they share a row or column with matching centers, or sit diagonally with a clear corner."
+    ],
+    "repair": "Trace these relationships at the desktop viewport. For Architecture, use references/architecture-layout-repair.md: reflow a blocked main path or tangled connected scene, and repair an isolated defect locally only when the surrounding composition is accepted. Preserve all semantic content and user-fixed geometry. Rerun finalize once after the edit."
+  }
+}

@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "architecture",
+  "quality": "showcase",
+  "specification": {
+    "path": "D:\\jarvis\\archify\\jarvis-master.architecture.json",
+    "sha256": "f1113f5d6e0ea9ff57c7ba8e7d45d54ad24c9fbf454b7e0993c858deab276dd0",
+    "bytes": 6730
+  },
+  "artifact": {
+    "path": "D:\\jarvis\\archify\\jarvis-master.html",
+    "sha256": "50ced6d5a94752df87f15f2d304223127a070acd201a7e6f996b0b91847f2723",
+    "bytes": 866509
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "D:\\jarvis\\archify\\jarvis-master.finalize.json",
+    "summaryReceipt": "D:\\jarvis\\archify\\jarvis-master.finalize-summary.json",
+    "browserCheckReceipt": "D:\\jarvis\\archify\\jarvis-master.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-10-28T07:48:24.353Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 8798,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  },
+  "visualReviewRecommendation": {
+    "action": "inspect-route-readability",
+    "signals": {
+      "resolvedCrossovers": 2,
+      "routesOverSuggestedBends": 2,
+      "routesOverSuggestedStretch": 2
+    },
+    "reason": "Automated gates passed, but crossings or detours still need perceptual review before claiming visual quality.",
+    "affectedRoutes": {
+      "crossings": [
+        {
+          "left": {
+            "id": "router-to-nvidia",
+            "from": "ai_router",
+            "to": "nvidia_nim",
+            "label": "Primary LLM",
+            "collectionIndex": 9,
+            "artifactIndex": 10
+          },
+          "right": {
+            "id": "backend-to-tts",
+            "from": "express_backend",
+            "to": "elevenlabs_proxy",
+            "label": "Stream Audio",
+            "collectionIndex": 11,
+            "artifactIndex": 12
+          },
+          "point": [
+            588,
+            465
+          ]
+        },
+        {
+          "left": {
+            "id": "router-to-gemini",
+            "from": "ai_router",
+            "to": "gemini_api",
+            "label": "Fallback LLM",
+            "collectionIndex": 10,
+            "artifactIndex": 11
+          },
+          "right": {
+            "id": "backend-to-tts",
+            "from": "express_backend",
+            "to": "elevenlabs_proxy",
+            "label": "Stream Audio",
+            "collectionIndex": 11,
+            "artifactIndex": 12
+          },
+          "point": [
+            588,
+            512
+          ]
+        }
+      ],
+      "detours": [
+        {
+          "relationship": {
+            "id": "shell-to-sandbox",
+            "from": "tauri_shell",
+            "to": "system_sandbox",
+            "label": "Path Validation",
+            "collectionIndex": 3,
+            "artifactIndex": 4
+          },
+          "bends": 4,
+          "stretch": 1.803,
+          "directCorridorBlockers": [
+            {
+              "id": "win32_apis",
+              "label": "Windows OS APIs",
+              "box": [
+                190,
+                260,
+                155,
+                64
+              ]
+            }
+          ]
+        },
+        {
+          "relationship": {
+            "id": "backend-to-tts",
+            "from": "express_backend",
+            "to": "elevenlabs_proxy",
+            "label": "Stream Audio",
+            "collectionIndex": 11,
+            "artifactIndex": 12
+          },
+          "bends": 4,
+          "stretch": 1.581,
+          "directCorridorBlockers": [
+            {
+              "id": "brain_engine",
+              "label": "Brain Engine",
+              "box": [
+                430,
+                320,
+                155,
+                64
+              ]
+            },
+            {
+              "id": "ai_router",
+              "label": "Multi-Provider Router",
+              "box": [
+                430,
+                440,
+                155,
+                64
+              ]
+            }
+          ]
+        }
+      ],
+      "truncated": false
+    },
+    "hints": [
+      "ai_router → nvidia_nim crosses express_backend → elevenlabs_proxy: move the node of whichever is a branch, return, or second entrance to the other side of the main path, so that relationship runs through an empty corridor.",
+      "ai_router → gemini_api crosses express_backend → elevenlabs_proxy: move the node of whichever is a branch, return, or second entrance to the other side of the main path, so that relationship runs through an empty corridor."
+    ],
+    "repair": "Trace these relationships at the desktop viewport. For Architecture, use references/architecture-layout-repair.md: reflow a blocked main path or tangled connected scene, and repair an isolated defect locally only when the surrounding composition is accepted. Preserve all semantic content and user-fixed geometry. Rerun finalize once after the edit."
+  }
+}

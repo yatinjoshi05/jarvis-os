@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "JARVIS OS — Master System Architecture",
+    "output": "archify/jarvis-master.html",
+    "quality_profile": "showcase",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "viewBox": [1120, 840]
+  },
+  "components": [
+    { "id": "user", "type": "external", "label": "User / Operator", "sublabel": "Desktop / Voice", "pos": [30, 400], "size": [120, 64] },
+    { "id": "win32_apis", "type": "backend", "label": "Windows OS APIs", "sublabel": "Audio & ConPTY", "pos": [190, 160], "size": [155, 64], "tag": "Win32 / COM" },
+    { "id": "system_sandbox", "type": "security", "label": "KnownFolder Sandbox", "sublabel": "Path Traversal Guard", "pos": [190, 280], "size": [155, 64], "tag": "Allowlist Policy" },
+    { "id": "tauri_shell", "type": "frontend", "label": "Tauri v2 Desktop Shell", "sublabel": "Rust Native Core", "pos": [190, 400], "size": [155, 64], "tag": "NSIS Windows" },
+    { "id": "react_ui", "type": "frontend", "label": "React 18 / Vite 5 UI", "sublabel": "HUD & 3D Globe", "pos": [190, 520], "size": [155, 64], "tag": "HashRouter" },
+    { "id": "express_backend", "type": "backend", "label": "Express 4 Backend", "sublabel": "Node.js ESM :3001", "pos": [430, 240], "size": [155, 64], "tag": "Local API Proxy" },
+    { "id": "elevenlabs_proxy", "type": "security", "label": "TTS Streaming Proxy", "sublabel": "Chunked Audio Stream", "pos": [430, 120], "size": [155, 64], "tag": "Key Guarded" },
+    { "id": "brain_engine", "type": "backend", "label": "Brain Engine", "sublabel": "Planner & Context", "pos": [430, 380], "size": [155, 64], "tag": "Behavior Policy" },
+    { "id": "ai_router", "type": "backend", "label": "Multi-Provider Router", "sublabel": "Fallback Cascade", "pos": [430, 500], "size": [155, 64], "tag": "Key Prioritization" },
+    { "id": "memory_intelligence", "type": "backend", "label": "Memory Intelligence", "sublabel": "Hybrid Semantic Engine", "pos": [430, 640], "size": [155, 64], "tag": "58 Tests Passing" },
+    { "id": "vector_store", "type": "database", "label": "Vector Store", "sublabel": "vectors.json", "pos": [680, 600], "size": [145, 64], "tag": "Cosine Index" },
+    { "id": "knowledge_graph", "type": "database", "label": "Knowledge Graph", "sublabel": "knowledge-graph.json", "pos": [680, 720], "size": [145, 64], "tag": "Entity Relations" },
+    { "id": "elevenlabs_api", "type": "cloud", "label": "ElevenLabs API", "sublabel": "Multilingual v2", "pos": [900, 120], "size": [145, 64], "tag": "Neural Speech" },
+    { "id": "nvidia_nim", "type": "cloud", "label": "NVIDIA NIM", "sublabel": "Llama 3.1 70B", "pos": [900, 460], "size": [145, 64], "tag": "Primary Provider" },
+    { "id": "gemini_api", "type": "cloud", "label": "Google Gemini", "sublabel": "gemini-1.5-flash", "pos": [900, 580], "size": [145, 64], "tag": "Fallback Provider" }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Client Host: Windows Desktop", "wraps": ["system_sandbox", "win32_apis", "tauri_shell", "react_ui"] },
+    { "kind": "security-group", "label": "Local Service Layer: localhost:3001", "wraps": ["express_backend", "brain_engine", "ai_router", "elevenlabs_proxy", "memory_intelligence"] },
+    { "kind": "region", "label": "Local Persistent Storage", "wraps": ["vector_store", "knowledge_graph"] },
+    { "kind": "region", "label": "External AI Cloud Services", "wraps": ["elevenlabs_api", "nvidia_nim", "gemini_api"] }
+  ],
+  "connections": [
+    { "id": "user-to-shell", "from": "user", "to": "tauri_shell", "label": "Desktop / Hotkeys", "variant": "default" },
+    { "id": "user-to-ui", "from": "user", "to": "react_ui", "label": "HUD Interaction", "variant": "default" },
+    { "id": "ui-to-shell", "from": "react_ui", "to": "tauri_shell", "label": "Tauri IPC", "variant": "emphasis" },
+    { "id": "shell-to-sandbox", "from": "tauri_shell", "to": "system_sandbox", "label": "Path Validation", "variant": "security" },
+    { "id": "sandbox-to-win32", "from": "system_sandbox", "to": "win32_apis", "label": "Authorized Ops", "variant": "default" },
+    { "id": "ui-to-backend", "from": "react_ui", "to": "express_backend", "label": "Vite Proxy :3001", "variant": "emphasis" },
+    { "id": "shell-to-backend", "from": "tauri_shell", "to": "express_backend", "label": "TCP Stream / REST", "variant": "default" },
+    { "id": "backend-to-brain", "from": "express_backend", "to": "brain_engine", "label": "Execute Intent", "variant": "emphasis" },
+    { "id": "brain-to-router", "from": "brain_engine", "to": "ai_router", "label": "Route Request", "variant": "default" },
+    { "id": "router-to-nvidia", "from": "ai_router", "to": "nvidia_nim", "label": "Primary LLM", "variant": "emphasis" },
+    { "id": "router-to-gemini", "from": "ai_router", "to": "gemini_api", "label": "Fallback LLM", "variant": "dashed" },
+    { "id": "backend-to-tts", "from": "express_backend", "to": "elevenlabs_proxy", "label": "Stream Audio", "variant": "security" },
+    { "id": "tts-to-elevenlabs", "from": "elevenlabs_proxy", "to": "elevenlabs_api", "label": "Server Key", "variant": "security" },
+    { "id": "brain-to-memory", "from": "brain_engine", "to": "memory_intelligence", "label": "Context Query", "variant": "emphasis" },
+    { "id": "memory-to-vectors", "from": "memory_intelligence", "to": "vector_store", "label": "Cosine Query", "variant": "default" },
+    { "id": "memory-to-graph", "from": "memory_intelligence", "to": "knowledge_graph", "label": "Entity Lookup", "variant": "default" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Desktop Shell & Security",
+      "items": [
+        "Tauri v2 Rust core manages Windows system tray, ConPTY terminals, and window state",
+        "KnownFolder sandbox restricts file operations strictly to Desktop, Documents, Downloads, Pictures",
+        "Master volume controlled natively via Win32 MMDeviceEnumerator COM endpoints"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Local Backend & Brain",
+      "items": [
+        "Express 4 server on localhost:3001 acts as local AI proxy and runtime coordinator",
+        "BrainEngine coordinates Planner, ContextEngine, and BehaviorEngine policy injection",
+        "Multi-provider router cascades from NVIDIA NIM (Llama 3.1) to Google Gemini on failure"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Associative Memory & Audio",
+      "items": [
+        "Dual-engine memory intelligence combining VectorStore cosine similarity and KnowledgeGraph",
+        "Server-side ElevenLabs streaming proxy isolates API credentials from frontend bundle",
+        "Automatic memory consolidation and decay managed by MemoryLifecycleManager"
+      ]
+    }
+  ]
+}

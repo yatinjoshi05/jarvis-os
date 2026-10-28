@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "c2298f18-1e5f-422e-a16e-f5356689edd7",
+  "status": "current",
+  "command": "deliver",
+  "type": "sequence",
+  "input": "D:\\jarvis\\archify\\jarvis-sequence.sequence.json",
+  "output": "D:\\jarvis\\archify\\jarvis-sequence.html",
+  "specification": {
+    "sha256": "a8bfbf3aec7ce761661f8f6ed603fce475eb50ebe65ca6ed3cb613a6a500740d",
+    "bytes": 4414
+  },
+  "artifact": {
+    "sha256": "839d8ef61357091c1fc1e30b9145fe5fc9ec1eca51dafc0e6585e73777552839",
+    "bytes": 842672
+  }
+}

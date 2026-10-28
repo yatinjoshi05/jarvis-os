@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "lifecycle",
+  "quality": "showcase",
+  "specification": {
+    "path": "D:\\jarvis\\archify\\jarvis-lifecycle.lifecycle.json",
+    "sha256": "b59551a8dac89514605c8ea87748039196e7a58a5f09f6605fa6b45e14c3a5fb",
+    "bytes": 4011
+  },
+  "artifact": {
+    "path": "D:\\jarvis\\archify\\jarvis-lifecycle.html",
+    "sha256": "d114cc7b498dd5f719eae780f5b7313513344a61de990c4494ac8badd1f5896d",
+    "bytes": 847626
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "D:\\jarvis\\archify\\jarvis-lifecycle.finalize.json",
+    "summaryReceipt": "D:\\jarvis\\archify\\jarvis-lifecycle.finalize-summary.json",
+    "browserCheckReceipt": "D:\\jarvis\\archify\\jarvis-lifecycle.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-10-28T07:48:24.353Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 16783,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  }
+}

@@ -1,0 +1,369 @@
+{
+  "schemaVersion": 1,
+  "ok": false,
+  "command": "finalize",
+  "status": "fail",
+  "type": "dataflow",
+  "quality": "showcase",
+  "startedAt": "2026-10-28T17:05:18.646Z",
+  "specification": {
+    "path": "D:\\jarvis\\archify\\jarvis-dataflow.dataflow.json",
+    "sha256": "87375ad30622da4f13247b16d75e165b83b19c3b28a7820f8a213ea203e1b24f",
+    "bytes": 4688
+  },
+  "artifact": {
+    "path": "D:\\jarvis\\archify\\jarvis-dataflow.html",
+    "sha256": "d4201f5f8ef366269e5878d621257184d546b19d66f4b51748d12d341e507aa0",
+    "bytes": 841924
+  },
+  "stages": {
+    "validate": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": null,
+      "execution": "embedded-in-deliver",
+      "command": [
+        "C:\\nvm4w\\nodejs\\node.exe",
+        "C:\\Users\\H\\.gemini\\config\\skills\\archify\\bin\\archify.mjs",
+        "deliver",
+        "dataflow",
+        "D:\\jarvis\\archify\\jarvis-dataflow.dataflow.json",
+        "D:\\jarvis\\archify\\jarvis-dataflow.html",
+        "--quality",
+        "showcase",
+        "--repo-root",
+        "d:\\jarvis",
+        "--json"
+      ],
+      "receipt": {
+        "schemaVersion": 1,
+        "ok": true,
+        "command": "validate",
+        "specification": {
+          "sha256": "87375ad30622da4f13247b16d75e165b83b19c3b28a7820f8a213ea203e1b24f",
+          "bytes": 4688
+        },
+        "validation": {
+          "checksPassed": 9,
+          "checkCount": 9,
+          "compositionProfile": "showcase",
+          "compositionStatus": "pass",
+          "errors": 0,
+          "warnings": 0
+        }
+      }
+    },
+    "deliver": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 4974,
+      "command": [
+        "C:\\nvm4w\\nodejs\\node.exe",
+        "C:\\Users\\H\\.gemini\\config\\skills\\archify\\bin\\archify.mjs",
+        "deliver",
+        "dataflow",
+        "D:\\jarvis\\archify\\jarvis-dataflow.dataflow.json",
+        "D:\\jarvis\\archify\\jarvis-dataflow.html",
+        "--quality",
+        "showcase",
+        "--repo-root",
+        "d:\\jarvis",
+        "--json"
+      ],
+      "receipt": {
+        "schemaVersion": 1,
+        "receiptId": "b7c8876f-372e-46c0-8eaf-d943a4e06478",
+        "ok": true,
+        "command": "deliver",
+        "type": "dataflow",
+        "input": "D:\\jarvis\\archify\\jarvis-dataflow.dataflow.json",
+        "output": "D:\\jarvis\\archify\\jarvis-dataflow.html",
+        "specification": {
+          "sha256": "87375ad30622da4f13247b16d75e165b83b19c3b28a7820f8a213ea203e1b24f",
+          "bytes": 4688
+        },
+        "artifact": {
+          "sha256": "d4201f5f8ef366269e5878d621257184d546b19d66f4b51748d12d341e507aa0",
+          "bytes": 841924
+        },
+        "validation": {
+          "checksPassed": 9,
+          "checkCount": 9,
+          "compositionProfile": "showcase",
+          "compositionStatus": "pass",
+          "errors": 0,
+          "warnings": 0
+        },
+        "update": {
+          "status": "unavailable",
+          "installedVersion": null,
+          "availableVersion": null,
+          "releaseNotes": null,
+          "checkedAt": null,
+          "source": null,
+          "noticeRequired": false,
+          "noticeText": null,
+          "reason": "disabled"
+        }
+      }
+    },
+    "check": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 936,
+      "command": [
+        "C:\\nvm4w\\nodejs\\node.exe",
+        "C:\\Users\\H\\.gemini\\config\\skills\\archify\\bin\\archify.mjs",
+        "check",
+        "D:\\jarvis\\archify\\jarvis-dataflow.html",
+        "--require-provenance"
+      ],
+      "receipt": {
+        "ok": true,
+        "file": "D:\\jarvis\\archify\\jarvis-dataflow.html",
+        "artifact": {
+          "sha256": "d4201f5f8ef366269e5878d621257184d546b19d66f4b51748d12d341e507aa0",
+          "bytes": 841924
+        },
+        "checks": [
+          {
+            "name": "single_svg",
+            "ok": true,
+            "details": [
+              "found 1 <svg> block(s)"
+            ]
+          },
+          {
+            "name": "finite_svg",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "orthogonal_arrows",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "label_route_clearance",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "relationship_crossings",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "relationship_corridors",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "container_border_runs",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "route_rhythm",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "legend_clearance",
+            "ok": true,
+            "details": []
+          }
+        ],
+        "composition": {
+          "schemaVersion": 1,
+          "profile": "showcase",
+          "status": "pass",
+          "summary": {
+            "errors": 0,
+            "warnings": 0
+          },
+          "metrics": {
+            "properCrossings": 0,
+            "resolvedCrossovers": 0,
+            "ambiguousCorridors": 0,
+            "arrowheadCollisions": 0,
+            "containerBorderRuns": 0,
+            "labelRouteClearanceIssues": 0,
+            "labelCanvasOverflowIssues": 0,
+            "minLabelRouteClearance": 5,
+            "desktopReadabilityIssues": 0,
+            "viewportHeightIssues": 0,
+            "minProjectedNodeTextPx": 6.027777777777779,
+            "maxBends": 2,
+            "routesOverSuggestedBends": 0,
+            "maxStretch": 1,
+            "routesOverSuggestedStretch": 0,
+            "minSegmentPx": 51.5,
+            "minInteriorSegmentPx": 228,
+            "shortSegmentCount": 0,
+            "shortEndpointSegmentCount": 0,
+            "shortInteriorSegmentCount": 0,
+            "microSegmentCount": 0
+          },
+          "suggestedLimits": {
+            "bendsPerRelationship": 2,
+            "stretch": 1.35,
+            "segmentPx": 16,
+            "microSegmentPx": 8
+          },
+          "routeReview": {
+            "crossings": [],
+            "detours": []
+          },
+          "leadingSpace": {
+            "measured": false,
+            "reviewSuggested": false
+          },
+          "desktopReadability": {
+            "budgetBasis": "legacy-930",
+            "readerContract": "declared-wide-v1",
+            "availableDiagramWidth": 930,
+            "actualBudgetPx": 930,
+            "limit": "legacy",
+            "requestedTargetPx": null,
+            "requestedTargetMet": null,
+            "hardFloorPx": 6,
+            "hardFloorMet": true,
+            "minimumOwner": {
+              "kind": "node",
+              "id": "conv_turn"
+            },
+            "minimumSourceTextPx": 7,
+            "minimumProjectedTextPx": 6.027777777777779,
+            "semanticTextCount": 27
+          },
+          "issues": []
+        },
+        "provenance": "current",
+        "deliveryReceiptId": "b7c8876f-372e-46c0-8eaf-d943a4e06478"
+      }
+    },
+    "browser-check": {
+      "status": "fail",
+      "exitCode": 1,
+      "durationMs": 14107,
+      "command": [
+        "C:\\nvm4w\\nodejs\\node.exe",
+        "C:\\Users\\H\\.gemini\\config\\skills\\archify\\bin\\archify.mjs",
+        "browser-check",
+        "D:\\jarvis\\archify\\jarvis-dataflow.html",
+        "--json",
+        "--require-provenance"
+      ],
+      "execution": "in-process",
+      "receipt": {
+        "schemaVersion": 1,
+        "ok": false,
+        "command": "browser-check",
+        "evidenceKind": "automated-browser",
+        "status": "fail",
+        "visualReview": "not-requested",
+        "provenance": "current",
+        "deliveryReceiptId": "b7c8876f-372e-46c0-8eaf-d943a4e06478",
+        "artifact": {
+          "path": "D:\\jarvis\\archify\\jarvis-dataflow.html",
+          "sha256": "d4201f5f8ef366269e5878d621257184d546b19d66f4b51748d12d341e507aa0",
+          "bytes": 841924
+        },
+        "state": {
+          "detail": "read",
+          "motion": "still"
+        },
+        "chrome": {
+          "status": "available",
+          "executable": "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
+        },
+        "diagnostics": [
+          {
+            "code": "viewer/temp-cleanup-incomplete",
+            "severity": "error",
+            "message": "Browser cleanup could not safely finish; inspect the reported retained path.",
+            "subject": {
+              "artifact": "D:\\jarvis\\archify\\jarvis-dataflow.html"
+            },
+            "evidence": {
+              "reason": "Chrome did not exit; retained temporary profile \"C:\\Users\\H\\AppData\\Local\\Temp\\archify-visual-check-profile-c0Ue9c\".",
+              "retainedDirectory": "C:\\Users\\H\\AppData\\Local\\Temp\\archify-visual-check-profile-c0Ue9c"
+            },
+            "supportedFixes": [
+              "resolve the reported process or filesystem failure; verify directory ownership before manual cleanup"
+            ]
+          }
+        ],
+        "containment": {
+          "status": "fail",
+          "policy": "fit-or-reader-declared-readable-vertical-scroll",
+          "viewports": []
+        },
+        "themeStates": {
+          "status": "fail",
+          "viewports": []
+        },
+        "readability": {
+          "status": "fail",
+          "minimumProjectedNodeTextPx": 6,
+          "viewports": []
+        },
+        "viewerChrome": {
+          "status": "fail",
+          "viewports": []
+        },
+        "captures": {
+          "status": "not-requested",
+          "screenshots": [],
+          "contactSheet": null
+        },
+        "sidecars": {
+          "receipt": "jarvis-dataflow.browser-check.json",
+          "files": []
+        },
+        "error": "Chrome did not exit; retained temporary profile \"C:\\Users\\H\\AppData\\Local\\Temp\\archify-visual-check-profile-c0Ue9c\"."
+      }
+    }
+  },
+  "browserCheck": {
+    "requested": true,
+    "ran": false
+  },
+  "diagnostics": [
+    {
+      "code": "viewer/temp-cleanup-incomplete",
+      "severity": "error",
+      "message": "Browser cleanup could not safely finish; inspect the reported retained path.",
+      "subject": {
+        "artifact": "D:\\jarvis\\archify\\jarvis-dataflow.html"
+      },
+      "evidence": {
+        "reason": "Chrome did not exit; retained temporary profile \"C:\\Users\\H\\AppData\\Local\\Temp\\archify-visual-check-profile-c0Ue9c\".",
+        "retainedDirectory": "C:\\Users\\H\\AppData\\Local\\Temp\\archify-visual-check-profile-c0Ue9c"
+      },
+      "supportedFixes": [
+        "resolve the reported process or filesystem failure; verify directory ownership before manual cleanup"
+      ]
+    }
+  ],
+  "evidence": {
+    "receipt": "D:\\jarvis\\archify\\jarvis-dataflow.finalize.json",
+    "summaryReceipt": "D:\\jarvis\\archify\\jarvis-dataflow.finalize-summary.json",
+    "browserCheckReceipt": "D:\\jarvis\\archify\\jarvis-dataflow.browser-check.json"
+  },
+  "visualReview": "not-requested",
+  "failedStage": "browser-check",
+  "finishedAt": "2026-10-28T17:05:40.018Z",
+  "durationMs": 21371,
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-10-28T07:48:24.353Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  }
+}

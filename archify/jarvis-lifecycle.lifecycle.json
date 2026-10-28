@@ -1,0 +1,66 @@
+{
+  "schema_version": 3,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "JARVIS OS — Application & Agent Lifecycle State Machine",
+    "output": "archify/jarvis-lifecycle.html",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase"
+  },
+  "mainPath": ["boot", "splash_init", "services_ready", "active_runtime", "clean_quit"],
+  "states": [
+    { "id": "boot", "type": "start", "label": "Cold Boot", "sublabel": "Process Init", "tag": "init", "step": "01" },
+    { "id": "splash_init", "type": "active", "label": "Splash & Shim", "sublabel": "Hydration", "tag": "storage", "step": "02" },
+    { "id": "services_ready", "type": "waiting", "label": "Services Up", "sublabel": "Express :3001", "tag": "ready", "step": "03" },
+    { "id": "active_runtime", "type": "active", "label": "Active HUD", "sublabel": "3D Workspace", "tag": "interactive", "step": "04" },
+    { "id": "clean_quit", "type": "success", "label": "Clean Exit", "sublabel": "Clean State", "tag": "terminal", "step": "05" },
+    { "id": "crash_check", "type": "decision", "label": "Crash Recovery", "sublabel": "dirty.flag Check", "tag": "diagnostic" },
+    { "id": "minimized_tray", "type": "waiting", "label": "System Tray", "sublabel": "Standby Mode", "tag": "background" },
+    { "id": "agent_exec", "type": "active", "label": "Tool Exec", "sublabel": "ConPTY / Win32", "tag": "executing" },
+    { "id": "port_collision", "type": "failure", "label": "Collision", "sublabel": "EADDRINUSE", "tag": "terminal" }
+  ],
+  "transitions": [
+    { "id": "boot-to-splash", "from": "boot", "to": "splash_init", "label": "launch" },
+    { "id": "boot-to-crash", "from": "boot", "to": "crash_check", "label": "dirty flag", "variant": "security" },
+    { "id": "crash-to-splash", "from": "crash_check", "to": "splash_init", "label": "recovered" },
+    { "id": "splash-to-services", "from": "splash_init", "to": "services_ready", "label": "bind port" },
+    { "id": "services-collision", "from": "services_ready", "to": "port_collision", "label": "in use", "variant": "security" },
+    { "id": "services-to-active", "from": "services_ready", "to": "active_runtime", "label": "reveal", "variant": "emphasis" },
+    { "id": "active-to-tray", "from": "active_runtime", "to": "minimized_tray", "label": "hide" },
+    { "id": "tray-to-active", "from": "minimized_tray", "to": "active_runtime", "label": "restore" },
+    { "id": "active-to-task", "from": "active_runtime", "to": "agent_exec", "label": "dispatch" },
+    { "id": "task-to-active", "from": "agent_exec", "to": "active_runtime", "label": "done" },
+    { "id": "active-to-quit", "from": "active_runtime", "to": "clean_quit", "label": "quit", "variant": "emphasis" },
+    { "id": "tray-to-quit", "from": "minimized_tray", "to": "clean_quit", "label": "exit", "variant": "emphasis" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Crash Recovery & Boot State",
+      "items": [
+        "Rust core creates dirty.flag on boot; unhandled crashes trigger recovery state on next launch",
+        "Storage shim hydrates user settings before mounting React component tree",
+        "Watchdog thread forces main window reveal if splash screen fails to dismiss in 10s"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Window & Background Lifecycle",
+      "items": [
+        "Window close events intercept close_requested to hide window into Windows notification tray",
+        "Maintains background AI runtime and websocket listeners without desktop taskbar clutter",
+        "Double-clicking tray icon restores focused workspace instantly"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Graceful Shutdown",
+      "items": [
+        "Explicit tray quit or SIGINT cleans dirty.flag and terminates Express child processes",
+        "Persists vector memory indexes and knowledge graph entities before unmapping",
+        "EADDRINUSE handler exits gracefully if an instance is already occupying port 3001"
+      ]
+    }
+  ]
+}

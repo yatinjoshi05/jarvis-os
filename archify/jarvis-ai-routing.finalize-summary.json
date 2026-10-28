@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "ok": false,
+  "command": "finalize",
+  "status": "fail",
+  "type": "workflow",
+  "quality": "showcase",
+  "specification": {
+    "path": "D:\\jarvis\\archify\\jarvis-ai-routing.workflow.json",
+    "sha256": "56520e3e2e33a9493cbcdcbf773940ad28cce1e45675dd2ea91c46f91ec269df",
+    "bytes": 4900
+  },
+  "artifact": {
+    "path": "D:\\jarvis\\archify\\jarvis-ai-routing.html",
+    "sha256": "f7bf89389a89262736ee5040b0a27dc6e42d3da3dded2101eca44ecf63a1bd02",
+    "bytes": 845670
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "fail"
+  },
+  "failedStage": "browser-check",
+  "diagnostics": [
+    {
+      "code": "viewer/temp-cleanup-incomplete",
+      "severity": "error",
+      "message": "Browser cleanup could not safely finish; inspect the reported retained path.",
+      "subject": {
+        "artifact": "D:\\jarvis\\archify\\jarvis-ai-routing.html"
+      },
+      "evidence": {
+        "reason": "Chrome did not exit; retained temporary profile \"C:\\Users\\H\\AppData\\Local\\Temp\\archify-visual-check-profile-VsfzEb\".",
+        "retainedDirectory": "C:\\Users\\H\\AppData\\Local\\Temp\\archify-visual-check-profile-VsfzEb"
+      },
+      "supportedFixes": [
+        "resolve the reported process or filesystem failure; verify directory ownership before manual cleanup"
+      ]
+    }
+  ],
+  "diagnosticSummary": {
+    "total": 1,
+    "shown": 1,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "D:\\jarvis\\archify\\jarvis-ai-routing.finalize.json",
+    "summaryReceipt": "D:\\jarvis\\archify\\jarvis-ai-routing.finalize-summary.json",
+    "browserCheckReceipt": "D:\\jarvis\\archify\\jarvis-ai-routing.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-10-28T07:48:24.353Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 20786,
+  "browserCheck": {
+    "requested": true,
+    "ran": false
+  }
+}

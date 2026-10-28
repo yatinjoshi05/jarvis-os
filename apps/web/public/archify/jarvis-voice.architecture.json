@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "JARVIS OS — Audio & Voice Subsystem Architecture",
+    "output": "archify/jarvis-voice.html",
+    "quality_profile": "showcase",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "viewBox": [1080, 780]
+  },
+  "components": [
+    { "id": "user_mic", "type": "external", "label": "User Microphone", "sublabel": "Speech Input", "pos": [30, 200], "size": [110, 64] },
+    { "id": "user_speaker", "type": "external", "label": "User Speaker", "sublabel": "Audio Output", "pos": [30, 480], "size": [110, 64] },
+    { "id": "web_speech", "type": "frontend", "label": "Web Speech API", "sublabel": "Browser Recognition", "pos": [240, 200], "size": [160, 64], "tag": "STT Engine" },
+    { "id": "mood_visualizer", "type": "frontend", "label": "3D Globe Visualizer", "sublabel": "Mood Modulation", "pos": [240, 340], "size": [160, 64], "tag": "Three.js / Canvas" },
+    { "id": "audio_player", "type": "frontend", "label": "AudioPlayer Client", "sublabel": "Web Audio Analyser", "pos": [240, 480], "size": [160, 64], "tag": "Amplitude / FFT" },
+    { "id": "win32_volume", "type": "backend", "label": "Win32 Audio Endpoint", "sublabel": "IAudioEndpointVolume", "pos": [240, 620], "size": [160, 64], "tag": "COM Master Vol" },
+    { "id": "voice_service", "type": "backend", "label": "VoiceService", "sublabel": "Energy VAD Engine", "pos": [500, 200], "size": [160, 64], "tag": "WakeWord Listener" },
+    { "id": "tts_proxy", "type": "security", "label": "ElevenLabs Proxy", "sublabel": "/api/tts/elevenlabs", "pos": [500, 340], "size": [160, 64], "tag": "Chunked Stream" },
+    { "id": "voice_fallback", "type": "backend", "label": "Provider Fallbacks", "sublabel": "UnsupportedSTT/TTS", "pos": [500, 480], "size": [160, 64], "tag": "Graceful Degrade" },
+    { "id": "elevenlabs_cloud", "type": "cloud", "label": "ElevenLabs Cloud", "sublabel": "Multilingual v2", "pos": [800, 340], "size": [160, 64], "tag": "Neural Synthesis" }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Frontend Audio Subsystem (React / Web Audio)", "wraps": ["web_speech", "mood_visualizer", "audio_player", "win32_volume"] },
+    { "kind": "security-group", "label": "Local Backend Audio Service (:3001)", "wraps": ["voice_service", "tts_proxy", "voice_fallback"] },
+    { "kind": "region", "label": "External Cloud Speech Services", "wraps": ["elevenlabs_cloud"] }
+  ],
+  "connections": [
+    { "id": "mic-to-speech", "from": "user_mic", "to": "web_speech", "label": "Audio Stream", "variant": "default", "fromSide": "right", "toSide": "left" },
+    { "id": "speech-to-service", "from": "web_speech", "to": "voice_service", "label": "Transcribed Text", "variant": "emphasis" },
+    { "id": "service-to-fallback", "from": "voice_service", "to": "voice_fallback", "label": "Offline Fallback", "variant": "dashed" },
+    { "id": "service-to-proxy", "from": "voice_service", "to": "tts_proxy", "label": "Synthesize Speech", "variant": "emphasis" },
+    { "id": "proxy-to-cloud", "from": "tts_proxy", "to": "elevenlabs_cloud", "label": "xi-api-key HTTPS", "variant": "security" },
+    { "id": "cloud-to-proxy", "from": "elevenlabs_cloud", "to": "tts_proxy", "label": "Chunked MP3", "variant": "emphasis", "fromSide": "bottom", "toSide": "bottom" },
+    { "id": "proxy-to-player", "from": "tts_proxy", "to": "audio_player", "label": "Stream Buffer", "variant": "emphasis" },
+    { "id": "player-to-visualizer", "from": "audio_player", "to": "mood_visualizer", "label": "FFT Frequency Data", "variant": "default" },
+    { "id": "player-to-speaker", "from": "audio_player", "to": "user_speaker", "label": "Sound Output", "variant": "emphasis", "fromSide": "left", "toSide": "right" },
+    { "id": "volume-to-speaker", "from": "win32_volume", "to": "user_speaker", "label": "Master Volume Level", "variant": "dashed", "fromSide": "left", "toSide": "bottom" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Audio Capture & STT",
+      "items": [
+        "Web Speech API captures microphone input directly in the browser renderer",
+        "EnergyVoiceActivityDetector on backend evaluates voice activity energy threshold",
+        "ConfigurableWakeWordEngine supports custom trigger phrases with graceful fallbacks"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "ElevenLabs Secure Proxy",
+      "items": [
+        "ELEVENLABS_API_KEY is isolated exclusively in services/backend/.env",
+        "Backend pipes streaming chunked audio responses directly to the frontend",
+        "Configurable voice IDs and model parameters (eleven_multilingual_v2)"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Playback & Real-Time Vis",
+      "items": [
+        "AudioPlayer initializes a Web Audio AnalyserNode to compute FFT spectrum",
+        "Audio frequencies modulate scale, color, and pulse of the 3D Quantum Globe",
+        "Native Win32 COM endpoint enables programmatic OS-level master volume control"
+      ]
+    }
+  ]
+}

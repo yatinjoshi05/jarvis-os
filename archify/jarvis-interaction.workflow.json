@@ -1,0 +1,80 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "JARVIS OS — User Interaction & Execution Workflow",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "output": "archify/jarvis-interaction.html"
+  },
+  "lanes": [
+    { "id": "ui", "label": "User Interface (React 18 / Zustand)" },
+    { "id": "brain", "label": "Brain Engine & Provider Routing (:3001)" },
+    { "id": "desktop", "label": "Tauri v2 Shell & Security Boundary" },
+    { "id": "execution", "label": "Tool Execution & Audio Delivery" }
+  ],
+  "phases": [
+    { "id": "intake", "label": "User Intake", "fromCol": 0, "toCol": 1 },
+    { "id": "reasoning", "label": "Plan & Sandbox Gate", "fromCol": 2, "toCol": 3, "variant": "emphasis" },
+    { "id": "execution_phase", "label": "Execute & Feedback", "fromCol": 4, "toCol": 5, "variant": "dashed" }
+  ],
+  "groups": [
+    { "id": "user_intake", "label": "Input Capture", "lane": "ui", "fromCol": 0, "toCol": 1 },
+    { "id": "ai_inference", "label": "Inference & Planning", "lane": "brain", "fromCol": 2, "toCol": 3, "variant": "emphasis" },
+    { "id": "security_gate", "label": "KnownFolder Policy", "lane": "desktop", "fromCol": 2, "toCol": 4, "variant": "security" },
+    { "id": "system_actions", "label": "Action & Speech", "lane": "execution", "fromCol": 4, "toCol": 5, "variant": "dashed" }
+  ],
+  "mainPath": ["user", "chat_input", "brain_planner", "ai_routing", "sandbox_gate", "tool_action", "tts_delivery", "response_hud"],
+  "nodes": [
+    { "id": "user", "lane": "ui", "col": 0, "type": "external", "label": "User", "sublabel": "Types / Speaks", "width": 136 },
+    { "id": "chat_input", "lane": "ui", "col": 1, "type": "frontend", "label": "Command & Chat", "sublabel": "Workspace Dispatch", "width": 136 },
+    { "id": "brain_planner", "lane": "brain", "col": 2, "type": "backend", "label": "Brain Engine", "sublabel": "Planner & Context", "tag": "associative recall", "width": 136 },
+    { "id": "ai_routing", "lane": "brain", "col": 3, "type": "backend", "label": "Behavior & Route", "sublabel": "NVIDIA / Gemini", "tag": "policy prompt", "width": 136 },
+    { "id": "sandbox_gate", "lane": "desktop", "col": 3, "type": "security", "label": "Sandbox Gate", "sublabel": "KnownFolder Check", "tag": "block traversal", "width": 136 },
+    { "id": "denied_stop", "lane": "desktop", "col": 4, "type": "security", "label": "Access Denied", "sublabel": "Security Error", "width": 136 },
+    { "id": "tool_action", "lane": "execution", "col": 4, "type": "backend", "label": "System Tool Call", "sublabel": "Win32 / PTY / File", "width": 136 },
+    { "id": "tts_delivery", "lane": "execution", "col": 5, "type": "cloud", "label": "ElevenLabs TTS", "sublabel": "Chunked MP3 Stream", "tag": "proxy guarded", "width": 136 },
+    { "id": "response_hud", "lane": "ui", "col": 5, "type": "frontend", "label": "HUD Render", "sublabel": "Audio & UI Update", "width": 136 }
+  ],
+  "edges": [
+    { "id": "user-to-input", "from": "user", "to": "chat_input", "variant": "default" },
+    { "id": "input-to-brain", "from": "chat_input", "to": "brain_planner", "label": "POST /api/brain/execute", "variant": "emphasis" },
+    { "id": "brain-to-routing", "from": "brain_planner", "to": "ai_routing", "label": "plan steps", "variant": "emphasis" },
+    { "id": "routing-to-sandbox", "from": "ai_routing", "to": "sandbox_gate", "label": "dispatch tool", "variant": "security" },
+    { "id": "sandbox-to-tool", "from": "sandbox_gate", "to": "tool_action", "label": "approved", "variant": "emphasis" },
+    { "id": "sandbox-denied", "from": "sandbox_gate", "to": "denied_stop", "label": "outside allowlist", "variant": "security", "role": "error" },
+    { "id": "denied-to-hud", "from": "denied_stop", "to": "response_hud", "label": "display error", "variant": "dashed", "role": "return", "fromSide": "top", "toSide": "bottom" },
+    { "id": "tool-to-tts", "from": "tool_action", "to": "tts_delivery", "label": "stream synthesis", "variant": "default" },
+    { "id": "tts-to-hud", "from": "tts_delivery", "to": "response_hud", "label": "playback audio", "variant": "emphasis", "role": "return", "fromSide": "right", "toSide": "right", "route": "outside-right", "labelSegment": 1 }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Intake & Native Safety",
+      "items": [
+        "User interactions from chat or command bar pass through workspace router",
+        "Filesystem commands require KnownFolder validation (Desktop, Documents, Downloads, Pictures)",
+        "Path traversal attempts (e.g. System32 or relative ..) are rejected before execution"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Brain Planning & Multi-Provider AI",
+      "items": [
+        "BrainEngine retrieves associative context from VectorStore and KnowledgeGraph",
+        "BehaviorEngine shapes personality and extracts structured action policies",
+        "Router attempts NVIDIA NIM Llama 3.1 70B, failing over to Google Gemini 1.5 Flash"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Execution & Streaming Audio",
+      "items": [
+        "Approved system tools invoke Win32 APIs, PowerShell ConPTY, or filesystem updates",
+        "Backend proxies TTS synthesis to ElevenLabs via chunked transfer, protecting secret keys",
+        "Frontend audio analyzer animates the 3D globe visualization in sync with speech"
+      ]
+    }
+  ]
+}
